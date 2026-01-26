@@ -8,10 +8,10 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     // IMPORTANT: This must match your GitHub repository name.
     // If your repo is https://github.com/abdelelyoo/portfolio-analysis, this is correct.
-    base: '/', 
+    base: '/',
     define: {
-      // This passes the API Key from GitHub Secrets to the code
-      'process.env.API_KEY': JSON.stringify(env.API_KEY) 
+      // This passes the API Key from GitHub Secrets or .env.local to the code
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || env.GEMINI_API_KEY)
     }
   }
 })

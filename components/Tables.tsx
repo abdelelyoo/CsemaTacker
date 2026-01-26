@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Trade, Position, CashTransaction } from '../types';
 import { formatCurrency } from '../utils';
 import { ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, AlertCircle, Wallet, Trophy, FileText, Edit3, Trash2, HelpCircle, Search, RefreshCw, Loader2 } from 'lucide-react';
+import { FixedSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export const PositionsTable: React.FC<{ positions: Position[] }> = ({ positions }) => {
     // Filter only currently held positions for the main table
