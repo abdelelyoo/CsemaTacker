@@ -2,12 +2,37 @@
 declare var process: {
   env: {
     API_KEY: string;
+    VITE_GEMINI_API_KEY: string;
     [key: string]: string | undefined;
   }
 };
 
 export type TradeType = 'Achat' | 'Vente';
 export type CashTransactionType = 'DEPOSIT' | 'WITHDRAWAL' | 'DIVIDEND' | 'TAX_ADJUSTMENT' | 'CUSTODY_FEE' | 'SUBSCRIPTION';
+export type NewsCategory = 'Corporate' | 'Macro' | 'Technical';
+
+export interface AnalystTarget {
+  ticker: string;
+  targetPrice: number;
+  recommendation: 'ACCUMULATE' | 'BUY' | 'HOLD' | 'REDUCE' | 'SELL';
+  date: string;
+  source: string;
+}
+
+export interface MarketIntelligence {
+  date: string;
+  sentiment: 'Bullish' | 'Bearish' | 'Neutral';
+  masiVariation: number;
+  totalVolume: number;
+  highlights: {
+    category: NewsCategory;
+    title: string;
+    content: string;
+    tickers?: string[];
+  }[];
+  topPerformers: { ticker: string; change: number }[];
+  bottomPerformers: { ticker: string; change: number }[];
+}
 
 export interface Trade {
   id?: string; // Unique identifier for CRUD operations
@@ -30,7 +55,7 @@ export interface Position {
   qty: number;
   avgCost: number; // PRU (Prix de Revient Unitaire) including fees
   totalCost: number;
-  marketPrice: number; 
+  marketPrice: number;
   marketValue: number;
   unrealizedPnL: number;
   breakEven: number; // Price needed to exit with 0 profit after sell fees
@@ -56,36 +81,36 @@ export interface TickerFrequency {
 }
 
 export interface PortfolioSummary {
-    totalBuys: number;
-    totalSells: number;
-    netInvested: number;
-    totalMarketValue: number;
-    totalUnrealizedPnL: number;
-    uniqueTickers: number;
-    tradeCount: number;
-    totalFees: number;
-    totalTaxes: number;
-    totalRealizedPnL: number;
-    winRate: number;
-    // Advanced Quant Metrics
-    avgWin: number;
-    avgLoss: number;
-    profitFactor: number;
-    kellyPercent: number;
-    expectancy: number;
+  totalBuys: number;
+  totalSells: number;
+  netInvested: number;
+  totalMarketValue: number;
+  totalUnrealizedPnL: number;
+  uniqueTickers: number;
+  tradeCount: number;
+  totalFees: number;
+  totalTaxes: number;
+  totalRealizedPnL: number;
+  winRate: number;
+  // Advanced Quant Metrics
+  avgWin: number;
+  avgLoss: number;
+  profitFactor: number;
+  kellyPercent: number;
+  expectancy: number;
 }
 
 export interface CashTransaction {
-    id?: string;
-    date: string;
-    type: CashTransactionType;
-    amount: number;
-    description: string;
+  id?: string;
+  date: string;
+  type: CashTransactionType;
+  amount: number;
+  description: string;
 }
 
 export interface PriceAlert {
-    id: string;
-    ticker: string;
-    threshold: number;
-    condition: 'ABOVE' | 'BELOW'; // 'ABOVE' = >= Threshold, 'BELOW' = <= Threshold
+  id: string;
+  ticker: string;
+  threshold: number;
+  condition: 'ABOVE' | 'BELOW'; // 'ABOVE' = >= Threshold, 'BELOW' = <= Threshold
 }

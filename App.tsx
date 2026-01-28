@@ -19,9 +19,13 @@ import {
     ArrowUpRight,
     FlaskConical,
     Scale,
-    ShieldAlert
+    ShieldAlert,
+    Loader2,
+    FileText,
+    Menu,
+    X
 } from 'lucide-react';
-import { TRADE_DATA, LATEST_PRICES, CASH_MOVEMENTS } from './constants';
+import { TRADE_DATA, LATEST_PRICES, CASH_MOVEMENTS, MARKET_DAILY_HIGHLIGHTS, ANALYST_TARGETS } from './constants';
 import { calculatePortfolioStats, getMonthlyMetrics, getTickerFrequency, formatCurrency, calculateConcentrationRisk } from './utils';
 import { VolumeChart, AllocationPieChart, FrequencyPieChart } from './components/Charts';
 import { PositionsTable, TradeHistoryTable, MarketDataTable, CashLedgerTable } from './components/Tables';
@@ -29,7 +33,8 @@ import { IPOAnalysis, PatternAnalysis } from './components/AnalysisSections';
 import { TradeForm } from './components/TradeForm';
 import { CashForm } from './components/CashForm';
 import { Lab } from './components/Lab'; // Import Lab Component
-import { Trade, CashTransaction, PriceAlert } from './types';
+import { Trade, CashTransaction, PriceAlert, AnalystTarget, MarketIntelligence } from './types';
+import { MarketIntelligenceComponent } from './components/MarketIntelligence';
 
 type Tab = 'overview' | 'positions' | 'ipos' | 'patterns' | 'trades' | 'market' | 'lab';
 
@@ -59,6 +64,7 @@ const getTVSymbol = (ticker: string) => {
 
 function App() {
     const [activeTab, setActiveTab] = useState<Tab>('overview');
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     // Using state for prices so user can update them manually
     const [prices, setPrices] = useState<Record<string, number>>(LATEST_PRICES);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -109,6 +115,26 @@ function App() {
     useEffect(() => {
         localStorage.setItem('capital_auditor_cash', JSON.stringify(cashTransactions));
     }, [cashTransactions]);
+
+    // Persistent state for Market Intelligence (Daily Highlights)
+    const [marketIntelligence, setMarketIntelligence] = useState<MarketIntelligence>(() => {
+        const saved = localStorage.getItem('capital_auditor_highlights');
+        return saved ? JSON.parse(saved) : MARKET_DAILY_HIGHLIGHTS;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('capital_auditor_highlights', JSON.stringify(marketIntelligence));
+    }, [marketIntelligence]);
+
+    // Persistent state for Analyst Targets
+    const [analystTargets, setAnalystTargets] = useState<AnalystTarget[]>(() => {
+        const saved = localStorage.getItem('capital_auditor_targets');
+        return saved ? JSON.parse(saved) : ANALYST_TARGETS;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('capital_auditor_targets', JSON.stringify(analystTargets));
+    }, [analystTargets]);
 
     // Save alerts
     useEffect(() => {
@@ -270,12 +296,10 @@ function App() {
         if (activeHoldingTickers.length === 0) return;
 
         setIsRefreshing(true);
-        console.log("Starting Live Price Refresh for:", activeHoldingTickers);
-
         try {
-            const apiKey = process.env.API_KEY;
+            const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
             if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
-                throw new Error("Invalid API Key: Please replace 'PLACEHOLDER_API_KEY' in your .env.local file with a valid Gemini API key from AI Studio.");
+                throw new Error("Invalid API Key");
             }
             const ai = new GoogleGenAI({ apiKey });
 
@@ -283,45 +307,138 @@ function App() {
                 Search for the real-time stock prices (Cours) on the Casablanca Stock Exchange (Bourse de Casablanca) for these tickers:
                 ${activeHoldingTickers.join(', ')}
 
-                URGENT: Prioritize "TradingView" (CSEMA symbols) or "Bourse de Casablanca" official site for the absolute latest prices.
-                
                 Return a raw JSON object where:
                 - Keys are the exact ticker symbols (e.g., "VCN", "IAM").
                 - Values are the latest price in MAD (numeric).
-                
-                Example: { "VCN": 455.00, "IAM": 92.50 }
                 Output ONLY valid JSON.
             `;
 
-            // Using gemini-2.5-flash-preview-09-2025 as requested
-            // Note: responseMimeType: "application/json" is NOT supported when tools are active
             const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-preview-09-2025',
+                model: 'gemini-2.0-flash',
                 contents: prompt,
-                config: {
-                    tools: [{ googleSearch: {} }],
-                },
+                config: { tools: [{ googleSearch: {} }] },
             });
 
             const text = response.text;
-
-            console.log("AI Price Fetch Raw Response:", text);
             if (text) {
-                // Remove potential markdown formatting just in case
                 const cleanText = text.replace(/```json|```/g, '').trim();
                 const newPrices = JSON.parse(cleanText);
-
-                setPrices(prev => ({
-                    ...prev,
-                    ...newPrices
-                }));
+                setPrices(prev => ({ ...prev, ...newPrices }));
                 setLastUpdated(new Date());
-                console.log("Prices successfully updated:", newPrices);
             }
         } catch (error: any) {
-            console.error("CRITICAL: Failed to fetch live prices:", error);
-            const errorMsg = error.message || "Unknown connectivity error";
-            alert(`Unable to fetch live data: ${errorMsg}. Using fallback prices.`);
+            console.error("Failed to fetch live prices:", error);
+            alert(`Unable to fetch live data. Using fallback.`);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
+    const handlePDFUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setIsRefreshing(true);
+        try {
+            const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
+            if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') throw new Error("Invalid API Key");
+
+            const base64PDF = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve((reader.result as string).split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+
+            const ai = new GoogleGenAI({ apiKey });
+
+            const extractionPrompt = `
+                I am providing the BKGR "Lettre Quotidienne" report. 
+                Perform a Deep Analysis of all pages to extract session data:
+                
+                1. Market Context:
+                   - Session Date (YYYY-MM-DD).
+                   - MASI Points (e.g. 18,384.99) and Daily Var % (e.g. -1.39).
+                   - Sentiment (Bullish/Bearish based on Daily Var).
+                   - Volume Global (e.g. 311.03 M MAD).
+                
+                2. Ticker Prices (Extremely Important):
+                   - Locate "TABLEAU DE BORD".
+                   - Scan the "Cours du jour" column. 
+                   - Extract prices for all companies.
+                   - CRITICAL: Map "SOT" to "MSA", "TGC" to "TGCC", "SNP" to "SNEP".
+                
+                3. Performers:
+                   - Top 3 Gains and Top 3 Losses from the "Evolution du MASI" section.
+
+                Return a CLEAN JSON object:
+                {
+                  "marketIntelligence": { "date": "...", "sentiment": "...", "masiVariation": 0.0, "totalVolume": 0, "highlights": [...], "topPerformers": [...], "bottomPerformers": [...] },
+                  "prices": { "TICKER": 0.0, ... },
+                  "targets": [...]
+                }
+            `;
+
+            // Use the new @google/genai SDK API (v1.38+)
+            const result = await ai.models.generateContent({
+                model: 'gemini-2.0-flash',
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [
+                            { inlineData: { data: base64PDF, mimeType: 'application/pdf' } },
+                            { text: extractionPrompt }
+                        ]
+                    }
+                ]
+            });
+
+            const responseText = result.text || '';
+            const cleanText = responseText.replace(/```json|```/g, '').trim();
+            const data = JSON.parse(cleanText);
+
+            if (data.marketIntelligence) setMarketIntelligence(data.marketIntelligence);
+            if (data.prices) setPrices(prev => ({ ...prev, ...data.prices }));
+            if (data.targets) setAnalystTargets(data.targets);
+
+            alert(`AI Magic Success! Processed data for ${data.marketIntelligence?.date || 'unknown date'}`);
+        } catch (error: any) {
+            console.error("AI Magic PDF Error:", error);
+            alert(`AI Magic failed: ${error.message || 'Unknown error'}. Please try again or use the Paste Text option.`);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
+    const handleTextMagic = async (text: string) => {
+        if (!text.trim()) return;
+        setIsRefreshing(true);
+        try {
+            const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
+            if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') throw new Error("Invalid API Key");
+
+            const ai = new GoogleGenAI({ apiKey });
+
+            const extractionPrompt = `
+                Extract structured market data from this text (BKGR Letter content):
+                "${text}"
+                Focus on session date and "Tableau de bord" prices. Map "SOT" to "MSA".
+                Return ONLY JSON.
+            `;
+
+            const result = await ai.models.generateContent({
+                model: 'gemini-2.0-flash',
+                contents: extractionPrompt
+            });
+
+            const data = JSON.parse((result.text || '').replace(/```json|```/g, '').trim());
+
+            if (data.marketIntelligence) setMarketIntelligence(data.marketIntelligence);
+            if (data.prices) setPrices(prev => ({ ...prev, ...data.prices }));
+            if (data.targets) setAnalystTargets(data.targets);
+            alert("Text Magic complete!");
+        } catch (e: any) {
+            console.error("Text Magic Error:", e);
+            alert(`Text analysis failed: ${e.message || 'Unknown error'}`);
         } finally {
             setIsRefreshing(false);
         }
@@ -812,6 +929,20 @@ function App() {
                             </p>
                         </div>
 
+                        {/* BKGR Daily Intelligence */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                                    <Globe className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-800">BKGR Daily Intelligence</h3>
+                                    <p className="text-sm text-slate-500">Insights from the processed BKGR Daily Letter</p>
+                                </div>
+                            </div>
+                            <MarketIntelligenceComponent data={marketIntelligence} />
+                        </div>
+
                         {/* TradingView Widget Section */}
                         {activeHoldingTickers.length > 0 && (
                             <div className="h-[500px] rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-white">
@@ -841,6 +972,7 @@ function App() {
                                     onRefresh={handleRefreshPrices}
                                     isRefreshing={isRefreshing}
                                     lastUpdated={lastUpdated}
+                                    analystTargets={analystTargets}
                                 />
                             </div>
                         ) : (
@@ -881,31 +1013,109 @@ function App() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row pb-12">
-            {/* Sidebar Navigation */}
-            <aside className="w-full md:w-64 bg-white border-r border-slate-200 fixed md:sticky top-0 h-auto md:h-screen z-10">
-                <div className="p-6 border-b border-slate-100">
-                    <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
-                        Capital.Auditor
-                    </h1>
-                    <p className="text-xs text-slate-400 mt-1">July 2025 - Jan 2026</p>
-                </div>
-                <nav className="p-4 space-y-1">
-                    <NavButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={LayoutDashboard} label="Overview" />
-                    <NavButton active={activeTab === 'positions'} onClick={() => setActiveTab('positions')} icon={PieChartIcon} label="Current Positions" />
-                    <NavButton active={activeTab === 'market'} onClick={() => setActiveTab('market')} icon={Globe} label="Market Data" />
-                    <NavButton active={activeTab === 'ipos'} onClick={() => setActiveTab('ipos')} icon={Rocket} label="IPO Analysis" />
-                    <NavButton active={activeTab === 'patterns'} onClick={() => setActiveTab('patterns')} icon={Activity} label="Patterns" />
-                    <NavButton active={activeTab === 'lab'} onClick={() => setActiveTab('lab')} icon={FlaskConical} label="The Lab" />
-                    <NavButton active={activeTab === 'trades'} onClick={() => setActiveTab('trades')} icon={List} label="Audit Log" />
-                </nav>
-            </aside>
+        <div className="min-h-screen bg-slate-50 flex flex-col pb-14 md:pb-12">
+            {/* Mobile Header with Hamburger */}
+            <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+                <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
+                    Capital.Auditor
+                </h1>
+                <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                >
+                    {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+            </header>
 
-            {/* Main Content */}
-            <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-                {/* Dynamic Content */}
-                {renderContent()}
-            </main>
+            {/* Mobile Overlay */}
+            {mobileMenuOpen && (
+                <div
+                    className="md:hidden fixed inset-0 bg-black/50 z-40"
+                    onClick={() => setMobileMenuOpen(false)}
+                />
+            )}
+
+            <div className="flex flex-1 pt-14 md:pt-0">
+                {/* Sidebar Navigation */}
+                <aside className={`
+                    fixed md:sticky top-14 md:top-0 left-0 h-[calc(100vh-3.5rem)] md:h-screen w-72 md:w-64 
+                    bg-white border-r border-slate-200 z-40
+                    transform transition-transform duration-300 ease-in-out
+                    ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+                    overflow-y-auto
+                `}>
+                    <div className="hidden md:block p-6 border-b border-slate-100">
+                        <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
+                            Capital.Auditor
+                        </h1>
+                        <p className="text-xs text-slate-400 mt-1">July 2025 - Jan 2026</p>
+                    </div>
+                    <nav className="p-4 space-y-1">
+                        <NavButton active={activeTab === 'overview'} onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} icon={LayoutDashboard} label="Overview" />
+                        <NavButton active={activeTab === 'positions'} onClick={() => { setActiveTab('positions'); setMobileMenuOpen(false); }} icon={PieChartIcon} label="Current Positions" />
+                        <NavButton active={activeTab === 'market'} onClick={() => { setActiveTab('market'); setMobileMenuOpen(false); }} icon={Globe} label="Market Data" />
+                        <NavButton active={activeTab === 'ipos'} onClick={() => { setActiveTab('ipos'); setMobileMenuOpen(false); }} icon={Rocket} label="IPO Analysis" />
+                        <NavButton active={activeTab === 'patterns'} onClick={() => { setActiveTab('patterns'); setMobileMenuOpen(false); }} icon={Activity} label="Patterns" />
+                        <NavButton active={activeTab === 'lab'} onClick={() => { setActiveTab('lab'); setMobileMenuOpen(false); }} icon={FlaskConical} label="The Lab" />
+                        <NavButton active={activeTab === 'trades'} onClick={() => { setActiveTab('trades'); setMobileMenuOpen(false); }} icon={List} label="Audit Log" />
+                    </nav>
+
+                    {/* PDF Magic Section */}
+                    <div className="mx-4 mt-6 p-4 bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl border border-indigo-100 shadow-sm">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="p-1.5 bg-indigo-600 text-white rounded-lg shadow-sm">
+                                <Rocket className="w-4 h-4" />
+                            </div>
+                            <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider">AI Magic Upload</h4>
+                        </div>
+                        <p className="text-[10px] text-indigo-700/70 mb-4 leading-relaxed">
+                            Upload your <strong>BKGR Daily Letter</strong> to sync evening prices & analyst targets.
+                        </p>
+                        <label className="block w-full">
+                            <span className="sr-only">Choose PDF</span>
+                            <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={handlePDFUpload}
+                                disabled={isRefreshing}
+                                className={`block w-full text-[10px] text-slate-500
+                                    file:mr-2 file:py-2 file:px-3
+                                    file:rounded-lg file:border-0
+                                    file:text-[10px] file:font-bold
+                                    file:bg-indigo-600 file:text-white
+                                    hover:file:bg-indigo-700
+                                    file:cursor-pointer disabled:opacity-50 transition-all
+                                `}
+                            />
+                        </label>
+                        {isRefreshing && (
+                            <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-indigo-600 animate-pulse">
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                                Magic in progress...
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Paste Magic Section */}
+                    <div className="mx-4 mt-4 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div className="flex items-center gap-2 mb-2">
+                            <FileText className="w-4 h-4 text-slate-600" />
+                            <h4 className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Paste Text Magic</h4>
+                        </div>
+                        <textarea
+                            placeholder="Paste PDF text here if upload fails..."
+                            className="w-full h-16 p-2 text-[10px] border border-slate-200 rounded bg-white focus:ring-1 focus:ring-indigo-500 outline-none resize-none"
+                            onBlur={(e) => handleTextMagic(e.target.value)}
+                        ></textarea>
+                    </div>
+                </aside>
+
+                {/* Main Content */}
+                <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+                    {/* Dynamic Content */}
+                    {renderContent()}
+                </main>
+            </div>
 
             {/* Ticker Tape Footer */}
             <div className="fixed bottom-0 left-0 right-0 z-50 h-12 shadow-inner">

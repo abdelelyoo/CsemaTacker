@@ -403,9 +403,9 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
         setLoading(true);
         console.log("Starting AI Analysis for view:", view);
         try {
-            const apiKey = process.env.API_KEY;
+            const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
             if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
-                throw new Error("Invalid API Key: Please replace 'PLACEHOLDER_API_KEY' in your .env.local file with a valid Gemini API key from AI Studio.");
+                throw new Error("Invalid API Key: Please ensure VITE_GEMINI_API_KEY is set in .env.local");
             }
             const ai = new GoogleGenAI({ apiKey });
 

@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       body { font-family: 'Inter', sans-serif; }
+      
       /* Custom scrollbar for tables */
       .scrollbar-hide::-webkit-scrollbar {
           display: none;
@@ -15,6 +16,44 @@
       .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+      }
+      
+      /* Mobile-friendly table scrolling */
+      .table-responsive {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Safe area insets for notched devices */
+      @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .pb-safe {
+          padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+        }
+      }
+      
+      /* Prevent text size adjustment on orientation change */
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      
+      /* Smooth animations */
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.3s ease-out forwards;
+      }
+      
+      /* Mobile touch improvements */
+      button, a, input, textarea, select {
+        touch-action: manipulation;
+      }
+      
+      /* Responsive text */
+      @media (max-width: 640px) {
+        .text-responsive-sm { font-size: 0.75rem; }
+        .text-responsive-base { font-size: 0.875rem; }
       }
     </style>
   <script type="importmap">

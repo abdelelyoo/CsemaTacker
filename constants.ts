@@ -1,23 +1,7 @@
 
-import { Trade, CashTransaction } from './types';
+import { Trade, CashTransaction, AnalystTarget, MarketIntelligence } from './types';
 
-export const LATEST_PRICES: Record<string, number> = {
-    'VCN': 420.20,
-    'TGC': 920.00,
-    'MSA': 940.00,
-    'DHO': 80.00,
-    'NKL': 52.00,
-    'ATW': 760.00,
-    'HPS': 510.00,
-    'AKT': 1178.00,
-    'RIS': 400.00,
-    'STR': 310.00,
-    'FBR': 460.00,
-    'BOA': 240.00,
-    'GTM': 940.00,
-    'SNA': 85.00,
-    'DYT': 328.00
-};
+export * from './daily_data';
 
 export const CASH_MOVEMENTS: CashTransaction[] = [
     { date: '2025-07-08', type: 'DEPOSIT', amount: 12000.00, description: 'Virmt Rçu / Achats en Bourse (VCN IPO)' },

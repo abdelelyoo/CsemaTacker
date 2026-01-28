@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trade, Position, CashTransaction } from '../types';
+import { Trade, Position, CashTransaction, AnalystTarget } from '../types';
 import { formatCurrency } from '../utils';
 import { ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, AlertCircle, Wallet, Trophy, FileText, Edit3, Trash2, HelpCircle, Search, RefreshCw, Loader2 } from 'lucide-react';
 import { FixedSizeList as List } from 'react-window';
@@ -93,7 +93,7 @@ export const PositionsTable: React.FC<{ positions: Position[] }> = ({ positions 
                             );
                         })}
                         {activePositions.length === 0 && (
-                             <tr>
+                            <tr>
                                 <td colSpan={8} className="p-8 text-center text-slate-400">
                                     No active positions currently held.
                                 </td>
@@ -106,8 +106,8 @@ export const PositionsTable: React.FC<{ positions: Position[] }> = ({ positions 
     );
 };
 
-export const TradeHistoryTable: React.FC<{ 
-    trades: Trade[], 
+export const TradeHistoryTable: React.FC<{
+    trades: Trade[],
     totalCashInjected: number,
     onEdit?: (trade: Trade) => void,
     onDelete?: (tradeId: string) => void
@@ -118,7 +118,7 @@ export const TradeHistoryTable: React.FC<{
     // Reverse to show newest first for display
     const sortedTrades = [...trades].reverse();
 
-    const filteredTrades = sortedTrades.filter(t => 
+    const filteredTrades = sortedTrades.filter(t =>
         t.ticker.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -152,7 +152,7 @@ export const TradeHistoryTable: React.FC<{
                         </p>
                         <p className="text-[10px] text-slate-400 mt-1">Cumulative profit/loss from closed positions</p>
                     </div>
-                     <div className={`p-3 rounded-lg ${totalRealizedPnL >= 0 ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'}`}>
+                    <div className={`p-3 rounded-lg ${totalRealizedPnL >= 0 ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'}`}>
                         <Trophy className="w-5 h-5" />
                     </div>
                 </div>
@@ -161,20 +161,20 @@ export const TradeHistoryTable: React.FC<{
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <h4 className="font-semibold text-slate-700 flex items-center">
-                         <FileText className="w-4 h-4 mr-2" /> Trading History
+                        <FileText className="w-4 h-4 mr-2" /> Trading History
                     </h4>
                     <div className="relative w-full sm:w-auto">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                        <input 
-                            type="text" 
-                            placeholder="Search by ticker..." 
+                        <input
+                            type="text"
+                            placeholder="Search by ticker..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-64 transition-all focus:w-full sm:focus:w-72"
                         />
                     </div>
                 </div>
-                 <div className="overflow-x-auto">
+                <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase text-slate-500 font-semibold tracking-wider">
@@ -200,14 +200,14 @@ export const TradeHistoryTable: React.FC<{
                                     const netAmt = t.netAmount || (t.qty * t.price);
                                     const tax = t.calculatedTax || 0;
                                     const finalAmount = isBuy ? netAmt : (netAmt - tax);
-                                    
+
                                     return (
                                         <React.Fragment key={t.id || idx}>
                                             <tr className={`hover:bg-opacity-50 transition-colors ${isBuy ? 'bg-emerald-50/30' : 'bg-rose-50/30'} ${expandedTradeId === t.id ? 'bg-slate-100' : ''}`}>
                                                 <td className="p-4 text-slate-500 whitespace-nowrap">{t.date}</td>
                                                 <td className="p-4">
                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isBuy ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-                                                        {isBuy ? <TrendingUp className="w-3 h-3 mr-1"/> : <TrendingDown className="w-3 h-3 mr-1"/>}
+                                                        {isBuy ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
                                                         {t.type === 'Achat' ? 'BUY' : 'SELL'}
                                                     </span>
                                                 </td>
@@ -221,8 +221,8 @@ export const TradeHistoryTable: React.FC<{
                                                     -{formatCurrency(t.calculatedFees || 0)}
                                                 </td>
                                                 <td className="p-4 text-right text-xs text-red-400">
-                                                     {t.calculatedTax && t.calculatedTax > 0 ? (
-                                                        <button 
+                                                    {t.calculatedTax && t.calculatedTax > 0 ? (
+                                                        <button
                                                             onClick={() => t.id && toggleTaxDetails(t.id)}
                                                             className="flex items-center justify-end gap-1 hover:text-red-600 focus:outline-none w-full group transition-colors"
                                                             title="View TPCVM Calculation"
@@ -230,9 +230,9 @@ export const TradeHistoryTable: React.FC<{
                                                             <span>-{formatCurrency(t.calculatedTax)}</span>
                                                             <HelpCircle className="w-3 h-3 text-slate-400 group-hover:text-red-500" />
                                                         </button>
-                                                     ) : (
+                                                    ) : (
                                                         t.calculatedTax && t.calculatedTax > 0 ? `-${formatCurrency(t.calculatedTax)}` : '-'
-                                                     )}
+                                                    )}
                                                 </td>
                                                 <td className="p-4 text-right font-mono font-bold text-slate-900 bg-slate-50/50">
                                                     {formatCurrency(finalAmount)}
@@ -250,8 +250,8 @@ export const TradeHistoryTable: React.FC<{
                                                     <td className="p-4 text-center">
                                                         <div className="flex justify-center gap-2">
                                                             {onEdit && (
-                                                                <button 
-                                                                    onClick={() => onEdit(t)} 
+                                                                <button
+                                                                    onClick={() => onEdit(t)}
                                                                     className="p-1 text-slate-400 hover:text-indigo-600 transition-colors"
                                                                     title="Edit"
                                                                 >
@@ -259,8 +259,8 @@ export const TradeHistoryTable: React.FC<{
                                                                 </button>
                                                             )}
                                                             {onDelete && (
-                                                                <button 
-                                                                    onClick={() => t.id && onDelete(t.id)} 
+                                                                <button
+                                                                    onClick={() => t.id && onDelete(t.id)}
                                                                     className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
                                                                     title="Delete"
                                                                 >
@@ -281,23 +281,23 @@ export const TradeHistoryTable: React.FC<{
                                                             <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                                                                 <div className="text-slate-500">Net Proceeds (After Fees):</div>
                                                                 <div className="text-right font-mono">{formatCurrency(t.netAmount || 0)}</div>
-                                                                
+
                                                                 <div className="text-slate-500">
                                                                     Acquisition Cost (PMP):
                                                                     <div className="text-[10px] text-slate-400">(Avg Cost × Sold Qty)</div>
                                                                 </div>
                                                                 <div className="text-right font-mono">-{formatCurrency((t.netAmount || 0) - (t.taxableGain || 0))}</div>
-                                                                
+
                                                                 <div className="col-span-2 border-t border-slate-100 my-1"></div>
-                                                                
+
                                                                 <div className="font-medium text-slate-700">Taxable Capital Gain:</div>
                                                                 <div className="text-right font-mono font-medium text-emerald-600">{formatCurrency(t.taxableGain || 0)}</div>
-                                                                
+
                                                                 <div className="text-slate-500">Tax Rate (TPCVM):</div>
                                                                 <div className="text-right font-mono">15%</div>
-                                                                
+
                                                                 <div className="col-span-2 border-t border-slate-100 my-1"></div>
-                                                                
+
                                                                 <div className="font-bold text-slate-800">Tax Payable:</div>
                                                                 <div className="text-right font-mono font-bold text-rose-500">-{formatCurrency(t.calculatedTax || 0)}</div>
                                                             </div>
@@ -323,7 +323,7 @@ export const TradeHistoryTable: React.FC<{
     );
 };
 
-export const CashLedgerTable: React.FC<{ 
+export const CashLedgerTable: React.FC<{
     transactions: CashTransaction[],
     onEdit?: (transaction: CashTransaction) => void,
     onDelete?: (transactionId: string) => void
@@ -332,13 +332,13 @@ export const CashLedgerTable: React.FC<{
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
             <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <h4 className="font-semibold text-slate-700 flex items-center">
-                        <Wallet className="w-4 h-4 mr-2" /> Cash Ledger (Deposits, Dividends & Fees)
+                    <Wallet className="w-4 h-4 mr-2" /> Cash Ledger (Deposits, Dividends & Fees)
                 </h4>
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                            <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase text-slate-500 font-semibold tracking-wider">
+                        <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase text-slate-500 font-semibold tracking-wider">
                             <th className="p-4">Date</th>
                             <th className="p-4">Type</th>
                             <th className="p-4">Description</th>
@@ -347,15 +347,15 @@ export const CashLedgerTable: React.FC<{
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-sm">
-                        {[...transactions].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((c, idx) => (
+                        {[...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((c, idx) => (
                             <tr key={c.id || idx} className="hover:bg-slate-50">
                                 <td className="p-4 text-slate-500 whitespace-nowrap">{c.date}</td>
                                 <td className="p-4">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                        ${c.type === 'DEPOSIT' ? 'bg-indigo-100 text-indigo-800' : 
-                                            c.type === 'DIVIDEND' ? 'bg-emerald-100 text-emerald-800' : 
-                                            (c.type === 'CUSTODY_FEE' || c.type === 'SUBSCRIPTION' || c.type === 'WITHDRAWAL' || c.type === 'TAX_ADJUSTMENT') ? 'bg-rose-100 text-rose-800' :
-                                            'bg-slate-100 text-slate-800'}`}>
+                                        ${c.type === 'DEPOSIT' ? 'bg-indigo-100 text-indigo-800' :
+                                            c.type === 'DIVIDEND' ? 'bg-emerald-100 text-emerald-800' :
+                                                (c.type === 'CUSTODY_FEE' || c.type === 'SUBSCRIPTION' || c.type === 'WITHDRAWAL' || c.type === 'TAX_ADJUSTMENT') ? 'bg-rose-100 text-rose-800' :
+                                                    'bg-slate-100 text-slate-800'}`}>
                                         {c.type}
                                     </span>
                                 </td>
@@ -367,8 +367,8 @@ export const CashLedgerTable: React.FC<{
                                     <td className="p-4 text-center">
                                         <div className="flex justify-center gap-2">
                                             {onEdit && (
-                                                <button 
-                                                    onClick={() => onEdit(c)} 
+                                                <button
+                                                    onClick={() => onEdit(c)}
                                                     className="p-1 text-slate-400 hover:text-indigo-600 transition-colors"
                                                     title="Edit"
                                                 >
@@ -376,8 +376,8 @@ export const CashLedgerTable: React.FC<{
                                                 </button>
                                             )}
                                             {onDelete && (
-                                                <button 
-                                                    onClick={() => c.id && onDelete(c.id)} 
+                                                <button
+                                                    onClick={() => c.id && onDelete(c.id)}
                                                     className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
                                                     title="Delete"
                                                 >
@@ -396,23 +396,29 @@ export const CashLedgerTable: React.FC<{
     );
 };
 
-export const MarketDataTable: React.FC<{ 
-    tickers: string[], 
-    prices: Record<string, number>, 
+export const MarketDataTable: React.FC<{
+    tickers: string[],
+    prices: Record<string, number>,
     onUpdate: (ticker: string, price: number) => void,
     onRefresh?: () => void,
     isRefreshing?: boolean,
-    lastUpdated?: Date | null
-}> = ({ tickers, prices, onUpdate, onRefresh, isRefreshing, lastUpdated }) => {
+    lastUpdated?: Date | null,
+    analystTargets?: AnalystTarget[]
+}> = ({ tickers, prices, onUpdate, onRefresh, isRefreshing, lastUpdated, analystTargets = [] }) => {
+    const targetsMap = React.useMemo(() => {
+        const map: Record<string, { price: number, rec: string }> = {};
+        analystTargets.forEach(t => map[t.ticker] = { price: t.targetPrice, rec: t.recommendation });
+        return map;
+    }, [analystTargets]);
     return (
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-             <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div className="flex items-center gap-4">
                     <h4 className="font-semibold text-slate-700 flex items-center">
-                         <Edit3 className="w-4 h-4 mr-2" /> Market Data
+                        <Edit3 className="w-4 h-4 mr-2" /> Market Data
                     </h4>
                     {onRefresh && (
-                        <button 
+                        <button
                             onClick={onRefresh}
                             disabled={isRefreshing}
                             className="flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition-colors"
@@ -440,6 +446,8 @@ export const MarketDataTable: React.FC<{
                         <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase text-slate-500 font-semibold tracking-wider">
                             <th className="p-4">Ticker</th>
                             <th className="p-4">Current Price (MAD)</th>
+                            <th className="p-4">Analyst Target (BKGR)</th>
+                            <th className="p-4">Upside / Potential</th>
                             <th className="p-4">Manual Override</th>
                         </tr>
                     </thead>
@@ -450,10 +458,34 @@ export const MarketDataTable: React.FC<{
                                 <td className="p-4 font-mono text-slate-800 font-bold bg-slate-50/50">
                                     {formatCurrency(prices[ticker] || 0)}
                                 </td>
+                                <td className="p-4 text-slate-600">
+                                    {targetsMap[ticker] ? (
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-indigo-700">{formatCurrency(targetsMap[ticker].price)}</span>
+                                            <span className="text-[10px] uppercase font-bold text-slate-400">{targetsMap[ticker].rec}</span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-slate-300">-</span>
+                                    )}
+                                </td>
+                                <td className="p-4">
+                                    {targetsMap[ticker] && prices[ticker] > 0 ? (
+                                        (() => {
+                                            const upside = ((targetsMap[ticker].price - prices[ticker]) / prices[ticker]) * 100;
+                                            return (
+                                                <span className={`font-bold ${upside > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                                    {upside > 0 ? '+' : ''}{upside.toFixed(2)}%
+                                                </span>
+                                            );
+                                        })()
+                                    ) : (
+                                        <span className="text-slate-300">-</span>
+                                    )}
+                                </td>
                                 <td className="p-4">
                                     <div className="flex items-center gap-2">
-                                        <input 
-                                            type="number" 
+                                        <input
+                                            type="number"
                                             className="w-32 p-2 border border-slate-200 rounded-lg text-right font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
                                             value={prices[ticker] || ''}
                                             onChange={(e) => onUpdate(ticker, parseFloat(e.target.value) || 0)}

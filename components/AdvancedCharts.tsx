@@ -125,7 +125,14 @@ export const PortfolioPerformanceChart = ({
     return <Line data={chartData} options={options} />;
 };
 
-export const RiskAnalysisChart = ({ positions, title = 'Risk Contribution Analysis' }: { positions: any[], title?: string }) => {
+export const RiskAnalysisChart = ({ positions, analystTargets = [], title = 'Risk Contribution Analysis' }: { positions: any[], analystTargets?: any[], title?: string }) => {
+    // Merge target data if available for tickers in view
+    const targetsMap = React.useMemo(() => {
+        const map: Record<string, number> = {};
+        analystTargets.forEach(t => map[t.ticker] = t.targetPrice);
+        return map;
+    }, [analystTargets]);
+
     const chartData = {
         labels: positions.map(p => p.ticker),
         datasets: [
@@ -162,11 +169,27 @@ export const RiskAnalysisChart = ({ positions, title = 'Risk Contribution Analys
                 grid: { color: '#f1f5f9' },
                 border: { display: false },
                 ticks: { callback: (value: any) => formatCurrency(value) }
+            },
+            yTarget: {
+                display: false,
+                position: 'right' as const,
+                grid: { display: false }
             }
         }
     };
 
-    return <Bar data={chartData} options={options} />;
+    return (
+        <div style={{ position: 'relative', height: '100%' }}>
+            <Bar data={chartData} options={options} />
+            {/* Legend for Targets */}
+            {analystTargets.length > 0 && (
+                <div className="absolute top-0 right-0 flex items-center gap-2 bg-white/80 p-1 rounded text-[10px] font-bold text-slate-500">
+                    <div className="w-2 h-2 rounded-full bg-violet-500"></div>
+                    BKGR Target
+                </div>
+            )}
+        </div>
+    );
 };
 
 export const CorrelationHeatmap = ({ correlationMatrix, title = 'Asset Correlation Matrix' }: { correlationMatrix: Record<string, Record<string, number>>, title?: string }) => {
