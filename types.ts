@@ -9,8 +9,6 @@ declare var process: {
 
 export type TradeType = 'Achat' | 'Vente';
 export type CashTransactionType = 'DEPOSIT' | 'WITHDRAWAL' | 'DIVIDEND' | 'TAX_ADJUSTMENT' | 'CUSTODY_FEE' | 'SUBSCRIPTION';
-export type NewsCategory = 'Corporate' | 'Macro' | 'Technical';
-
 export interface AnalystTarget {
   ticker: string;
   targetPrice: number;
@@ -19,20 +17,6 @@ export interface AnalystTarget {
   source: string;
 }
 
-export interface MarketIntelligence {
-  date: string;
-  sentiment: 'Bullish' | 'Bearish' | 'Neutral';
-  masiVariation: number;
-  totalVolume: number;
-  highlights: {
-    category: NewsCategory;
-    title: string;
-    content: string;
-    tickers?: string[];
-  }[];
-  topPerformers: { ticker: string; change: number }[];
-  bottomPerformers: { ticker: string; change: number }[];
-}
 
 export interface Trade {
   id?: string; // Unique identifier for CRUD operations
@@ -113,4 +97,20 @@ export interface PriceAlert {
   ticker: string;
   threshold: number;
   condition: 'ABOVE' | 'BELOW'; // 'ABOVE' = >= Threshold, 'BELOW' = <= Threshold
+}
+
+// =============================================================================
+// BKGR Enhanced Data Types
+// =============================================================================
+
+// Enhanced ticker fundamentals from BKGR Daily Letter
+// Enhanced ticker fundamentals from TradingView (via local sync)
+export interface TickerFundamentals {
+  ticker: string;
+  price: number;
+  marketCap: number | null;
+  peRatio: number | null;
+  dividendYield: number | null;
+  changePercent?: number;
+  volume?: number;
 }

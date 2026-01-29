@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Trade, Position, CashTransaction, AnalystTarget } from '../types';
+import { Trade, Position, CashTransaction, AnalystTarget, TickerFundamentals } from '../types';
 import { formatCurrency } from '../utils';
-import { ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, AlertCircle, Wallet, Trophy, FileText, Edit3, Trash2, HelpCircle, Search, RefreshCw, Loader2 } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, AlertCircle, Wallet, Trophy, FileText, Edit3, Trash2, HelpCircle, Search, RefreshCw, Loader2, BarChart3, PieChart } from 'lucide-react';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
@@ -403,99 +403,67 @@ export const MarketDataTable: React.FC<{
     onRefresh?: () => void,
     isRefreshing?: boolean,
     lastUpdated?: Date | null,
-    analystTargets?: AnalystTarget[]
-}> = ({ tickers, prices, onUpdate, onRefresh, isRefreshing, lastUpdated, analystTargets = [] }) => {
-    const targetsMap = React.useMemo(() => {
-        const map: Record<string, { price: number, rec: string }> = {};
-        analystTargets.forEach(t => map[t.ticker] = { price: t.targetPrice, rec: t.recommendation });
+    analystTargets?: AnalystTarget[],
+    fundamentals?: TickerFundamentals[],
+    hideHeader?: boolean
+}> = ({ tickers, prices, onUpdate, onRefresh, isRefreshing, lastUpdated, analystTargets = [], fundamentals = [], hideHeader }) => {
+    const fundamentalsMap = React.useMemo(() => {
+        const map: Record<string, TickerFundamentals> = {};
+        fundamentals.forEach(f => map[f.ticker] = f);
         return map;
-    }, [analystTargets]);
+    }, [fundamentals]);
     return (
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-4">
-                    <h4 className="font-semibold text-slate-700 flex items-center">
-                        <Edit3 className="w-4 h-4 mr-2" /> Market Data
-                    </h4>
-                    {onRefresh && (
-                        <button
-                            onClick={onRefresh}
-                            disabled={isRefreshing}
-                            className="flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition-colors"
-                        >
-                            {isRefreshing ? (
-                                <><Loader2 className="w-3 h-3 mr-2 animate-spin" /> Updating...</>
-                            ) : (
-                                <><RefreshCw className="w-3 h-3 mr-2" /> Refresh with AI</>
-                            )}
-                        </button>
-                    )}
+            {!hideHeader && (
+                <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-4">
+                        <h4 className="font-semibold text-slate-700 flex items-center">
+                            <Edit3 className="w-4 h-4 mr-2" /> Market Data
+                        </h4>
+                        {onRefresh && (
+                            <button
+                                onClick={onRefresh}
+                                disabled={isRefreshing}
+                                className="flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition-colors"
+                            >
+                                {isRefreshing ? (
+                                    <><Loader2 className="w-3 h-3 mr-2 animate-spin" /> Updating...</>
+                                ) : (
+                                    <><RefreshCw className="w-3 h-3 mr-2" /> Refresh Prices</>
+                                )}
+                            </button>
+                        )}
+                    </div>
+                    <div className="flex flex-col items-end">
+                        <span className="text-xs text-slate-400">Prices in MAD</span>
+                        {lastUpdated && (
+                            <span className="text-[10px] text-emerald-600 font-medium animate-fade-in">
+                                Updated: {lastUpdated.toLocaleTimeString()}
+                            </span>
+                        )}
+                    </div>
                 </div>
-                <div className="flex flex-col items-end">
-                    <span className="text-xs text-slate-400">Prices in MAD</span>
-                    {lastUpdated && (
-                        <span className="text-[10px] text-emerald-600 font-medium animate-fade-in">
-                            Updated: {lastUpdated.toLocaleTimeString()}
-                        </span>
-                    )}
-                </div>
-            </div>
+            )}
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase text-slate-500 font-semibold tracking-wider">
+                        <tr className="bg-slate-50 border-b border-slate-100 text-[10px] uppercase text-slate-500 font-bold tracking-wider">
                             <th className="p-4">Ticker</th>
-                            <th className="p-4">Current Price (MAD)</th>
-                            <th className="p-4">Analyst Target (BKGR)</th>
-                            <th className="p-4">Upside / Potential</th>
-                            <th className="p-4">Manual Override</th>
+                            <th className="p-4">Price (MAD)</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-sm">
-                        {tickers.map(ticker => (
-                            <tr key={ticker} className="hover:bg-slate-50">
-                                <td className="p-4 font-bold text-slate-700">{ticker}</td>
-                                <td className="p-4 font-mono text-slate-800 font-bold bg-slate-50/50">
-                                    {formatCurrency(prices[ticker] || 0)}
-                                </td>
-                                <td className="p-4 text-slate-600">
-                                    {targetsMap[ticker] ? (
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-indigo-700">{formatCurrency(targetsMap[ticker].price)}</span>
-                                            <span className="text-[10px] uppercase font-bold text-slate-400">{targetsMap[ticker].rec}</span>
-                                        </div>
-                                    ) : (
-                                        <span className="text-slate-300">-</span>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    {targetsMap[ticker] && prices[ticker] > 0 ? (
-                                        (() => {
-                                            const upside = ((targetsMap[ticker].price - prices[ticker]) / prices[ticker]) * 100;
-                                            return (
-                                                <span className={`font-bold ${upside > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                                    {upside > 0 ? '+' : ''}{upside.toFixed(2)}%
-                                                </span>
-                                            );
-                                        })()
-                                    ) : (
-                                        <span className="text-slate-300">-</span>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="number"
-                                            className="w-32 p-2 border border-slate-200 rounded-lg text-right font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
-                                            value={prices[ticker] || ''}
-                                            onChange={(e) => onUpdate(ticker, parseFloat(e.target.value) || 0)}
-                                            step="0.01"
-                                        />
-                                        <span className="text-slate-400 text-xs">MAD</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                        {tickers.map(ticker => {
+                            const fund = fundamentalsMap[ticker];
+                            return (
+                                <tr key={ticker} className="hover:bg-slate-50 transition-colors">
+                                    <td className="p-4 font-bold text-slate-700">{ticker}</td>
+                                    <td className="p-4 font-mono text-slate-800 font-bold bg-slate-50/50">
+                                        {formatCurrency(prices[ticker] || (fund?.price || 0))}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

@@ -7,10 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "sync": "tsx scripts/sync_tradingview.ts",
     "refresh-data": "python scripts/analyze_pdf.py && npx tsx scripts/process_daily_report.ts"
   },
   "dependencies": {
-    "@google/genai": "^1.38.0",
     "@vitejs/plugin-react": "^5.1.2",
     "chart.js": "^4.4.3",
     "lucide-react": "^0.562.0",

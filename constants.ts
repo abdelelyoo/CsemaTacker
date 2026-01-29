@@ -1,5 +1,5 @@
 
-import { Trade, CashTransaction, AnalystTarget, MarketIntelligence } from './types';
+import { Trade, CashTransaction, AnalystTarget } from './types';
 
 export * from './daily_data';
 

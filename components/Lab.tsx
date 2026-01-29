@@ -1,17 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { Trade } from '../types';
 import { formatCurrency, calculatePortfolioStats, calculateConcentrationRisk, getTickerFrequency, calculateVaR, calculateCorrelationMatrix, monteCarloSimulation } from '../utils';
-import { GoogleGenAI } from "@google/genai";
 import { TechnicalAnalysis } from './TradingViewWidgets';
 import { Ghost, Sparkles, TrendingUp, TrendingDown, ArrowRight, Loader2, BrainCircuit, Target, ArrowLeftRight, Calculator, Sigma, Info, Radar, Activity, Scale, Quote, Wallet, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { PortfolioPerformanceChart, RiskAnalysisChart, CorrelationHeatmap, MonteCarloSimulationChart, TradingActivityHeatmap } from './AdvancedCharts';
+import { IPOAnalysis, PatternAnalysis } from './AnalysisSections';
 
 interface LabProps {
     trades: Trade[];
     currentPrices: Record<string, number>;
 }
 
-type AnalysisMode = 'TRANSACTIONS' | 'AGGREGATE' | 'RISK_TECHNICALS' | 'BIAS_ANALYSIS' | 'AI_RECOMMENDATIONS' | 'ADVANCED_ANALYTICS';
+type AnalysisMode = 'TRANSACTIONS' | 'AGGREGATE' | 'RISK_TECHNICALS' | 'BIAS_ANALYSIS' | 'ADVANCED_ANALYTICS' | 'IPOS' | 'PATTERNS';
 type TransactionSide = 'EXIT' | 'ENTRY';
 
 // Helper for TradingView symbols
@@ -41,8 +41,6 @@ const getTVSymbol = (ticker: string) => {
 export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
     const [view, setView] = useState<AnalysisMode>('AGGREGATE');
     const [side, setSide] = useState<TransactionSide>('EXIT');
-    const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
 
     // Calculate Portfolio Stats for Risk Analysis
     const { positions, summary } = useMemo(() => calculatePortfolioStats(trades, currentPrices), [trades, currentPrices]);
@@ -400,251 +398,6 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
 
 
     const handleAiAnalysis = async () => {
-        setLoading(true);
-        console.log("Starting AI Analysis for view:", view);
-        try {
-            const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
-            if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
-                throw new Error("Invalid API Key: Please ensure VITE_GEMINI_API_KEY is set in .env.local");
-            }
-            const ai = new GoogleGenAI({ apiKey });
-
-            let prompt = "";
-            const commonInstructions = `
-                Format your response using clear Markdown:
-                - Use '##' for section headers (e.g., ## Verdict).
-                - Use '**' for bold text (e.g., **Key Stat**).
-                - Use bullet points for lists.
-                - Keep it concise, professional, yet witty.
-            `;
-
-            if (view === 'AGGREGATE') {
-                prompt = `
-                    Perform a statistical deep dive on my trading execution (VWAP Analysis).
-                    
-                    My Buy Execution vs Current Prices (Entry Efficiency):
-                    ${aggregateData.filter(d => d.hasBuys).map(d => `- ${d.ticker}: Avg Buy ${d.buyVWAP.toFixed(2)}, Now ${d.currentPrice}. Alpha: ${d.entryAlpha.toFixed(2)}%`).join('\n')}
-
-                    My Sell Execution vs Current Prices (Exit Efficiency):
-                    ${aggregateData.filter(d => d.hasSells).map(d => `- ${d.ticker}: Avg Sell ${d.sellVWAP.toFixed(2)}, Now ${d.currentPrice}. Alpha: ${d.exitAlpha.toFixed(2)}%`).join('\n')}
-
-                    Task: Summarize my statistical edge. Do I add value via timing, or is my alpha random?
-                    
-                    Structure the response as:
-                    ## Executive Summary
-                    (One sentence verdict)
-                    ## Statistical Edge
-                    (Where I am winning)
-                    ## Areas of Inefficiency
-                    (Where I am losing value)
-                    
-                    ${commonInstructions}
-                `;
-            } else if (view === 'RISK_TECHNICALS') {
-                prompt = `
-                    Perform a mathematical risk audit of this portfolio.
-                    
-                    Money Management Stats:
-                    - Win Rate: ${summary.winRate.toFixed(1)}%
-                    - Profit Factor: ${summary.profitFactor.toFixed(2)}
-                    - Kelly Criterion: ${summary.kellyPercent.toFixed(1)}% (Optimal Allocation)
-                    
-                    Concentration Risk (Herfindahl-Hirschman Index): ${hhi} (${concentrationLevel} Concentration).
-                    
-                    Active Holdings and Portfolio Weights:
-                    ${activeHoldings.map(p => `- ${p.ticker}: ${formatCurrency(p.marketValue)}`).join('\n')}
-                    
-                    Task: Analyze the structural risk and my position sizing.
-                    
-                    Structure the response as:
-                    ## Money Management Audit
-                    (Critique of the Kelly Criterion vs actual position sizing)
-                    ## Risk Profile
-                    (Verdict on HHI and Concentration)
-                    ## Mathematical Prescription
-                    (Formula-based suggestion to optimize variance)
-
-                    ${commonInstructions}
-                `;
-            } else if (view === 'BIAS_ANALYSIS') {
-                const biasSummary = Object.entries(tradingBiases).map(([name, data]) =>
-                    `- ${name} (${data.severity}): ${data.evidence.length} instances detected`
-                ).join('\n');
-
-                prompt = `
-                    Perform a comprehensive behavioral analysis of this trader's psychological patterns.
-                    
-                    Detected Biases:
-                    ${biasSummary || 'No significant biases detected'}
-                    
-                    Trading Statistics:
-                    - Win Rate: ${summary.winRate.toFixed(1)}%
-                    - Profit Factor: ${summary.profitFactor.toFixed(2)}
-                    - Trade Frequency: ${trades.length} trades over ${Math.round((Math.max(...trades.map(t => new Date(t.date).getTime())) - Math.min(...trades.map(t => new Date(t.date).getTime()))) / (1000 * 60 * 60 * 24 * 30))} months
-                    - Average Position Size: ${(summary.netInvested / positions.filter(p => p.qty > 0).length).toFixed(0)} MAD
-                    
-                    Task: Provide a psychological profile and actionable improvement plan.
-                    
-                    Structure the response as:
-                    ## Psychological Profile
-                    (Overall assessment of trading psychology and discipline)
-                    ## Bias Breakdown
-                    (Detailed analysis of each detected bias with specific examples)
-                    ## Cognitive Improvement Plan
-                    (Step-by-step behavioral modification strategies)
-                    ## Risk Management Recommendations
-                    (Position sizing, stop-loss discipline, and emotional control techniques)
-
-                    ${commonInstructions}
-                `;
-            } else if (view === 'ADVANCED_ANALYTICS') {
-                // Prepare data for advanced analytics
-                const portfolioReturns = positions.map(p => (
-                    (currentPrices[p.ticker] || p.marketPrice) - p.avgCost
-                ) / p.avgCost);
-
-                const riskMetrics = {
-                    var95: calculateVaR(portfolioReturns),
-                    maxDrawdown: Math.min(0, ...portfolioReturns),
-                    sharpeRatio: summary.totalRealizedPnL / Math.max(1, Math.abs(summary.totalUnrealizedPnL)),
-                    volatility: Math.sqrt(portfolioReturns.reduce((sum, r) => sum + r * r, 0) / portfolioReturns.length)
-                };
-
-                prompt = `
-                    Perform advanced quantitative analysis on this portfolio:
-                    
-                    Portfolio Composition:
-                    ${positions.map(p =>
-                    `- ${p.ticker}: ${p.qty} shares, Avg Cost: ${p.avgCost}, Current: ${currentPrices[p.ticker] || 'N/A'}, P&L: ${p.unrealizedPnL.toFixed(2)} (${(p.unrealizedPnL / p.totalCost * 100).toFixed(2)}%)`
-                ).join('\n')}
-                    
-                    Risk Metrics:
-                    - Value at Risk (95%): ${riskMetrics.var95.toFixed(4)} (${(riskMetrics.var95 * summary.totalMarketValue).toFixed(2)} MAD)
-                    - Maximum Drawdown: ${riskMetrics.maxDrawdown.toFixed(4)} (${(riskMetrics.maxDrawdown * 100).toFixed(2)}%)
-                    - Sharpe Ratio: ${riskMetrics.sharpeRatio.toFixed(2)}
-                    - Volatility: ${riskMetrics.volatility.toFixed(4)}
-                    
-                    Trading Activity:
-                    - Total Trades: ${trades.length}
-                    - Trade Frequency: ${(trades.length / 30).toFixed(1)} trades/month
-                    - Win Rate: ${summary.winRate.toFixed(1)}%
-                    - Profit Factor: ${summary.profitFactor.toFixed(2)}
-                    
-                    Task: Provide sophisticated risk analysis and Monte Carlo simulation interpretation.
-                    
-                    Structure:
-                    ## Executive Summary
-                    (Overall portfolio risk assessment and key findings)
-                    
-                    ## Risk Analysis
-                    (Detailed breakdown of VaR, drawdown, Sharpe ratio, and volatility)
-                    
-                    ## Monte Carlo Simulation Results
-                    (Interpretation of simulation outcomes with confidence intervals)
-                    
-                    ## Diversification Analysis
-                    (Correlation insights and portfolio concentration assessment)
-                    
-                    ## Strategic Recommendations
-                    (Actionable advice for risk management and optimization)
-                    
-                    ## Stress Test Scenarios
-                    (How the portfolio might perform in various market conditions)
-
-                    ${commonInstructions}
-                `;
-            } else if (view === 'AI_RECOMMENDATIONS') {
-                const recommendationSummary = Object.entries(aiRecommendations).map(([category, rec]) =>
-                    `- ${category}: ${rec.description}`
-                ).join('\n');
-
-                prompt = `
-                    Generate a comprehensive, personalized trading improvement plan based on this trader's portfolio and history.
-                    
-                    Current Performance:
-                    - Win Rate: ${summary.winRate.toFixed(1)}%
-                    - Profit Factor: ${summary.profitFactor.toFixed(2)}
-                    - Kelly Criterion: ${summary.kellyPercent.toFixed(1)}%
-                    - Portfolio Concentration: ${hhi} (${concentrationLevel})
-                    - Trade Frequency: ${tradeFrequency.toFixed(1)}/month
-                    
-                    Key Issues:
-                    ${recommendationSummary || 'Overall solid performance with minor optimizations needed'}
-                    
-                    Detected Biases:
-                    ${Object.keys(tradingBiases).length > 0 ? Object.keys(tradingBiases).join(', ') : 'None detected'}
-                    
-                    Task: Provide a detailed, step-by-step improvement plan with specific, actionable recommendations.
-                    
-                    Structure:
-                    ## Executive Summary
-                    (Brief overview of current performance and key opportunities)
-                    ## Strategic Recommendations
-                    (Prioritized list of 3-5 key improvements with detailed rationale)
-                    ## Tactical Implementation
-                    (Specific actions, tools, and techniques to implement recommendations)
-                    ## Risk Management Framework
-                    (Position sizing, stop-loss strategies, and portfolio construction)
-                    ## Performance Tracking
-                    (Metrics to monitor progress and KPIs for success)
-                    ## Long-Term Development Plan
-                    (30/60/90 day roadmap for continuous improvement)
-
-                    ${commonInstructions}
-                `;
-            } else {
-                const missedGainsTickers = sellHindsightData?.filter(item => item?.missedGain > 0).slice(0, 3).map(t => t?.ticker).join(', ') || 'None';
-                const avoidedLossesTickers = sellHindsightData?.filter(item => item?.avoidedLoss > 0).slice(0, 3).map(t => t?.ticker).join(', ') || 'None';
-                const valueCapturedTickers = buyHindsightData?.filter(item => item?.valueCaptured > 0).slice(0, 3).map(t => t?.ticker).join(', ') || 'None';
-                const drawdownTickers = buyHindsightData?.filter(item => item?.drawdownIncurred > 0).slice(0, 3).map(t => t?.ticker).join(', ') || 'None';
-
-                const sidePrompt = side === 'EXIT'
-                    ? `Sales Analysis:
-                       - Missed Gains: ${formatCurrency(totalMissedGains)} (${missedGainsCount} trades: ${missedGainsTickers})
-                       - Avoided Losses: ${formatCurrency(totalAvoidedLosses)} (${avoidedLossesCount} trades: ${avoidedLossesTickers})
-                       - Net Impact: ${formatCurrency(totalMissedGains - totalAvoidedLosses)}`
-                    : `Buys Analysis:
-                       - Value Captured: ${formatCurrency(totalValueCaptured)} (${valueCapturedCount} trades: ${valueCapturedTickers})
-                       - Drawdown Incurred: ${formatCurrency(totalEntryDrawdown)} (${drawdownCount} trades: ${drawdownTickers})
-                       - Net Impact: ${formatCurrency(totalValueCaptured - totalEntryDrawdown)}`;
-
-                prompt = `
-                    Analyze these transactions with refined hindsight categorization:
-                    ${sidePrompt}
-                    
-                    For ${side === 'EXIT' ? 'sells' : 'buys'}, provide specific insights:
-                    ${side === 'EXIT' ?
-                        "- Missed Gains: Identify patterns of selling too early (FOMO out)\n - Avoided Losses: Recognize successful risk management (discipline)\n - Overall: Assess if the trader is cutting winners short or letting losers run"
-                        :
-                        "- Value Captured: Highlight successful entry timing (patience)\n - Drawdown Incurred: Point out impulsive buying (FOMO in)\n - Overall: Evaluate position sizing relative to conviction"}
-                    
-                    Structure:
-                    ## Behavioral Diagnosis
-                    (Specific biases detected: FOMO, panic selling, overconfidence, etc.)
-                    ## Quantitative Breakdown
-                    (Detailed analysis of the refined categories)
-                    ## Actionable Prescription
-                    (Concrete steps to improve, with examples from the data)
-
-                    ${commonInstructions}
-                `;
-            }
-
-            const response = await ai.models.generateContent({
-                model: 'gemini-3-flash-preview', // Using the latest requested preview model
-                contents: prompt,
-            });
-
-            const responseText = response.text;
-
-            setAiAnalysis(responseText);
-        } catch (error: any) {
-            console.error("AI Analysis Failed:", error);
-            const errorMsg = error.message || "Unknown API error";
-            setAiAnalysis(`## AI Analysis Failure\n\n**Error Details:** ${errorMsg}\n\n**Common Fixes:**\n- Ensure your API key in \`.env.local\` is valid.\n- Check your internet connection.\n- The model \`gemini-1.5-pro\` might be rate-limited; try again in a moment.`);
-        } finally {
-            setLoading(false);
-        }
     };
 
     // Helper functions for bias analysis
@@ -695,41 +448,6 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
         }
     };
 
-    // Custom Text Renderer for pretty AI output
-    const renderFormattedText = (text: string) => {
-        return text.split('\n').map((line, i) => {
-            if (line.trim().startsWith('##')) {
-                return (
-                    <h4 key={i} className="text-lg font-bold text-indigo-900 mt-5 mb-2 flex items-center gap-2 border-b border-indigo-100 pb-1">
-                        {line.replace(/^##\s*/, '')}
-                    </h4>
-                );
-            }
-            if (line.trim().startsWith('-') || line.trim().startsWith('* ')) {
-                const content = line.replace(/^[-*]\s*/, '');
-                const boldParts = content.split(/(\*\*.*?\*\*)/g);
-                return (
-                    <li key={i} className="ml-4 list-disc text-slate-700 mb-1 pl-1 marker:text-indigo-400">
-                        {boldParts.map((part, j) =>
-                            part.startsWith('**') ? <strong key={j} className="text-indigo-800 font-semibold">{part.slice(2, -2)}</strong> : part
-                        )}
-                    </li>
-                );
-            }
-            if (line.trim() === '') {
-                return <div key={i} className="h-2"></div>;
-            }
-
-            const boldParts = line.split(/(\*\*.*?\*\*)/g);
-            return (
-                <p key={i} className="text-slate-700 leading-relaxed mb-2">
-                    {boldParts.map((part, j) =>
-                        part.startsWith('**') ? <strong key={j} className="text-indigo-800 font-semibold">{part.slice(2, -2)}</strong> : part
-                    )}
-                </p>
-            );
-        });
-    };
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -746,42 +464,49 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                 </div>
                 <div className="flex bg-slate-800 p-1 rounded-lg overflow-x-auto max-w-full">
                     <button
-                        onClick={() => { setView('AGGREGATE'); setAiAnalysis(null); }}
+                        onClick={() => { setView('AGGREGATE'); }}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'AGGREGATE' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
                     >
                         <Sigma className="w-4 h-4 inline mr-2" />
                         VWAP Alpha
                     </button>
                     <button
-                        onClick={() => { setView('RISK_TECHNICALS'); setAiAnalysis(null); }}
+                        onClick={() => { setView('RISK_TECHNICALS'); }}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'RISK_TECHNICALS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
                     >
                         <Radar className="w-4 h-4 inline mr-2" />
                         Risk & Techs
                     </button>
                     <button
-                        onClick={() => { setView('BIAS_ANALYSIS'); setAiAnalysis(null); }}
+                        onClick={() => { setView('BIAS_ANALYSIS'); }}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'BIAS_ANALYSIS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
                     >
                         <BrainCircuit className="w-4 h-4 inline mr-2" />
                         Bias Detection
                     </button>
                     <button
-                        onClick={() => { setView('AI_RECOMMENDATIONS'); setAiAnalysis(null); }}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'AI_RECOMMENDATIONS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
-                    >
-                        <Sparkles className="w-4 h-4 inline mr-2" />
-                        AI Recommendations
-                    </button>
-                    <button
-                        onClick={() => { setView('ADVANCED_ANALYTICS'); setAiAnalysis(null); }}
+                        onClick={() => { setView('ADVANCED_ANALYTICS'); }}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'ADVANCED_ANALYTICS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
                     >
                         <Activity className="w-4 h-4 inline mr-2" />
                         Advanced Analytics
                     </button>
                     <button
-                        onClick={() => { setView('TRANSACTIONS'); setAiAnalysis(null); }}
+                        onClick={() => { setView('IPOS'); }}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'IPOS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                    >
+                        <Ghost className="w-4 h-4 inline mr-2" />
+                        IPO Analysis
+                    </button>
+                    <button
+                        onClick={() => { setView('PATTERNS'); }}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'PATTERNS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                    >
+                        <Sparkles className="w-4 h-4 inline mr-2" />
+                        Patterns
+                    </button>
+                    <button
+                        onClick={() => { setView('TRANSACTIONS'); }}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${view === 'TRANSACTIONS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
                     >
                         <Target className="w-4 h-4 inline mr-2" />
@@ -805,36 +530,8 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                                     This removes the noise of individual trades to show your true statistical edge per ticker.
                                 </p>
                             </div>
-                            <button
-                                onClick={handleAiAnalysis}
-                                disabled={loading}
-                                className="px-4 py-2 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition-colors flex items-center gap-2"
-                            >
-                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                                Quant Review
-                            </button>
                         </div>
 
-                        {/* Enhanced AI Display */}
-                        {aiAnalysis && (
-                            <div className="mb-8 bg-white border border-indigo-100 rounded-2xl shadow-lg overflow-hidden animate-fade-in relative">
-                                <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-4 flex items-center justify-between">
-                                    <h4 className="font-bold text-white flex items-center gap-2">
-                                        <BrainCircuit className="w-5 h-5" />
-                                        Quant Intelligence Report
-                                    </h4>
-                                    <span className="text-indigo-100 text-xs bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-                                        Generated via Gemini
-                                    </span>
-                                </div>
-                                <div className="p-8 bg-indigo-50/20">
-                                    <div className="prose prose-sm max-w-none text-slate-600">
-                                        {renderFormattedText(aiAnalysis)}
-                                    </div>
-                                </div>
-                                <div className="h-1 w-full bg-gradient-to-r from-indigo-200 via-purple-200 to-indigo-200"></div>
-                            </div>
-                        )}
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
@@ -976,14 +673,6 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                                     Score: <strong>{hhi}</strong>
                                 </p>
                             </div>
-                            <button
-                                onClick={handleAiAnalysis}
-                                disabled={loading}
-                                className="px-4 py-2 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition-colors flex items-center gap-2"
-                            >
-                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                                Analyze Risk
-                            </button>
                         </div>
 
                         <div className="relative pt-6 pb-2">
@@ -1003,25 +692,6 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                             </div>
                         </div>
 
-                        {/* Enhanced AI Display for Risk */}
-                        {aiAnalysis && (
-                            <div className="mt-8 mb-2 bg-white border border-indigo-100 rounded-2xl shadow-lg overflow-hidden animate-fade-in relative">
-                                <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-4 flex items-center justify-between">
-                                    <h4 className="font-bold text-white flex items-center gap-2">
-                                        <Radar className="w-5 h-5" />
-                                        Risk Audit Report
-                                    </h4>
-                                    <span className="text-indigo-100 text-xs bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-                                        Mathematical Analysis
-                                    </span>
-                                </div>
-                                <div className="p-8 bg-indigo-50/20">
-                                    <div className="prose prose-sm max-w-none text-slate-600">
-                                        {renderFormattedText(aiAnalysis)}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     {/* TradingView Technical Screener */}
@@ -1057,203 +727,6 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                                 ))}
                             </div>
                         )}
-                    </div>
-                </div>
-            ) : view === 'AI_RECOMMENDATIONS' ? (
-                <div className="space-y-6 animate-fade-in">
-                    {/* AI Recommendations Header */}
-                    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white shadow-md">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <h2 className="text-xl font-bold flex items-center gap-2">
-                                    <Sparkles className="w-6 h-6" />
-                                    AI-Powered Trading Recommendations
-                                </h2>
-                                <p className="opacity-80 text-sm mt-1">
-                                    Personalized strategies based on your portfolio, trade history, and market data
-                                </p>
-                            </div>
-                            <button
-                                onClick={handleAiAnalysis}
-                                disabled={loading}
-                                className="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2"
-                            >
-                                {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <BrainCircuit className="w-3 h-3" />}
-                                Deep AI Analysis
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Enhanced AI Display for Recommendations */}
-                    {aiAnalysis && (
-                        <div className="mb-6 bg-white border border-indigo-100 rounded-2xl shadow-lg overflow-hidden animate-fade-in relative">
-                            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between">
-                                <h4 className="font-bold text-white flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5" />
-                                    AI Quant Recommendations
-                                </h4>
-                                <span className="text-indigo-100 text-xs bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-                                    Personalized Strategy
-                                </span>
-                            </div>
-                            <div className="p-8 bg-indigo-50/20">
-                                <div className="prose prose-sm max-w-none text-slate-600">
-                                    {renderFormattedText(aiAnalysis)}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* AI Recommendations Content */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <div className="flex justify-between items-center mb-6">
-                            <div>
-                                <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                    <Target className="w-5 h-5 text-indigo-600" />
-                                    Personalized Action Plan
-                                </h3>
-                                <p className="text-sm text-slate-500 mt-1">
-                                    Data-driven recommendations to optimize your trading performance
-                                </p>
-                            </div>
-                            <div className={`px-3 py-1 rounded-full text-xs font-bold ${Object.keys(aiRecommendations).length > 0 ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
-                                {Object.keys(aiRecommendations).length} recommendations
-                            </div>
-                        </div>
-
-                        {Object.keys(aiRecommendations).length > 0 ? (
-                            <div className="space-y-6">
-                                {Object.entries(aiRecommendations).map(([category, recommendation]) => (
-                                    <div key={category} className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div>
-                                                <h4 className="font-bold text-slate-800 flex items-center gap-2">
-                                                    {category}
-                                                </h4>
-                                                <p className="text-sm text-slate-600 mt-1">
-                                                    {recommendation.description}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-3">
-                                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                                                Rationale:
-                                            </p>
-                                            <p className="text-sm text-slate-700 mb-3">
-                                                {recommendation.rationale}
-                                            </p>
-                                        </div>
-
-                                        <div className="mt-4 pt-3 border-t border-slate-100">
-                                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                                                Action Items:
-                                            </p>
-                                            <ul className="list-disc list-inside space-y-1 text-sm text-indigo-700">
-                                                {recommendation.actionItems.map((item, idx) => (
-                                                    <li key={idx} className="pl-1 marker:text-indigo-400">
-                                                        {item}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-8">
-                                <div className="bg-emerald-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-2xl">🎯</span>
-                                </div>
-                                <h4 className="font-bold text-emerald-700 mb-2">Optimized Trading Strategy</h4>
-                                <p className="text-slate-500 text-sm max-w-md mx-auto">
-                                    Your current approach appears well-optimized. Continue monitoring and refining your strategy.
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Implementation Checklist */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <Wallet className="w-5 h-5 text-indigo-600" />
-                            Implementation Roadmap
-                        </h3>
-
-                        <div className="space-y-4">
-                            <div className="flex items-start gap-3">
-                                <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
-                                    1
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-700">Week 1-2: Risk Management</h4>
-                                    <p className="text-sm text-slate-600">
-                                        Implement position sizing rules and stop-loss discipline
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
-                                    2
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-700">Week 3-4: Trade Quality</h4>
-                                    <p className="text-sm text-slate-600">
-                                        Reduce frequency, focus on high-conviction setups
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
-                                    3
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-700">Ongoing: Performance Review</h4>
-                                    <p className="text-sm text-slate-600">
-                                        Weekly review of trades and continuous improvement
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Expected Impact Summary */}
-                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border border-indigo-100">
-                        <h3 className="text-lg font-bold text-indigo-800 mb-4 flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5 text-indigo-600" />
-                            Potential Performance Impact
-                        </h3>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-indigo-700 mb-1">
-                                    +{Math.min(summary.winRate + 10, 90).toFixed(1)}%
-                                </div>
-                                <div className="text-xs text-slate-500 uppercase tracking-wider">
-                                    Improved Win Rate
-                                </div>
-                            </div>
-
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-indigo-700 mb-1">
-                                    {Math.min(summary.profitFactor + 0.5, 3.0).toFixed(2)}
-                                </div>
-                                <div className="text-xs text-slate-500 uppercase tracking-wider">
-                                    Better Profit Factor
-                                </div>
-                            </div>
-
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-indigo-700 mb-1">
-                                    -{Math.min(summary.totalFees * 0.3, summary.totalFees * 0.8).toFixed(0)}%
-                                </div>
-                                <div className="text-xs text-slate-500 uppercase tracking-wider">
-                                    Reduced Fees
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             ) : view === 'ADVANCED_ANALYTICS' ? (
@@ -1424,84 +897,8 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                                     Probabilistic portfolio projections based on historical performance
                                 </p>
                             </div>
-                            <button
-                                onClick={handleAiAnalysis}
-                                disabled={loading}
-                                className="px-4 py-2 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition-colors flex items-center gap-2"
-                            >
-                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                                Run Simulation
-                            </button>
                         </div>
 
-                        {aiAnalysis?.includes('Monte Carlo') ? (
-                            <div>
-                                {/* Enhanced AI Display for Monte Carlo Results */}
-                                <div className="mb-6 bg-white border border-indigo-100 rounded-2xl shadow-lg overflow-hidden animate-fade-in relative">
-                                    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between">
-                                        <h4 className="font-bold text-white flex items-center gap-2">
-                                            <Calculator className="w-5 h-5" />
-                                            Monte Carlo Results
-                                        </h4>
-                                        <span className="text-indigo-100 text-xs bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-                                            Probabilistic Analysis
-                                        </span>
-                                    </div>
-                                    <div className="p-8 bg-indigo-50/20">
-                                        <div className="prose prose-sm max-w-none text-slate-600">
-                                            {renderFormattedText(aiAnalysis)}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Simulation Visualization */}
-                                <div className="mb-6">
-                                    <h4 className="font-bold text-slate-700 mb-3">Simulation Results Visualization</h4>
-                                    <div className="h-64">
-                                        <MonteCarloSimulationChart
-                                            simulationResults={monteCarloSimulation(
-                                                summary.totalMarketValue,
-                                                portfolioRoi / 100 / 252, // Daily return
-                                                0.015 // Volatility (1.5% daily)
-                                            )}
-                                            initialValue={summary.totalMarketValue}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Key Statistics */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg">
-                                    <div>
-                                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Expected Value</p>
-                                        <p className="text-xl font-bold text-indigo-700">
-                                            {formatCurrency(summary.totalMarketValue * (1 + portfolioRoi / 100))}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">90% Confidence Range</p>
-                                        <p className="text-xl font-bold text-indigo-700">
-                                            {formatCurrency(summary.totalMarketValue * 0.9)} - {formatCurrency(summary.totalMarketValue * 1.3)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Worst Case (5th Percentile)</p>
-                                        <p className="text-xl font-bold text-rose-600">
-                                            {formatCurrency(summary.totalMarketValue * 0.85)}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="text-center py-8 bg-slate-50 rounded-lg">
-                                <div className="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Calculator className="w-8 h-8 text-indigo-400" />
-                                </div>
-                                <h4 className="font-bold text-indigo-700 mb-2">Run Monte Carlo Simulation</h4>
-                                <p className="text-slate-500 text-sm max-w-md mx-auto">
-                                    Click the button above to run probabilistic simulations of your portfolio's future performance
-                                </p>
-                            </div>
-                        )}
                     </div>
 
                     {/* Trading Activity Analysis */}
@@ -1547,14 +944,6 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                                     Behavioral patterns detected in your trading history
                                 </p>
                             </div>
-                            <button
-                                onClick={handleAiAnalysis}
-                                disabled={loading}
-                                className="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2"
-                            >
-                                {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                Deep AI Analysis
-                            </button>
                         </div>
                     </div>
 
@@ -1575,25 +964,6 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                             </div>
                         </div>
 
-                        {/* Enhanced AI Display for Bias Analysis */}
-                        {aiAnalysis && (
-                            <div className="mb-6 bg-white border border-indigo-100 rounded-2xl shadow-lg overflow-hidden animate-fade-in relative">
-                                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 flex items-center justify-between">
-                                    <h4 className="font-bold text-white flex items-center gap-2">
-                                        <BrainCircuit className="w-5 h-5" />
-                                        AI Behavioral Assessment
-                                    </h4>
-                                    <span className="text-indigo-100 text-xs bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-                                        Cognitive Analysis
-                                    </span>
-                                </div>
-                                <div className="p-8 bg-indigo-50/20">
-                                    <div className="prose prose-sm max-w-none text-slate-600">
-                                        {renderFormattedText(aiAnalysis)}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
 
                         {Object.keys(tradingBiases).length > 0 ? (
                             <div className="space-y-6">
@@ -1690,7 +1060,7 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : view === 'TRANSACTIONS' ? (
                 <div className="space-y-6 animate-fade-in">
                     <div className={`rounded-xl p-6 text-white shadow-md transition-colors duration-500 ${side === 'EXIT' ? 'bg-violet-600' : 'bg-blue-600'}`}>
                         <div className="flex justify-between items-center">
@@ -1704,7 +1074,7 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                                 </p>
                             </div>
                             <button
-                                onClick={() => { setSide(prev => prev === 'EXIT' ? 'ENTRY' : 'EXIT'); setAiAnalysis(null); }}
+                                onClick={() => { setSide(prev => prev === 'EXIT' ? 'ENTRY' : 'EXIT'); }}
                                 className="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2"
                             >
                                 <ArrowLeftRight className="w-3 h-3" />
@@ -1803,28 +1173,8 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                     <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-bold text-slate-700">Transaction Log</h3>
-                            <button
-                                onClick={handleAiAnalysis}
-                                disabled={loading}
-                                className="text-indigo-600 text-xs font-bold hover:underline flex items-center gap-1"
-                            >
-                                {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                AI Commentary
-                            </button>
                         </div>
 
-                        {/* Enhanced AI Display for Transactions */}
-                        {aiAnalysis && (
-                            <div className="mb-6 bg-white border border-slate-200 rounded-xl shadow-md overflow-hidden animate-fade-in relative">
-                                <div className="bg-slate-50 p-3 border-b border-slate-100 flex items-center gap-2">
-                                    <Quote className="w-4 h-4 text-indigo-500" />
-                                    <h5 className="text-xs font-bold text-slate-500 uppercase">Trading Psychologist</h5>
-                                </div>
-                                <div className="p-5 text-sm text-slate-700 italic">
-                                    {renderFormattedText(aiAnalysis)}
-                                </div>
-                            </div>
-                        )}
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
@@ -1883,6 +1233,27 @@ export const Lab: React.FC<LabProps> = ({ trades, currentPrices }) => {
                             </table>
                         </div>
                     </div>
+                </div>
+            ) : view === 'IPOS' ? (
+                <div className="space-y-6 animate-fade-in">
+                    <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-8 text-white shadow-lg">
+                        <h2 className="text-3xl font-bold mb-2">IPO & Capital Increase Analysis</h2>
+                        <p className="opacity-70">
+                            Deep dive into Vicenne IPO, TGCC Capital Increase, and SGTM IPO allocations.
+                        </p>
+                    </div>
+                    <IPOAnalysis />
+                </div>
+            ) : view === 'PATTERNS' ? (
+                <div className="space-y-6 animate-fade-in">
+                    <h2 className="text-2xl font-bold text-slate-800">Trading Behavior Analysis</h2>
+                    <PatternAnalysis />
+                </div>
+            ) : (
+                <div className="bg-white p-8 rounded-xl border border-dashed border-slate-200 text-center animate-fade-in">
+                    <Info className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-slate-600">Select an Analysis Tool</h3>
+                    <p className="text-slate-500">Choose a mode from the switcher above to begin your deep dive.</p>
                 </div>
             )}
         </div>
