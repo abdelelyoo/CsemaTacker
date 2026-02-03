@@ -1,0 +1,5 @@
+{
+  "name": "Atlas Portfolio Manager",
+  "description": "A comprehensive portfolio management dashboard tailored for the Moroccan Stock Market. Features transaction parsing, sector allocation analysis, performance tracking, and AI-powered insights.",
+  "requestFramePermissions": []
+}

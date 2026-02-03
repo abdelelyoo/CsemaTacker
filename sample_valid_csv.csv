@@ -1,0 +1,10 @@
+Date,Company,ISIN,Operation,Ticker,Qty,Price,Total,Fees,Tax
+2023-01-01,Attijariwafa Bank,MA0000012445,Achat,ATW,10,750.00,-7510.00,10.00,0.00
+2023-01-02,Bank of Africa,MA0000012437,Achat,BOA,20,240.00,-4820.00,20.00,0.00
+2023-01-05,Test Company,MA123456,Achat,TEST,15,100.00,-1515.00,15.00,0.00
+2023-01-10,Bank,,Depot,,,5000.00,,
+2023-01-15,Test Company,MA123456,Vente,TEST,5,120.00,590.00,9.50,15.00
+2023-01-16,Attijariwafa Bank,MA0000012445,Vente,ATW,3,780.00,2325.00,12.00,18.00
+2023-01-20,Bank,,Frais,,,-50.00,,
+2023-01-25,Test Company,,Dividende,TEST,,,75.00,,
+2023-01-30,Bank,,Retrait,,,-1000.00,,
