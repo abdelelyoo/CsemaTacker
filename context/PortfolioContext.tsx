@@ -1,8 +1,9 @@
 
 import React, { createContext, useContext, ReactNode, useMemo, useState } from 'react';
-import { Transaction, PortfolioSummary } from '../types';
+import { Transaction, PortfolioSummary, FeeRecord, FeeType } from '../types';
 import { useTransactions } from '../hooks/useTransactions';
 import { usePortfolio } from '../hooks/usePortfolio';
+import { useFees } from '../hooks/useFees';
 
 interface PortfolioContextType {
     // Transactions
@@ -28,6 +29,12 @@ interface PortfolioContextType {
     // UI / Global State
     dbError: string | null;
     clearDbError: () => void;
+
+    // Fees
+    fees: FeeRecord[];
+    addFee: (date: Date, type: FeeType, amount: number, description?: string) => Promise<boolean>;
+    deleteFee: (id: number) => Promise<boolean>;
+    clearFees: () => Promise<boolean>;
 }
 
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
@@ -47,13 +54,20 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
     } = useTransactions();
 
     const {
+        fees,
+        addFee,
+        deleteFee,
+        clearFees
+    } = useFees();
+
+    const {
         portfolio,
         currentPrices,
         updateManualPrice,
         updateManualPrices,
         resetManualPrices,
         isFeedConnected
-    } = usePortfolio(transactions);
+    } = usePortfolio(transactions, fees);
 
     // Memoized duplicate groups for performance
     const duplicateGroups = useMemo(() => findDuplicates(), [transactions, findDuplicates]);
@@ -76,7 +90,11 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateManualPrices,
         resetManualPrices,
         dbError,
-        clearDbError
+        clearDbError,
+        fees,
+        addFee,
+        deleteFee,
+        clearFees
     };
 
     return (

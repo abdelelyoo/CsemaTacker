@@ -1,4 +1,4 @@
-import { Transaction, Holding, PortfolioSummary, PerformancePoint } from '../types';
+import { Transaction, Holding, PortfolioSummary, FeeRecord } from '../types';
 import { TICKER_TO_SECTOR } from '../constants';
 import { DateService } from '../services/dateService';
 import { roundTo } from './helpers';
@@ -154,7 +154,7 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
 
 // --- Main Portfolio Calculation ---
 
-export const calculatePortfolio = (transactions: Transaction[], currentPrices: Record<string, number> = {}): PortfolioSummary => {
+export const calculatePortfolio = (transactions: Transaction[], currentPrices: Record<string, number> = {}, fees: FeeRecord[] = []): PortfolioSummary => {
   const holdingsMap = new Map<string, HoldingState>();
 
   let cashBalance = 0;
@@ -208,6 +208,10 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
       const companyLower = (tx.Company || '').toLowerCase().trim();
 
       // 1. Classification
+      // Deprecated auto detection for SUB/CUS from transactions if we are moving to separate table,
+      // but keeping it for backward compatibility if user mixes methods or for old data.
+      // However, user asked for separated table.
+
       const isSubscription = tickerLower.includes('sub') || normalizedOp.includes('sub');
       const isBankFee = !isSubscription && (
         normalizedOp.includes('frais') &&
@@ -216,10 +220,7 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
       const isTax = !isSubscription && (normalizedOp.includes('taxe') || normalizedOp.includes('tpcvm'));
 
       // 2. State Updates
-      // Only add to cash balance if it's NOT a subscription (handled by automatic logic separately)
-      if (!isSubscription) {
-        cashBalance += tx.Total;
-      }
+      cashBalance += tx.Total;
 
       if (isBankFee) {
         totalCustodyFees += Math.abs(tx.Total);
@@ -235,50 +236,16 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
     }
   });
 
-  // --- Automatic Monthly Subscriptions ---
-  // Apply -108.90 MAD every month from the first transaction until today.
-  // CAP AT 5 MONTHS MAXIMUM (User Request)
-  // DISABLE IF MANUAL "SUB" EXISTS
+  // --- Process Separate Fees (CUS / SUB) ---
+  fees.forEach(fee => {
+    // Reduce cash balance (fees are outflows)
+    cashBalance -= fee.amount;
 
-  const hasManualSub = transactions.some(tx =>
-    tx.Ticker === 'SUB (Auto)' ||
-    tx.Operation.toUpperCase() === 'FRAIS' && tx.Company.toLowerCase().includes('subscription')
-  );
-
-  const AUTO_SUB_FEE = 108.90;
-
-  if (!hasManualSub && transactions.length > 0) {
-    const firstTxDate = transactions.reduce((min, tx) => (tx.parsedDate < min ? tx.parsedDate : min), transactions[0].parsedDate);
-    const today = new Date();
-
-    // Count full months between firstTxDate and today
-    let months = (today.getFullYear() - firstTxDate.getFullYear()) * 12 + (today.getMonth() - firstTxDate.getMonth());
-    // If the first transaction was this month, it counts as 1st month if we want to charge immediately
-    months = Math.max(1, months + 1);
-
-    // CAP at 5 Months
-    months = Math.min(months, 5);
-
-    const totalAutoSubCost = months * AUTO_SUB_FEE;
-
-    // Subtract from cash balance
-    cashBalance -= totalAutoSubCost;
-
-    // Add a summary record to enrichedTransactions for visibility
-    enrichedTransactions.push({
-      Date: DateService.toShortDisplay(today),
-      parsedDate: today,
-      Operation: 'Frais',
-      Ticker: 'SUB (Auto)',
-      Company: `Subscription (${months} months capped)`,
-      Qty: 0,
-      Price: 0,
-      Total: -totalAutoSubCost,
-      Fees: totalAutoSubCost,
-      Tax: 0,
-      ISIN: ''
-    } as any);
-  }
+    if (fee.type === 'CUS') {
+      totalCustodyFees += fee.amount;
+    }
+    // For SUB, we just deduct from cash for now, unless we add totalSubscriptionFees to summary
+  });
 
   // Calculate History using dedicated builder
   const history = buildPerformanceHistory(transactions, currentPrices);

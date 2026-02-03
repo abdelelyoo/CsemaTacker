@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, L
 import { MarketData } from './MarketData';
 import { usePortfolioContext } from '../context/PortfolioContext';
 import { Sparkline } from './Sparkline';
+import { FeesManager } from './FeesManager';
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#6366f1'];
 
@@ -58,6 +59,7 @@ const StatCard = ({ title, value, subValue, isPositive, icon, sparklineData, col
 export const Dashboard: React.FC = () => {
   const { portfolio, currentPrices, updateManualPrices: onUpdatePrices, isFeedConnected } = usePortfolioContext();
   const [isMarketDataOpen, setIsMarketDataOpen] = useState(false);
+  const [isFeesManagerOpen, setIsFeesManagerOpen] = useState(false);
   const [chartScale, setChartScale] = useState<'linear' | 'log'>('linear');
   const [showBenchmark, setShowBenchmark] = useState(false);
   const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('ALL');
@@ -163,6 +165,10 @@ export const Dashboard: React.FC = () => {
           onUpdatePrices={onUpdatePrices}
           onClose={() => setIsMarketDataOpen(false)}
         />
+      )}
+      {/* Fees Manager Modal */}
+      {isFeesManagerOpen && (
+        <FeesManager onClose={() => setIsFeesManagerOpen(false)} />
       )}
 
       {/* Header Actions */}
@@ -292,10 +298,18 @@ export const Dashboard: React.FC = () => {
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
           <h3 className="text-slate-500 text-sm font-medium mb-3 flex items-center justify-between">
             <span>Fees, Taxes & Expenses</span>
-            <div className="group relative">
-              <Info size={14} className="text-slate-400 cursor-help" />
-              <div className="absolute bottom-full right-0 mb-2 w-64 p-2 bg-slate-800 text-white text-xs rounded shadow-lg hidden group-hover:block z-10">
-                Breakdown of all trading costs, custody fees, and tax adjustments (TPCVM).
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsFeesManagerOpen(true)}
+                className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-md transition-colors border border-emerald-100"
+              >
+                MANAGE
+              </button>
+              <div className="group relative">
+                <Info size={14} className="text-slate-400 cursor-help" />
+                <div className="absolute bottom-full right-0 mb-2 w-64 p-2 bg-slate-800 text-white text-xs rounded shadow-lg hidden group-hover:block z-10">
+                  Breakdown of all trading costs, custody fees, and tax adjustments (TPCVM).
+                </div>
               </div>
             </div>
           </h3>

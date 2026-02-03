@@ -1,12 +1,12 @@
 
 import { useState, useMemo, useEffect } from 'react';
-import { Transaction, PortfolioSummary } from '../types';
+import { Transaction, PortfolioSummary, FeeRecord } from '../types';
 import { calculatePortfolio } from '../utils/portfolioCalc';
 import { getMarketPrices } from '../services/marketService';
 
 const STORAGE_KEY_MANUAL_PRICES = 'atlas_portfolio_manual_prices';
 
-export const usePortfolio = (transactions: Transaction[]) => {
+export const usePortfolio = (transactions: Transaction[], fees: FeeRecord[] = []) => {
     // State for manual price overrides
     const [manualPrices, setManualPrices] = useState<Record<string, number>>(() => {
         try {
@@ -41,8 +41,8 @@ export const usePortfolio = (transactions: Transaction[]) => {
                 enrichedTransactions: []
             };
         }
-        return calculatePortfolio(transactions, currentPrices);
-    }, [transactions, currentPrices]);
+        return calculatePortfolio(transactions, currentPrices, fees);
+    }, [transactions, currentPrices, fees]);
 
     const updateManualPrice = (ticker: string, price: number) => {
         setManualPrices(prev => ({ ...prev, [ticker]: price }));

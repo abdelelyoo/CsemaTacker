@@ -9,6 +9,16 @@ export enum TransactionType {
   FEE = 'Frais'
 }
 
+export type FeeType = 'CUS' | 'SUB';
+
+export interface FeeRecord {
+  id?: number;
+  date: Date;
+  type: FeeType;
+  amount: number;
+  description?: string;
+}
+
 export interface RawTransaction {
   Date: string;
   Company: string;
