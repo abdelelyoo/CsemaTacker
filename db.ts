@@ -7,7 +7,7 @@ export class AtlasPortfolioDB extends Dexie {
 
   constructor() {
     super('AtlasPortfolioDB');
-    (this as any).version(1).stores({
+    (this as any).version(2).stores({
       transactions: '++id, parsedDate, Ticker, Operation, Company', // Primary key and indexed props
       fees: '++id, date, type'
     });
