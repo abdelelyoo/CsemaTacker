@@ -1,4 +1,4 @@
-# Atlas Portfolio Manager (v2.0 Enterprise)
+# Atlas Portfolio Manager (v2.0.1 Enterprise)
 
 ### Professional Investment Tracking Dashboard
 
