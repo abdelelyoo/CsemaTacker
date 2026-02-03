@@ -109,10 +109,22 @@ export const useTransactions = () => {
         try {
             // Preparation step outside the transaction if it involves complex mapping
             // ensuring we have proper parsedDate objects
-            const clean = parsed.map(({ id, ...rest }) => ({
-                ...rest,
-                parsedDate: rest.parsedDate || DateService.parse(rest.Date)
-            }));
+            const clean = parsed.map(({ id, ...rest }) => {
+                const normalizedOp = (rest.Operation || '').toLowerCase();
+                const ticker = (rest.Ticker || '').toLowerCase();
+                const company = (rest.Company || '').toLowerCase();
+                const isSubscription = normalizedOp.includes('abonnement') || normalizedOp.includes('subscription');
+                const isBankFee = !isSubscription && (
+                    (normalizedOp.includes('frais') || normalizedOp.includes('fees')) &&
+                    (ticker === 'bank' || ticker === 'cus' || ticker.includes('bank') || company.includes('bank'))
+                );
+
+                return {
+                    ...rest,
+                    parsedDate: rest.parsedDate || DateService.parse(rest.Date),
+                    Operation: isBankFee ? 'Frais Bancaires' : rest.Operation // Standardize bank fees
+                };
+            });
 
             // Use an atomic transaction for clear + add
             await db.transaction('rw', db.transactions, async () => {
