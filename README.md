@@ -1,6 +1,6 @@
 # Atlas Portfolio Manager
 
-**Professional Investment Tracking Dashboard**
+### Professional Investment Tracking Dashboard
 
 This project is a high-performance, enterprise-grade portfolio manager built for the Moroccan Stock Market (CSEMA).
 

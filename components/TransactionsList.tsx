@@ -127,6 +127,9 @@ export const TransactionsList: React.FC = () => {
           onSave={(data) => {
             if (editingTransaction.id !== undefined) {
               onEditTransaction(editingTransaction.id, data);
+            } else if (onAddTransaction) {
+              // Handle virtual/auto transactions (like SUB Auto) by creating a real one
+              onAddTransaction(data);
             }
             setEditingTransaction(null);
           }}

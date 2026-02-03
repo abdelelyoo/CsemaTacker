@@ -237,8 +237,17 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
 
   // --- Automatic Monthly Subscriptions ---
   // Apply -108.90 MAD every month from the first transaction until today.
+  // CAP AT 5 MONTHS MAXIMUM (User Request)
+  // DISABLE IF MANUAL "SUB" EXISTS
+
+  const hasManualSub = transactions.some(tx =>
+    tx.Ticker === 'SUB (Auto)' ||
+    tx.Operation.toUpperCase() === 'FRAIS' && tx.Company.toLowerCase().includes('subscription')
+  );
+
   const AUTO_SUB_FEE = 108.90;
-  if (transactions.length > 0) {
+
+  if (!hasManualSub && transactions.length > 0) {
     const firstTxDate = transactions.reduce((min, tx) => (tx.parsedDate < min ? tx.parsedDate : min), transactions[0].parsedDate);
     const today = new Date();
 
@@ -246,6 +255,9 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
     let months = (today.getFullYear() - firstTxDate.getFullYear()) * 12 + (today.getMonth() - firstTxDate.getMonth());
     // If the first transaction was this month, it counts as 1st month if we want to charge immediately
     months = Math.max(1, months + 1);
+
+    // CAP at 5 Months
+    months = Math.min(months, 5);
 
     const totalAutoSubCost = months * AUTO_SUB_FEE;
 
@@ -258,7 +270,7 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
       parsedDate: today,
       Operation: 'Frais',
       Ticker: 'SUB (Auto)',
-      Company: `Subscription (${months} months)`,
+      Company: `Subscription (${months} months capped)`,
       Qty: 0,
       Price: 0,
       Total: -totalAutoSubCost,
