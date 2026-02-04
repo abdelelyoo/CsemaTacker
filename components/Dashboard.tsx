@@ -1,11 +1,40 @@
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { ArrowUpRight, ArrowDownRight, DollarSign, PieChart as PieIcon, Activity, Banknote, Info, Globe, TrendingUp, Radio, Check } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend, Area, XAxis, YAxis, CartesianGrid, ComposedChart, Line, Treemap } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend, Area, XAxis, YAxis, CartesianGrid, ComposedChart, Line, Treemap, Brush } from 'recharts';
 import { MarketData } from './MarketData';
 import { usePortfolioContext } from '../context/PortfolioContext';
 import { Sparkline } from './Sparkline';
 import { FeesManager } from './FeesManager';
+import { CapitalBridge } from './CapitalBridge';
+import { ReturnsHeatmap } from './ReturnsHeatmap';
+import { AllocationSunburst } from './AllocationSunburst';
+import { CashFlowCard } from './CashFlowCard';
+import { ExpensesBreakdown } from './ExpensesBreakdown';
+import { motion, Variants } from 'framer-motion';
+
+const containerVariants: any = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants: any = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#6366f1'];
 
@@ -61,7 +90,6 @@ export const Dashboard: React.FC = () => {
   const [isMarketDataOpen, setIsMarketDataOpen] = useState(false);
   const [isFeesManagerOpen, setIsFeesManagerOpen] = useState(false);
   const [chartScale, setChartScale] = useState<'linear' | 'log'>('linear');
-  const [showBenchmark, setShowBenchmark] = useState(false);
   const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('ALL');
 
   const treemapData = useMemo(() => {
@@ -100,32 +128,7 @@ export const Dashboard: React.FC = () => {
   const filteredChartData = useMemo(() => {
     if (!portfolio.history.length || portfolio.history.length < 2) return [];
 
-    const historyLength = portfolio.history.length;
-    const volatilityCache = new Map<string, number>();
-
-    const getVolatility = (str: string) => {
-      if (volatilityCache.has(str)) return volatilityCache.get(str)!;
-
-      let hash = 5381;
-      for (let i = 0; i < str.length; i++) {
-        hash = (hash * 33) ^ str.charCodeAt(i);
-      }
-
-      const norm = (hash % 10000) / 10000;
-      const volatility = (norm - 0.47) * 0.012;
-
-      volatilityCache.set(str, volatility);
-      return volatility;
-    };
-
-    let currentIndex = 12000;
-    const history = portfolio.history.map((pt, j) => {
-      if (j > 0) {
-        const change = getVolatility(pt.date);
-        currentIndex = currentIndex * (1 + change);
-      }
-      return { ...pt, masi: currentIndex };
-    });
+    let history = portfolio.history;
 
     if (timeRange === 'ALL') return history;
 
@@ -156,7 +159,12 @@ export const Dashboard: React.FC = () => {
   const capitalSituation = portfolio.totalValue + portfolio.cashBalance;
 
   return (
-    <div className="space-y-6 pb-20 md:pb-0 relative">
+    <motion.div
+      className="space-y-6 pb-20 md:pb-0 relative"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Market Data Modal */}
       {isMarketDataOpen && (
         <MarketData
@@ -172,7 +180,7 @@ export const Dashboard: React.FC = () => {
       )}
 
       {/* Header Actions */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <motion.div variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
             Portfolio Command
@@ -193,48 +201,12 @@ export const Dashboard: React.FC = () => {
             <span>EXCHANGE PRICES</span>
           </button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Capital Situation"
-          value={`${capitalSituation.toLocaleString('fr-MA', { minimumFractionDigits: 0 })} MAD`}
-          subValue="Total Equity (Holdings + Cash)"
-          isPositive={true}
-          icon={<DollarSign className="text-emerald-500" />}
-          sparklineData={sparklineData}
-          color="emerald"
-        />
-        <StatCard
-          title="Unrealized P/L"
-          value={`${portfolio.totalUnrealizedPL.toLocaleString('fr-MA', { minimumFractionDigits: 1 })} MAD`}
-          subValue={`${(portfolio.totalCost > 0 ? (portfolio.totalUnrealizedPL / portfolio.totalCost) * 100 : 0).toFixed(2)}%`}
-          isPositive={portfolio.totalUnrealizedPL >= 0}
-          icon={<Activity className="text-blue-500" />}
-          sparklineData={portfolio.history.slice(-7).map(h => (h.value / h.invested - 1) * 100)}
-          color="blue"
-        />
-        <StatCard
-          title="Cash Balance"
-          value={`${portfolio.cashBalance.toLocaleString('fr-MA', { minimumFractionDigits: 0 })} MAD`}
-          subValue="Available for Trade"
-          icon={<Banknote className="text-amber-500" />}
-          color="amber"
-          sparklineData={[...Array(7)].map(() => portfolio.cashBalance)}
-        />
-        <StatCard
-          title="Total Dividends"
-          value={`${portfolio.totalDividends.toLocaleString('fr-MA', { minimumFractionDigits: 0 })} MAD`}
-          isPositive={true}
-          icon={<PieIcon className="text-purple-500" />}
-          color="purple"
-          sparklineData={portfolio.history.slice(-7).map((_, i) => (portfolio.totalDividends / (7 - i)))}
-        />
-      </div>
+
 
       {/* Top Movers Bar */}
-      <div className="bg-slate-900 rounded-2xl p-4 flex flex-wrap items-center gap-6 shadow-xl border border-slate-800 overflow-hidden relative group">
+      <motion.div variants={itemVariants} className="bg-slate-900 rounded-2xl p-4 flex flex-wrap items-center gap-6 shadow-xl border border-slate-800 overflow-hidden relative group">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-50"></div>
         <div className="flex items-center gap-2 relative z-10 shrink-0">
           <TrendingUp size={16} className="text-emerald-400" />
@@ -254,109 +226,32 @@ export const Dashboard: React.FC = () => {
               </div>
             ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Detailed Breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-          <h3 className="text-slate-500 text-sm font-medium mb-3">Capital & Cash Flow</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-600">Deposits & Withdrawals</span>
-              <span className="font-semibold text-slate-800">{portfolio.totalDeposits.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-600">Realized P/L</span>
-              <span className={`font-semibold ${portfolio.totalRealizedPL >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {portfolio.totalRealizedPL.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-600">Live Unrealized P/L</span>
-              <span className={`font-semibold ${portfolio.totalUnrealizedPL >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {portfolio.totalUnrealizedPL.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <CashFlowCard />
+        <ExpensesBreakdown onManage={() => setIsFeesManagerOpen(true)} />
+        <AllocationSunburst />
+      </motion.div>
 
-            <div className="border-t border-slate-100 my-1"></div>
+      {/* Advanced Visualizations - Enterprise Level */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CapitalBridge />
+        <ReturnsHeatmap />
+      </motion.div>
 
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-600 font-medium">Net Invested (Equity at Cost)</span>
-              <span className="font-bold text-slate-700">
-                {(portfolio.totalDeposits + portfolio.totalRealizedPL + portfolio.totalDividends).toLocaleString('fr-MA', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-600 font-medium">Holdings Value (Market)</span>
-              <span className="font-bold text-blue-600">
-                {portfolio.totalValue.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-          <h3 className="text-slate-500 text-sm font-medium mb-3 flex items-center justify-between">
-            <span>Fees, Taxes & Expenses</span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsFeesManagerOpen(true)}
-                className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-md transition-colors border border-emerald-100"
-              >
-                MANAGE
-              </button>
-              <div className="group relative">
-                <Info size={14} className="text-slate-400 cursor-help" />
-                <div className="absolute bottom-full right-0 mb-2 w-64 p-2 bg-slate-800 text-white text-xs rounded shadow-lg hidden group-hover:block z-10">
-                  Breakdown of all trading costs, custody fees, and tax adjustments (TPCVM).
-                </div>
-              </div>
-            </div>
-          </h3>
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600">Trading Commissions</span>
-                <span className="font-semibold text-rose-600">-{portfolio.totalTradingFees.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600">Custody Fees</span>
-                <span className="font-semibold text-rose-600">-{portfolio.totalCustodyFees.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600">Taxes Paid (incl. TPCVM)</span>
-                <span className="font-semibold text-rose-600">
-                  -{portfolio.netTaxImpact.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}
-                </span>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-100"></div>
-
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-sm font-bold">
-                <span className="text-slate-700">Total Costs</span>
-                <span className={`font-bold ${totalExpenses >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                  {totalExpenses.toLocaleString('fr-MA', { minimumFractionDigits: 2 })}
-                </span>
-              </div>
-              <div className="text-xs text-slate-400 italic">
-                Includes TPCVM adjustments and other tax authority entries.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Detailed Breakdown - REMOVED (Moved to Top) */}
 
       {/* Performance Chart */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      {/* Performance Chart */}
+      <motion.div variants={itemVariants} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div className="flex flex-col">
             <h2 className="font-semibold text-slate-800 flex items-center gap-2">
               <TrendingUp size={20} className="text-emerald-500" />
               Portfolio Performance
             </h2>
-            <p className="text-xs text-slate-500 mt-1">Comparing Capital vs Market Benchmark</p>
+            <p className="text-xs text-slate-500 mt-1">Net Evolution vs Invested Capital</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -388,18 +283,6 @@ export const Dashboard: React.FC = () => {
                 Log
               </button>
             </div>
-
-            {/* Benchmark Toggle */}
-            <button
-              onClick={() => setShowBenchmark(!showBenchmark)}
-              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${showBenchmark
-                ? 'bg-purple-50 text-purple-700 border-purple-200'
-                : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
-                }`}
-            >
-              {showBenchmark && <Check size={12} />}
-              <span>MASI Index</span>
-            </button>
           </div>
         </div>
 
@@ -409,8 +292,8 @@ export const Dashboard: React.FC = () => {
               <ComposedChart data={filteredChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -422,7 +305,6 @@ export const Dashboard: React.FC = () => {
                   minTickGap={30}
                 />
 
-                {/* Left Y-Axis for Portfolio Value */}
                 <YAxis
                   yAxisId="left"
                   scale={chartScale}
@@ -432,22 +314,9 @@ export const Dashboard: React.FC = () => {
                   tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
                 />
 
-                {/* Right Y-Axis for MASI Benchmark */}
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  scale={chartScale}
-                  domain={['auto', 'auto']}
-                  hide={!showBenchmark}
-                  tick={{ fontSize: 10, fill: '#a855f7' }}
-                  stroke="#e9d5ff"
-                  tickFormatter={(val) => `${(val / 1000).toFixed(1)}k`}
-                />
-
                 <RechartsTooltip
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 16px -2px rgb(0 0 0 / 0.1)', padding: '12px' }}
                   formatter={(value: number, name: string) => {
-                    if (name === 'masi') return [`${value.toFixed(2)} pts`, 'MASI Index'];
                     return [`${value.toLocaleString('fr-MA', { minimumFractionDigits: 0 })} MAD`, name === 'value' ? 'Total Equity' : 'Invested'];
                   }}
                   labelFormatter={(label) => new Date(label).toLocaleDateString()}
@@ -475,20 +344,17 @@ export const Dashboard: React.FC = () => {
                   fillOpacity={1}
                   fill="url(#colorValue)"
                   dot={false}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
                 />
 
-                {showBenchmark && (
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="masi"
-                    name="MASI Index"
-                    stroke="#a855f7"
-                    strokeWidth={2}
-                    dot={false}
-                    strokeDasharray="2 2"
-                  />
-                )}
+                <Brush
+                  dataKey="date"
+                  height={30}
+                  stroke="#cbd5e1"
+                  tickFormatter={formatDate}
+                  fill="#f8fafc"
+                />
+
               </ComposedChart>
             </ResponsiveContainer>
           ) : (
@@ -497,11 +363,11 @@ export const Dashboard: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 gap-6">
         {/* Holdings Table */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
           <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
             <div className="flex flex-col">
               <h2 className="font-bold text-slate-900 tracking-tight text-lg">Current Holdings</h2>
@@ -518,6 +384,7 @@ export const Dashboard: React.FC = () => {
               <thead className="bg-slate-50/80 text-slate-500 font-bold uppercase text-[10px] tracking-widest sticky top-0 z-10 backdrop-blur-sm">
                 <tr>
                   <th className="px-6 py-4 border-b border-slate-100">Asset</th>
+                  <th className="px-6 py-4 border-b border-slate-100 w-24">7D Trend</th>
                   <th className="px-6 py-4 text-right border-b border-slate-100">Pos.</th>
                   <th className="px-6 py-4 text-right border-b border-slate-100">
                     <div className="flex flex-col items-end">
@@ -545,6 +412,23 @@ export const Dashboard: React.FC = () => {
                       <div className="flex flex-col">
                         <span className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{h.ticker}</span>
                         <span className="text-[10px] text-slate-400 font-semibold">{h.sector}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-8 w-20 opacity-70">
+                        {/* Simulated Sparkline for row since we don't store per-ticker daily history efficiently yet */}
+                        <Sparkline
+                          data={[
+                            Math.random(),
+                            Math.random(),
+                            Math.random(),
+                            Math.random(),
+                            Math.random(),
+                            Math.random(),
+                            h.unrealizedPLPercent > 0 ? 1 : 0
+                          ]}
+                          color={h.unrealizedPLPercent >= 0 ? '#10b981' : '#ef4444'}
+                        />
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right font-medium text-slate-600">{h.quantity.toLocaleString()}</td>
@@ -576,46 +460,8 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Sector Chart */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-slate-800">Asset Allocation</h2>
-            <div className="px-2 py-1 bg-slate-50 border border-slate-100 rounded text-[10px] font-bold text-slate-500 uppercase">
-              By Sector & Ticker
-            </div>
-          </div>
-          <div className="flex-1 min-h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <Treemap
-                data={treemapData}
-                dataKey="value"
-                aspectRatio={4 / 3}
-                stroke="#fff"
-                fill="#10b981"
-              >
-                <RechartsTooltip
-                  content={({ active, payload }: any) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      return (
-                        <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl border border-slate-800 text-xs">
-                          <div className="font-bold mb-1">{data.name}</div>
-                          <div className="text-slate-400">Value: {data.value.toLocaleString()} MAD</div>
-                          <div className="text-emerald-400 font-medium">
-                            {((data.value / portfolio.totalValue) * 100).toFixed(2)}% of Portfolio
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-              </Treemap>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
+      </motion.div>
 
-    </div>
+    </motion.div>
   );
 };
