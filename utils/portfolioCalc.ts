@@ -304,26 +304,31 @@ export const calculatePortfolio = (
   // totalSubscriptionFees already declared above for separate fees table
   
   bankOperations.forEach(op => {
-    cashBalance += op.Amount;
-    
+    // Handle cash flow direction based on category
     switch (op.Category) {
       case 'DEPOSIT':
         totalDeposits += Math.abs(op.Amount);
+        cashBalance += Math.abs(op.Amount); // Money IN
         break;
       case 'WITHDRAWAL':
         totalWithdrawals += Math.abs(op.Amount);
+        cashBalance -= Math.abs(op.Amount); // Money OUT
         break;
       case 'DIVIDEND':
         totalDividends += Math.abs(op.Amount);
+        cashBalance += Math.abs(op.Amount); // Money IN
         break;
       case 'TAX':
         netTaxImpact += Math.abs(op.Amount);
+        cashBalance -= Math.abs(op.Amount); // Money OUT (tax stored as positive)
         break;
       case 'BANK_FEE':
         totalBankFees += Math.abs(op.Amount);
+        cashBalance += op.Amount; // Amount already negative
         break;
       case 'SUBSCRIPTION':
         totalSubscriptionFees += Math.abs(op.Amount);
+        cashBalance += op.Amount; // Amount already negative
         break;
     }
   });
