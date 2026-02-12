@@ -67,8 +67,8 @@ export const useTransactions = () => {
             Qty: qty,
             Price: parseFloat(data.price || data.Price) || 0,
             Total: parseFloat(data.total || data.Total) || 0,
-            Fees: data.fees !== undefined ? parseFloat(data.fees) : (data.Fees || 0),
-            Tax: data.tax !== undefined ? parseFloat(data.tax) : (data.Tax || 0),
+            Fees: data.fees !== undefined ? parseFloat(data.fees) : data.Fees,
+            Tax: data.tax !== undefined ? parseFloat(data.tax) : data.Tax,
             ISIN: data.isin || data.ISIN || ''
         };
     };

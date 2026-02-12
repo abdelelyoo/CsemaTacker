@@ -272,7 +272,12 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
         totalDeposits += tx.Total;
       }
 
-      enrichedTransactions.push(tx);
+      enrichedTransactions.push({
+        ...tx,
+        Fees: isBankFee ? Math.abs(tx.Total) : (tx.Fees || 0),
+        Tax: isTax ? Math.abs(tx.Total) : (tx.Tax || 0),
+        RealizedPL: 0
+      });
     }
   });
 

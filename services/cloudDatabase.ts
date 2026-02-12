@@ -50,9 +50,9 @@ export const getTransactions = async (): Promise<Transaction[]> => {
     Qty: t.qty,
     Price: t.price,
     Total: t.total,
-    Fees: t.fees,
-    Tax: t.tax,
-    RealizedPL: t.realized_pl,
+    Fees: t.fees === 0 ? null : t.fees,
+    Tax: t.tax === 0 ? null : t.tax,
+    RealizedPL: t.realized_pl === 0 ? null : t.realized_pl,
     parsedDate: new Date(t.parsed_date)
   }));
 };
@@ -77,9 +77,9 @@ export const addTransaction = async (transaction: Transaction): Promise<Transact
       qty: transaction.Qty,
       price: transaction.Price,
       total: transaction.Total,
-      fees: transaction.Fees || 0,
-      tax: transaction.Tax || 0,
-      realized_pl: transaction.RealizedPL || 0,
+      fees: transaction.Fees === undefined ? null : transaction.Fees,
+      tax: transaction.Tax === undefined ? null : transaction.Tax,
+      realized_pl: transaction.RealizedPL === undefined ? null : transaction.RealizedPL,
       parsed_date: transaction.parsedDate.toISOString().split('T')[0]
     })
     .select()
@@ -125,9 +125,9 @@ export const addTransactions = async (transactions: Transaction[]): Promise<void
     qty: t.Qty,
     price: t.Price,
     total: t.Total,
-    fees: t.Fees || 0,
-    tax: t.Tax || 0,
-    realized_pl: t.RealizedPL || 0,
+    fees: t.Fees === undefined ? null : t.Fees,
+    tax: t.Tax === undefined ? null : t.Tax,
+    realized_pl: t.RealizedPL === undefined ? null : t.RealizedPL,
     parsed_date: t.parsedDate.toISOString().split('T')[0]
   }));
 

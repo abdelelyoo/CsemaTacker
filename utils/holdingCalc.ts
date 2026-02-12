@@ -37,7 +37,7 @@ export const updateHoldingState = (
 
     if (isBuy) {
         // 1. Fee Inference if missing (Buy: Total = -(Gross + Fees))
-        if (tx.Fees === undefined) {
+        if (tx.Fees == null) {
             const totalAbs = Math.abs(tx.Total);
             const diff = totalAbs - grossAmount;
             const stdFees = calculateStandardFees(grossAmount);
@@ -48,6 +48,11 @@ export const updateHoldingState = (
             } else {
                 fees = Math.max(0, diff);
             }
+        }
+
+        // Add validation for high fees
+        if (fees > grossAmount * 0.05) {
+            console.warn(`High fee detected: ${fees} MAD on ${grossAmount} MAD (${((fees/grossAmount)*100).toFixed(2)}%)`);
         }
 
         // 2. Update Weighted Averages
@@ -76,8 +81,8 @@ export const updateHoldingState = (
     } else if (isSell) {
         // 1. Fee/Tax Inference if missing (Sell: Total = Gross - Fees - Tax)
         // Handle cases where fees or tax may be partially provided
-        const hasFees = tx.Fees !== undefined && tx.Fees !== null;
-        const hasTax = tx.Tax !== undefined && tx.Tax !== null;
+        const hasFees = tx.Fees != null;
+        const hasTax = tx.Tax != null;
         
         if (!hasFees || !hasTax) {
             const proceeds = tx.Total;
@@ -116,6 +121,11 @@ export const updateHoldingState = (
                     tax = 0;
                 }
             }
+        }
+
+        // Add validation for high fees
+        if (fees > grossAmount * 0.05) {
+            console.warn(`High fee detected: ${fees} MAD on ${grossAmount} MAD (${((fees/grossAmount)*100).toFixed(2)}%)`);
         }
 
         // 2. Calculate P&L

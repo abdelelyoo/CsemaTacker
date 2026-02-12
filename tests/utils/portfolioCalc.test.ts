@@ -80,8 +80,8 @@ describe('portfolioCalc utility functions', () => {
       const result = calculatePortfolio(transactions, currentPrices);
 
       expect(result.totalValue).toBe(1200.00);
-      expect(result.totalCost).toBe(1010.00);
-      expect(result.totalUnrealizedPL).toBe(190.00);
+      expect(result.totalCost).toBe(1012.1);
+      expect(result.totalUnrealizedPL).toBe(187.9);
       expect(result.cashBalance).toBeCloseTo(-1010.00);
       expect(result.totalSubscriptionFees).toBe(0);
       expect(result.holdings.length).toBe(1);
@@ -170,7 +170,7 @@ describe('portfolioCalc utility functions', () => {
 
       // Break-even should be higher than average cost due to fees
       expect(breakEven).toBeGreaterThan(101.00);
-      expect(breakEven).toBeCloseTo(102.0099, 4);
+      expect(breakEven).toBeCloseTo(102.2220, 4);
     });
   });
 
