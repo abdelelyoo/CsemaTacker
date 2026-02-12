@@ -40,9 +40,11 @@ export const updateHoldingState = (
         if (tx.Fees === undefined) {
             const totalAbs = Math.abs(tx.Total);
             const diff = totalAbs - grossAmount;
-            // If diff is roughly standard fees or very small, use standard fee calc
-            if (Math.abs(diff - calculateStandardFees(grossAmount)) < 1 || Math.abs(diff) < 0.01) {
-                fees = calculateStandardFees(grossAmount);
+            const stdFees = calculateStandardFees(grossAmount);
+            // If diff is roughly standard fees (within 5 MAD tolerance) or very small, use standard fee calc
+            // 5 MAD tolerance accounts for rounding differences and minor broker variations
+            if (Math.abs(diff - stdFees) < 5 || Math.abs(diff) < 0.01) {
+                fees = stdFees;
             } else {
                 fees = Math.max(0, diff);
             }
@@ -73,22 +75,46 @@ export const updateHoldingState = (
 
     } else if (isSell) {
         // 1. Fee/Tax Inference if missing (Sell: Total = Gross - Fees - Tax)
-        if (tx.Fees === undefined && tx.Tax === undefined) {
+        // Handle cases where fees or tax may be partially provided
+        const hasFees = tx.Fees !== undefined && tx.Fees !== null;
+        const hasTax = tx.Tax !== undefined && tx.Tax !== null;
+        
+        if (!hasFees || !hasTax) {
             const proceeds = tx.Total;
             const diff = grossAmount - proceeds;
             const stdFees = calculateStandardFees(grossAmount);
             const gain = (tx.Price - state.avgPrice) * qty;
             const estTax = calculateTaxOnGain(gain);
 
-            if (Math.abs(diff - (stdFees + estTax)) < 1 || Math.abs(diff) < 0.01) {
-                fees = stdFees;
-                tax = estTax;
-            } else if (diff > stdFees) {
-                fees = stdFees;
-                tax = diff - stdFees;
-            } else {
-                fees = Math.max(0, diff);
-                tax = 0;
+            if (!hasFees && !hasTax) {
+                // Neither provided - infer both
+                // Use 5 MAD tolerance for better handling of rounding and broker variations
+                if (Math.abs(diff - (stdFees + estTax)) < 5 || Math.abs(diff) < 0.01) {
+                    fees = stdFees;
+                    tax = estTax;
+                } else if (diff > stdFees) {
+                    fees = stdFees;
+                    tax = Math.max(0, diff - stdFees);
+                } else {
+                    fees = Math.max(0, diff);
+                    tax = 0;
+                }
+            } else if (!hasFees && hasTax) {
+                // Only tax provided - infer fees
+                const remaining = diff - tax;
+                if (Math.abs(remaining - stdFees) < 5 || remaining < 0) {
+                    fees = stdFees;
+                } else {
+                    fees = Math.max(0, remaining);
+                }
+            } else if (hasFees && !hasTax) {
+                // Only fees provided - infer tax
+                const remaining = diff - fees;
+                if (remaining > 0.01) {
+                    tax = remaining;
+                } else {
+                    tax = 0;
+                }
             }
         }
 

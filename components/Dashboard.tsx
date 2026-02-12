@@ -153,7 +153,7 @@ const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('A
   }, [portfolio.history]);
 
   const netTaxDisplay = portfolio.netTaxImpact;
-  const totalExpenses = -(portfolio.totalTradingFees + portfolio.totalCustodyFees + portfolio.netTaxImpact);
+  const totalExpenses = -(portfolio.totalTradingFees + portfolio.totalCustodyFees + portfolio.totalSubscriptionFees + portfolio.netTaxImpact);
   const holdingTickers = useMemo(() => portfolio.holdings.map(h => h.ticker), [portfolio]);
 
   const formatDate = (dateStr: string) => {

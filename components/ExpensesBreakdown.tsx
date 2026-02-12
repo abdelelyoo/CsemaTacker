@@ -13,6 +13,7 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({ onManage }
     const data = [
         { name: 'Commissions', value: Math.abs(portfolio.totalTradingFees), color: '#fb7185' }, // Rose-400
         { name: 'Custody Fees', value: Math.abs(portfolio.totalCustodyFees), color: '#f43f5e' }, // Rose-500
+        { name: 'Subscription', value: Math.abs(portfolio.totalSubscriptionFees), color: '#f472b6' }, // Pink-400
         { name: 'Taxes', value: Math.abs(portfolio.netTaxImpact), color: '#e11d48' }, // Rose-600
     ].filter(d => d.value > 0);
 

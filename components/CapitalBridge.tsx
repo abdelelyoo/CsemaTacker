@@ -9,7 +9,7 @@ export const CapitalBridge: React.FC = () => {
     const netInvested = portfolio.totalDeposits;
     const realized = portfolio.totalRealizedPL;
     const dividends = portfolio.totalDividends;
-    const fees = -(portfolio.totalTradingFees + portfolio.totalCustodyFees + portfolio.netTaxImpact);
+    const fees = -(portfolio.totalTradingFees + portfolio.totalCustodyFees + portfolio.totalSubscriptionFees + portfolio.netTaxImpact);
     const unrealized = portfolio.totalUnrealizedPL;
     const currentValue = portfolio.totalValue + portfolio.cashBalance;
 
