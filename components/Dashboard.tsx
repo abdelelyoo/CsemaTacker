@@ -1,5 +1,6 @@
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+// Deployment trigger: 2026-02-12 - Force Vercel rebuild
 import { ArrowUpRight, ArrowDownRight, DollarSign, PieChart as PieIcon, Activity, Banknote, Info, Globe, TrendingUp, Radio, Check, Award, TrendingDown } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend, Area, XAxis, YAxis, CartesianGrid, ComposedChart, Line, Treemap, Brush } from 'recharts';
 import { MarketData } from './MarketData';
