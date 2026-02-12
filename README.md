@@ -4,6 +4,8 @@
 
 This project is a high-performance, enterprise-grade portfolio manager built for the Moroccan Stock Market (CSEMA). Now with **cloud synchronization** - access your portfolio from any device!
 
+Note: This is an automated test commit to exercise the push workflow.
+
 ## Features
 
 - **Real-Time Dashboard**: Monitor your capital, P/L, and cash balance instantly.
