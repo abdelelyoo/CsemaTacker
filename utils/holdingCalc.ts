@@ -57,19 +57,19 @@ export const updateHoldingState = (
             if (qty > 0) {
                 // If we were at 0 or negative (short), the new cost basis is just the current purchase
                 if (state.qty <= 0) {
-                    state.costBasis = roundTo(addedCost / qty, 4);
-                    state.avgPrice = roundTo(grossAmount / qty, 4);
+                    state.costBasis = roundTo(addedCost / qty, 6);
+                    state.avgPrice = roundTo(grossAmount / qty, 6);
                 } else {
                     const currentTotalCost = state.qty * state.costBasis;
                     const currentTotalPrice = state.qty * state.avgPrice;
-                    state.costBasis = roundTo((currentTotalCost + addedCost) / newQty, 4);
-                    state.avgPrice = roundTo((currentTotalPrice + grossAmount) / newQty, 4);
+                    state.costBasis = roundTo((currentTotalCost + addedCost) / newQty, 6);
+                    state.avgPrice = roundTo((currentTotalPrice + grossAmount) / newQty, 6);
                 }
             }
         }
         state.qty = newQty;
-        state.totalBuyCost = roundTo(state.totalBuyCost + grossAmount, 4);
-        state.totalBuyQty = roundTo(state.totalBuyQty + qty, 4);
+        state.totalBuyCost = roundTo(state.totalBuyCost + grossAmount, 6);
+        state.totalBuyQty = roundTo(state.totalBuyQty + qty, 6);
 
     } else if (isSell) {
         // 1. Fee/Tax Inference if missing (Sell: Total = Gross - Fees - Tax)
@@ -94,9 +94,13 @@ export const updateHoldingState = (
 
         // 2. Calculate P&L
         // Realized P&L = Net Proceeds - (Qty * Net Cost Basis)
+        // Use unrounded cost basis for accurate P&L calculation
         const netProceeds = tx.Total;
         const costOfSoldShares = qty * state.costBasis;
         realizedPL = roundTo(netProceeds - costOfSoldShares, 2);
+        
+        // Alternative calculation using raw values for verification
+        // realizedPL = netProceeds - (qty * (state.totalBuyCost / state.totalBuyQty || 0));
 
         state.qty = roundTo(state.qty - qty, 4);
         state.totalSellProceeds = roundTo(state.totalSellProceeds + grossAmount, 4);
