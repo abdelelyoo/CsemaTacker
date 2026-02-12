@@ -1,0 +1,368 @@
+﻿import React, { useEffect, useState } from 'react';
+import { RiskAnalysisService, ConcentrationMetrics, SectorExposure, OwnershipOverlap } from '../services/riskAnalysisService';
+import { usePortfolioContext } from '../context/PortfolioContext';
+import { AlertTriangle, PieChart as PieChartIcon, Users, TrendingDown } from 'lucide-react';
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+
+export const RiskDashboard: React.FC = () => {
+    const { portfolio } = usePortfolioContext();
+    const [concentration, setConcentration] = useState<ConcentrationMetrics | null>(null);
+    const [sectorExposure, setSectorExposure] = useState<SectorExposure[]>([]);
+    const [ownershipOverlap, setOwnershipOverlap] = useState<OwnershipOverlap[]>([]);
+    const [warnings, setWarnings] = useState<string[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        loadRiskAnalysis();
+    }, [portfolio]);
+
+    const loadRiskAnalysis = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const holdings = portfolio.holdings.map(h => ({
+                ticker: h.ticker,
+                value: h.marketValue,
+                quantity: h.quantity,
+                currentPrice: h.currentPrice
+            }));
+
+            const [conc, sectors, overlap, warns] = await Promise.all([
+                RiskAnalysisService.getConcentrationMetrics(holdings.map(h => ({ ticker: h.ticker, value: h.value }))),
+                RiskAnalysisService.getSectorExposure(holdings),
+                RiskAnalysisService.getOwnershipOverlap(holdings.map(h => ({ ticker: h.ticker }))),
+                RiskAnalysisService.getRiskWarnings(holdings)
+            ]);
+
+            setConcentration(conc);
+            setSectorExposure(sectors);
+            setOwnershipOverlap(overlap);
+            setWarnings(warns);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to analyze risk');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getRiskLevelColor = (level?: string): string => {
+        switch (level) {
+            case 'low':
+                return 'text-emerald-600';
+            case 'moderate':
+                return 'text-amber-600';
+            case 'high':
+                return 'text-orange-600';
+            case 'extreme':
+                return 'text-rose-600';
+            default:
+                return 'text-slate-600';
+        }
+    };
+
+    const getRiskLevelBgColor = (level?: string): string => {
+        switch (level) {
+            case 'low':
+                return 'bg-emerald-50 border-emerald-200';
+            case 'moderate':
+                return 'bg-amber-50 border-amber-200';
+            case 'high':
+                return 'bg-orange-50 border-orange-200';
+            case 'extreme':
+                return 'bg-rose-50 border-rose-200';
+            default:
+                return 'bg-slate-50 border-slate-200';
+        }
+    };
+
+    const SECTOR_COLORS = [
+        '#3b82f6',
+        '#10b981',
+        '#f59e0b',
+        '#ef4444',
+        '#8b5cf6',
+        '#ec4899',
+        '#06b6d4',
+        '#14b8a6',
+        '#6366f1',
+        '#f97316'
+    ];
+
+    if (loading) {
+        return (
+            <div className="bg-white p-8 rounded-xl border border-slate-200 animate-pulse">
+                <div className="h-6 bg-slate-200 rounded w-1/3 mb-4"></div>
+                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
+            </div>
+        );
+    }
+
+    if (portfolio.holdings.length === 0) {
+        return (
+            <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 text-center">
+                <PieChartIcon size={48} className="mx-auto text-slate-300 mb-3" />
+                <h3 className="font-semibold text-slate-700 mb-2">No Holdings</h3>
+                <p className="text-sm text-slate-500">
+                    Add holdings to your portfolio to analyze risk and diversification
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-rose-600 to-rose-700 p-6 rounded-xl text-white shadow-lg">
+                <div className="flex items-center gap-3 mb-3">
+                    <TrendingDown size={28} />
+                    <div>
+                        <h2 className="text-2xl font-bold">Risk & Diversification Analysis</h2>
+                        <p className="text-sm text-rose-100">Concentration, sector exposure, and ownership overlap</p>
+                    </div>
+                </div>
+            </div>
+
+            {error && (
+                <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-lg">
+                    {error}
+                </div>
+            )}
+
+            {/* Risk Warnings */}
+            {warnings.length > 0 && (
+                <div className="bg-rose-50 border border-rose-200 rounded-xl p-6">
+                    <div className="flex items-start gap-3 mb-4">
+                        <AlertTriangle size={20} className="text-rose-600 flex-shrink-0 mt-1" />
+                        <h3 className="text-lg font-bold text-rose-800">Risk Warnings</h3>
+                    </div>
+                    <ul className="space-y-2">
+                        {warnings.map((warning, idx) => (
+                            <li key={idx} className="text-rose-700 text-sm">
+                                {warning}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {/* Concentration Metrics */}
+            {concentration && (
+                <div className={`border rounded-xl p-6 ${getRiskLevelBgColor(concentration.riskLevel)}`}>
+                    <h3 className="text-lg font-bold mb-4 text-slate-800">Concentration Metrics</h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div className="mb-4">
+                                <div className="flex justify-between mb-2">
+                                    <span className="text-sm font-semibold text-slate-700">Risk Level</span>
+                                    <span className={`font-bold uppercase text-sm ${getRiskLevelColor(concentration.riskLevel)}`}>
+                                        {concentration.riskLevel}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600">
+                                    HHI Index: {concentration.herfindahlIndex.toFixed(0)}
+                                    {concentration.riskLevel === 'low' && ' (< 1500)'}
+                                    {concentration.riskLevel === 'moderate' && ' (1500-2500)'}
+                                    {concentration.riskLevel === 'high' && ' (2500-5000)'}
+                                    {concentration.riskLevel === 'extreme' && ' (> 5000)'}
+                                </p>
+                            </div>
+
+                            <div className="space-y-3">
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-sm text-slate-700">Top Holding</span>
+                                        <span className="font-bold text-slate-800">
+                                            {concentration.topHoldingPercent.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-slate-200 rounded-full h-2">
+                                        <div
+                                            className="bg-rose-500 h-2 rounded-full"
+                                            style={{ width: `${Math.min(concentration.topHoldingPercent, 100)}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-sm text-slate-700">Top 3</span>
+                                        <span className="font-bold text-slate-800">
+                                            {concentration.top3Percent.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-slate-200 rounded-full h-2">
+                                        <div
+                                            className="bg-orange-500 h-2 rounded-full"
+                                            style={{ width: `${Math.min(concentration.top3Percent, 100)}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-sm text-slate-700">Top 5</span>
+                                        <span className="font-bold text-slate-800">
+                                            {concentration.top5Percent.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-slate-200 rounded-full h-2">
+                                        <div
+                                            className="bg-amber-500 h-2 rounded-full"
+                                            style={{ width: `${Math.min(concentration.top5Percent, 100)}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="bg-white bg-opacity-50 rounded-lg p-4">
+                                <p className="text-xs text-slate-600 mb-2">Diversification Score</p>
+                                <div className="text-center">
+                                    <div className="text-4xl font-bold text-slate-800 mb-2">
+                                        {concentration.effectiveDiversification.toFixed(1)}%
+                                    </div>
+                                    <div className="w-full bg-slate-200 rounded-full h-3">
+                                        <div
+                                            className={`h-3 rounded-full transition-all ${
+                                                concentration.effectiveDiversification > 80
+                                                    ? 'bg-emerald-500'
+                                                    : concentration.effectiveDiversification > 60
+                                                        ? 'bg-blue-500'
+                                                        : concentration.effectiveDiversification > 40
+                                                            ? 'bg-amber-500'
+                                                            : 'bg-rose-500'
+                                            }`}
+                                            style={{ width: `${concentration.effectiveDiversification}%` }}
+                                        ></div>
+                                    </div>
+                                    <p className="text-xs text-slate-600 mt-2">
+                                        Stocks: {concentration.stockCount}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Sector Exposure */}
+            {sectorExposure.length > 0 && (
+                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div className="flex items-center gap-3 mb-4">
+                        <PieChartIcon size={20} className="text-blue-600" />
+                        <h3 className="text-lg font-bold text-slate-800">Sector Exposure</h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="flex justify-center">
+                            <ResponsiveContainer width="100%" height={300}>
+                                <PieChart>
+                                    <Pie
+                                        data={sectorExposure}
+                                        dataKey="percentOfPortfolio"
+                                        nameKey="sector"
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={80}
+                                        label={({ index, payload }: any) => {
+                                            const data = sectorExposure[index];
+                                            return data ? `${data.sector} ${data.percentOfPortfolio.toFixed(0)}%` : '';
+                                        }}
+                                    >
+                                        {sectorExposure.map((_, idx) => (
+                                            <Cell key={idx} fill={SECTOR_COLORS[idx % SECTOR_COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        <div className="space-y-3">
+                            {sectorExposure.map((sector, idx) => (
+                                <div key={sector.sector} className="bg-slate-50 p-3 rounded-lg">
+                                    <div className="flex justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div
+                                                className="w-3 h-3 rounded-full"
+                                                style={{ backgroundColor: SECTOR_COLORS[idx % SECTOR_COLORS.length] }}
+                                            ></div>
+                                            <span className="font-semibold text-slate-800">{sector.sector}</span>
+                                        </div>
+                                        <span className="font-bold text-slate-800">
+                                            {sector.percentOfPortfolio.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-600">
+                                        {sector.holdingCount} companies • {sector.companies.join(', ')}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Ownership Overlap */}
+            {ownershipOverlap.length > 0 && (
+                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Users size={20} className="text-purple-600" />
+                        <h3 className="text-lg font-bold text-slate-800">Ownership Overlap</h3>
+                    </div>
+
+                    <div className="space-y-3">
+                        {ownershipOverlap.map((overlap, idx) => {
+                            const overlapColors = {
+                                low: 'border-blue-200 bg-blue-50',
+                                medium: 'border-amber-200 bg-amber-50',
+                                high: 'border-rose-200 bg-rose-50'
+                            };
+
+                            return (
+                                <div
+                                    key={idx}
+                                    className={`border rounded-lg p-4 ${overlapColors[overlap.overlapLevel]}`}
+                                >
+                                    <div className="flex justify-between mb-2">
+                                        <div>
+                                            <p className="font-bold text-slate-800">{overlap.majorShareholder}</p>
+                                            <p className="text-xs text-slate-600">{overlap.percentage.toFixed(1)}% ownership</p>
+                                        </div>
+                                        <span className={`text-xs font-bold px-2 py-1 rounded capitalize ${
+                                            overlap.overlapLevel === 'high'
+                                                ? 'bg-rose-100 text-rose-700'
+                                                : overlap.overlapLevel === 'medium'
+                                                    ? 'bg-amber-100 text-amber-700'
+                                                    : 'bg-blue-100 text-blue-700'
+                                        }`}>
+                                            {overlap.overlapLevel} Risk
+                                        </span>
+                                    </div>
+                                    <p className="text-sm font-semibold text-slate-700 mb-1">
+                                        Affects {overlap.affectedHoldings.length} holdings:
+                                    </p>
+                                    <p className="text-sm text-slate-600">
+                                        {overlap.affectedHoldings.join(', ')}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Empty State */}
+            {sectorExposure.length === 0 && ownershipOverlap.length === 0 && (
+                <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 text-center">
+                    <p className="text-slate-500">
+                        Unable to load risk analysis data. Please ensure all holdings have associated company profiles.
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+};

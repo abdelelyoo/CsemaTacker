@@ -1,0 +1,392 @@
+﻿import { db } from '../db';
+import { FinancialRatio } from '../types';
+
+export interface ValuationMetrics {
+    ticker: string;
+    companyName: string;
+    sector: string;
+
+    // Current
+    currentPE?: number;
+    currentPB?: number;
+    currentDivYield?: number;
+
+    // Ranges (3-5 year)
+    pe52WeekHigh?: number;
+    pe52WeekLow?: number;
+    peAverage?: number;
+    pePercentile?: number; // vs sector
+
+    // GARP Scoring
+    garpScore?: number; // 0-100
+    garpGrade?: 'A' | 'B' | 'C' | 'D' | 'F';
+
+    // Signals
+    signal?: 'overvalued' | 'fair' | 'undervalued';
+    confidenceLevel?: 'high' | 'medium' | 'low';
+
+    // PEG Ratio (P/E / Growth Rate)
+    pegRatio?: number;
+
+    // Historical context
+    valuationTrend?: 'expanding' | 'contracting' | 'stable';
+}
+
+export interface ScreenFilters {
+    peMin?: number;
+    peMax?: number;
+    pbMin?: number;
+    pbMax?: number;
+    divYieldMin?: number;
+    divYieldMax?: number;
+    garpGradeMin?: string; // 'A', 'B', 'C', 'D', 'F'
+    signal?: 'overvalued' | 'fair' | 'undervalued';
+    sector?: string;
+    sortBy?: 'pe' | 'garpScore' | 'divYield' | 'pe_percentile' | 'pegRatio';
+    sortOrder?: 'asc' | 'desc';
+}
+
+/**
+ * Calculate Compound Annual Growth Rate (CAGR)
+ */
+function calculateCAGR(startValue: number, endValue: number, years: number): number {
+    if (startValue <= 0 || endValue <= 0 || years <= 0) return 0;
+    return (Math.pow(endValue / startValue, 1 / years) - 1) * 100;
+}
+
+/**
+ * Calculate percentile rank of a value in an array
+ */
+function calculatePercentile(value: number, array: number[]): number {
+    if (array.length === 0) return 0;
+    const sorted = [...array].sort((a, b) => a - b);
+    const position = sorted.findIndex(v => v >= value);
+    if (position === -1) return 100;
+    return (position / sorted.length) * 100;
+}
+
+/**
+ * Convert grade number to letter
+ */
+function scoreToGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
+}
+
+/**
+ * Clamp value between min and max
+ */
+function clamp(value: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, value));
+}
+
+/**
+ * Service for valuation analysis and screening
+ */
+export class ValuationService {
+    /**
+     * Get valuation metrics for a single ticker
+     */
+    static async getValuationRanges(ticker: string): Promise<ValuationMetrics | null> {
+        const company = await db.companies.where('ticker').equals(ticker).first();
+        if (!company) return null;
+
+        const ratios = await db.financialRatios
+            .where('ticker')
+            .equals(ticker)
+            .toArray();
+
+        if (ratios.length === 0) return null;
+
+        // Sort by year
+        ratios.sort((a, b) => a.year - b.year);
+
+        // Get PE values (filter out undefined)
+        const peValues = ratios
+            .map(r => r.per)
+            .filter((pe): pe is number => pe !== undefined && pe > 0);
+
+        // Get latest values
+        const latestRatio = ratios[ratios.length - 1];
+        const previousRatio = ratios.length > 1 ? ratios[ratios.length - 2] : null;
+
+        // Calculate PE statistics
+        let peAverage: number | undefined;
+        let pe52WeekHigh: number | undefined;
+        let pe52WeekLow: number | undefined;
+        let pegRatio: number | undefined;
+        let valuationTrend: 'expanding' | 'contracting' | 'stable' | undefined;
+
+        if (peValues.length > 0) {
+            peAverage = peValues.reduce((a, b) => a + b) / peValues.length;
+            pe52WeekHigh = Math.max(...peValues);
+            pe52WeekLow = Math.min(...peValues);
+
+            // Determine trend
+            if (previousRatio && latestRatio.per && previousRatio.per) {
+                const peDiff = latestRatio.per - previousRatio.per;
+                const threshold = peAverage * 0.05; // 5% threshold
+                if (peDiff > threshold) valuationTrend = 'expanding';
+                else if (peDiff < -threshold) valuationTrend = 'contracting';
+                else valuationTrend = 'stable';
+            }
+
+            // Calculate PEG ratio: PE / Annual Earnings Growth %
+            if (latestRatio.per && latestRatio.per > 0) {
+                // Get revenue growth from financials
+                const figures = await db.financialFigures
+                    .where('ticker')
+                    .equals(ticker)
+                    .toArray();
+
+                if (figures.length >= 2) {
+                    figures.sort((a, b) => a.year - b.year);
+                    const latestFigure = figures[figures.length - 1];
+                    const oldestFigure = figures[0];
+
+                    if (latestFigure.revenue && oldestFigure.revenue && oldestFigure.revenue > 0) {
+                        const years = latestFigure.year - oldestFigure.year;
+                        const earningsGrowth = calculateCAGR(
+                            oldestFigure.revenue,
+                            latestFigure.revenue,
+                            years
+                        );
+
+                        if (earningsGrowth > 0) {
+                            pegRatio = latestRatio.per / earningsGrowth;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Calculate GARP Score (0-100)
+        let garpScore = 70; // Start with baseline
+
+        if (pegRatio !== undefined) {
+            if (pegRatio < 1.0) garpScore += 25;
+            else if (pegRatio < 1.5) garpScore += 15;
+            else if (pegRatio < 2.0) garpScore += 5;
+            else garpScore -= 5;
+        }
+
+        // Check ROE trend
+        const roeValues = ratios
+            .map(r => r.roe_percent)
+            .filter((roe): roe is number => roe !== undefined);
+        if (roeValues.length >= 2) {
+            if (roeValues[roeValues.length - 1] > roeValues[0]) {
+                garpScore += 10; // Improving ROE
+            } else if (roeValues[roeValues.length - 1] < roeValues[0]) {
+                garpScore -= 10; // Declining ROE
+            }
+        }
+
+        // Clamp score
+        garpScore = clamp(garpScore, 0, 100);
+
+        // Determine valuation signal
+        let signal: 'overvalued' | 'fair' | 'undervalued' = 'fair';
+        let confidenceLevel: 'high' | 'medium' | 'low' = 'medium';
+
+        if (pegRatio !== undefined) {
+            if (pegRatio > 2.0) {
+                signal = 'overvalued';
+                confidenceLevel = 'high';
+            } else if (pegRatio < 0.8) {
+                signal = 'undervalued';
+                confidenceLevel = 'high';
+            } else if (pegRatio > 1.5) {
+                signal = 'overvalued';
+                confidenceLevel = 'medium';
+            } else if (pegRatio < 1.0) {
+                signal = 'undervalued';
+                confidenceLevel = 'medium';
+            }
+        } else if (latestRatio.per && peAverage) {
+            const ratio = latestRatio.per / peAverage;
+            if (ratio > 1.2) {
+                signal = 'overvalued';
+                confidenceLevel = 'medium';
+            } else if (ratio < 0.8) {
+                signal = 'undervalued';
+                confidenceLevel = 'medium';
+            }
+        }
+
+        return {
+            ticker,
+            companyName: company.name,
+            sector: company.sector,
+            currentPE: latestRatio.per,
+            currentPB: latestRatio.pbr,
+            currentDivYield: latestRatio.dividend_yield_percent,
+            pe52WeekHigh,
+            pe52WeekLow,
+            peAverage,
+            pePercentile: undefined, // Will be calculated in sector comparison
+            garpScore,
+            garpGrade: scoreToGrade(garpScore),
+            signal,
+            confidenceLevel,
+            pegRatio,
+            valuationTrend
+        };
+    }
+
+    /**
+     * Get valuation metrics for multiple tickers
+     */
+    static async getMultipleValuations(tickers: string[]): Promise<ValuationMetrics[]> {
+        const results: ValuationMetrics[] = [];
+
+        for (const ticker of tickers) {
+            const metrics = await this.getValuationRanges(ticker);
+            if (metrics) {
+                results.push(metrics);
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Screen companies by valuation metrics
+     */
+    static async screenByMetrics(filters: ScreenFilters): Promise<ValuationMetrics[]> {
+        // Get all companies, or filtered by sector
+        let companies = await db.companies.toArray();
+        if (filters.sector) {
+            companies = companies.filter(c => c.sector === filters.sector);
+        }
+
+        // Get valuations for all companies
+        const tickers = companies.map(c => c.ticker);
+        let results = await this.getMultipleValuations(tickers);
+
+        // Calculate percentiles for sector
+        if (results.length > 0) {
+            const peValues = results
+                .map(r => r.currentPE)
+                .filter((pe): pe is number => pe !== undefined && pe > 0);
+            const pbValues = results
+                .map(r => r.currentPB)
+                .filter((pb): pb is number => pb !== undefined && pb > 0);
+
+            results = results.map(r => ({
+                ...r,
+                pePercentile:
+                    r.currentPE !== undefined && r.currentPE > 0
+                        ? calculatePercentile(r.currentPE, peValues)
+                        : undefined
+            }));
+        }
+
+        // Apply filters
+        results = results.filter(r => {
+            if (filters.peMin !== undefined && r.currentPE !== undefined && r.currentPE < filters.peMin)
+                return false;
+            if (filters.peMax !== undefined && r.currentPE !== undefined && r.currentPE > filters.peMax)
+                return false;
+            if (filters.pbMin !== undefined && r.currentPB !== undefined && r.currentPB < filters.pbMin)
+                return false;
+            if (filters.pbMax !== undefined && r.currentPB !== undefined && r.currentPB > filters.pbMax)
+                return false;
+            if (
+                filters.divYieldMin !== undefined &&
+                r.currentDivYield !== undefined &&
+                r.currentDivYield < filters.divYieldMin
+            )
+                return false;
+            if (
+                filters.divYieldMax !== undefined &&
+                r.currentDivYield !== undefined &&
+                r.currentDivYield > filters.divYieldMax
+            )
+                return false;
+            if (filters.garpGradeMin !== undefined && r.garpGrade) {
+                const gradeOrder: Record<string, number> = { A: 4, B: 3, C: 2, D: 1, F: 0 };
+                if (gradeOrder[r.garpGrade] < gradeOrder[filters.garpGradeMin]) return false;
+            }
+            if (filters.signal !== undefined && r.signal !== filters.signal) return false;
+            return true;
+        });
+
+        // Sort
+        const sortBy = filters.sortBy || 'garpScore';
+        const sortOrder = filters.sortOrder || 'desc';
+
+        results.sort((a, b) => {
+            let aVal: number = 0;
+            let bVal: number = 0;
+
+            switch (sortBy) {
+                case 'pe':
+                    aVal = a.currentPE || 0;
+                    bVal = b.currentPE || 0;
+                    break;
+                case 'garpScore':
+                    aVal = a.garpScore || 0;
+                    bVal = b.garpScore || 0;
+                    break;
+                case 'divYield':
+                    aVal = a.currentDivYield || 0;
+                    bVal = b.currentDivYield || 0;
+                    break;
+                case 'pe_percentile':
+                    aVal = a.pePercentile || 0;
+                    bVal = b.pePercentile || 0;
+                    break;
+                case 'pegRatio':
+                    aVal = a.pegRatio || 0;
+                    bVal = b.pegRatio || 0;
+                    break;
+            }
+
+            return sortOrder === 'desc' ? bVal - aVal : aVal - bVal;
+        });
+
+        return results;
+    }
+
+    /**
+     * Get valuation signals for all companies
+     */
+    static async getAllValuationSignals(): Promise<ValuationMetrics[]> {
+        return this.screenByMetrics({});
+    }
+
+    /**
+     * Get companies with specific signal
+     */
+    static async getCompaniesBySignal(
+        signal: 'overvalued' | 'undervalued' | 'fair'
+    ): Promise<ValuationMetrics[]> {
+        return this.screenByMetrics({ signal });
+    }
+
+    /**
+     * Get top undervalued stocks
+     */
+    static async getTopUndervalued(limit: number = 10): Promise<ValuationMetrics[]> {
+        return this.screenByMetrics({
+            signal: 'undervalued',
+            sortBy: 'garpScore',
+            sortOrder: 'desc'
+        }).then(results => results.slice(0, limit));
+    }
+
+    /**
+     * Get top overvalued stocks
+     */
+    static async getTopOvervalued(limit: number = 10): Promise<ValuationMetrics[]> {
+        return this.screenByMetrics({
+            signal: 'overvalued',
+            sortBy: 'pegRatio',
+            sortOrder: 'asc'
+        }).then(results => results.slice(0, limit));
+    }
+}
