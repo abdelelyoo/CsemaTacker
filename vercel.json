@@ -5,6 +5,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "alias": ["atlas.vercel.app"],
+  "lastUpdated": "2026-02-12T23:00:00Z",
   "routes": [
     {
       "src": "/(.*)",
