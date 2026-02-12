@@ -97,3 +97,7 @@ See `supabase/schema.sql` for the complete schema.
 
 MIT
 // Deployed: Thu Feb 12 13:07:20     2026
+// Deployment trigger: Thu Feb 12 21:59:12     2026
+
+## Deployment
+- Last deployed: 2026-02-12 21:59:24
