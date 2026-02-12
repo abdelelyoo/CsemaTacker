@@ -310,9 +310,9 @@ export const TransactionsList: React.FC = () => {
                         <Edit2 size={14} />
                       </button>
                     )}
-                    {onDeleteTransaction && t.id !== undefined && (
+                    {onDeleteTransaction && (
                       <button
-                        onClick={() => handleDelete(t.id!)}
+                        onClick={() => handleDelete(t.id || t.Ticker + t.Date)}
                         className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
                         title="Delete"
                       >

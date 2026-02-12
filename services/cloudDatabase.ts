@@ -284,6 +284,26 @@ export const clearFees = async (): Promise<void> => {
   }
 };
 
+export const deleteFee = async (id: number | string): Promise<void> => {
+  const userId = await getCurrentUserId();
+  
+  if (!userId) {
+    await db.fees.delete(id as number);
+    return;
+  }
+
+  const { error } = await supabase
+    .from('fees')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error deleting fee:', error);
+    throw error;
+  }
+};
+
 // ==================== COMPANY PROFILES ====================
 
 export const getCompanies = async (): Promise<CompanyProfile[]> => {

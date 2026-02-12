@@ -3,7 +3,8 @@ import { FeeRecord, FeeType } from '../types';
 import {
   getFees,
   addFee as addCloudFee,
-  clearFees as clearCloudFees
+  clearFees as clearCloudFees,
+  deleteFee as deleteCloudFee
 } from '../services/cloudDatabase';
 import { supabase } from '../lib/supabase';
 
@@ -56,10 +57,9 @@ export const useFees = () => {
         }
     };
 
-    const deleteFee = async (id: number) => {
+    const deleteFee = async (id: number | string) => {
         try {
-            // For cloud DB, we'd need a delete function
-            // For now, we'll reload to sync state
+            await deleteCloudFee(id);
             await loadFees();
             return true;
         } catch (err) {
