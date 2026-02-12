@@ -320,7 +320,7 @@ export const calculatePortfolio = (
         break;
       case 'TAX':
         netTaxImpact += Math.abs(op.Amount);
-        cashBalance -= Math.abs(op.Amount); // Money OUT (tax stored as positive)
+        cashBalance += Math.abs(op.Amount); // Money IN (tax refund stored as positive)
         break;
       case 'BANK_FEE':
         totalBankFees += Math.abs(op.Amount);
