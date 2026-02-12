@@ -129,7 +129,8 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
             Total: total,
             Fees: parseMadNumber(raw.Fees),
             Tax: parseMadNumber(raw.Tax),
-            RealizedPL: parseMadNumber(raw['Realized P&L']),
+            // Don't import Realized P&L from CSV - calculate it from actual transactions
+            // RealizedPL: parseMadNumber(raw['Realized P&L']),
             parsedDate
           });
         } else if (isOldFormat) {
