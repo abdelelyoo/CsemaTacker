@@ -1,152 +1,268 @@
 -- Supabase Database Schema for Atlas Portfolio Manager
+-- Updated: 2024 - Fixed fee/tax columns to support NULL values for proper inference
 -- Run this SQL in your Supabase SQL Editor
 
--- Enable RLS (Row Level Security)
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create tables
+-- ============================================
+-- 1. TRANSACTIONS TABLE
+-- ============================================
+-- Stores all buy/sell transactions and other operations
+-- Note: fees and tax columns allow NULL to enable automatic inference
+DROP TABLE IF EXISTS transactions CASCADE;
 
--- 1. Transactions Table
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE transactions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  date TEXT NOT NULL,
-  company TEXT NOT NULL,
-  isin TEXT,
-  operation TEXT NOT NULL,
-  ticker TEXT NOT NULL,
-  qty NUMERIC NOT NULL,
-  price NUMERIC NOT NULL,
-  total NUMERIC NOT NULL,
-  fees NUMERIC,
-  tax NUMERIC,
-  realized_pl NUMERIC DEFAULT 0,
-  parsed_date DATE NOT NULL,
+  
+  -- Transaction Details
+  date TEXT NOT NULL,                    -- Transaction date (DD/MM/YY format)
+  company TEXT NOT NULL,                 -- Company name
+  isin TEXT,                             -- ISIN code (optional)
+  operation TEXT NOT NULL,               -- Operation type: Achat, Vente, Depot, Taxe, Frais, Dividende
+  ticker TEXT NOT NULL,                  -- Stock ticker symbol
+  
+  -- Financial Data
+  qty NUMERIC NOT NULL,                  -- Quantity (negative for sells)
+  price NUMERIC NOT NULL,                -- Unit price
+  total NUMERIC NOT NULL,                -- Total amount (after fees/tax)
+  fees NUMERIC,                          -- Transaction fees (NULL = will be inferred)
+  tax NUMERIC,                           -- Tax amount (NULL = will be inferred)
+  realized_pl NUMERIC,                   -- Realized P&L (NULL = will be calculated)
+  
+  -- Metadata
+  parsed_date DATE NOT NULL,             -- Parsed date for sorting
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Fees Table
-CREATE TABLE IF NOT EXISTS fees (
+-- Indexes for better performance
+CREATE INDEX idx_transactions_user_id ON transactions(user_id);
+CREATE INDEX idx_transactions_ticker ON transactions(ticker);
+CREATE INDEX idx_transactions_parsed_date ON transactions(parsed_date);
+CREATE INDEX idx_transactions_operation ON transactions(operation);
+
+-- ============================================
+-- 2. FEES TABLE (CUS/SUB)
+-- ============================================
+-- Stores separate custody and subscription fees
+DROP TABLE IF EXISTS fees CASCADE;
+
+CREATE TABLE fees (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  date DATE NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('CUS', 'SUB')),
-  amount NUMERIC NOT NULL,
-  description TEXT,
+  
+  date DATE NOT NULL,                    -- Fee date
+  type TEXT NOT NULL CHECK (type IN ('CUS', 'SUB')),  -- CUS = Custody, SUB = Subscription
+  amount NUMERIC NOT NULL,               -- Fee amount (always positive)
+  description TEXT,                      -- Optional description
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 3. Company Profiles Table
-CREATE TABLE IF NOT EXISTS companies (
+CREATE INDEX idx_fees_user_id ON fees(user_id);
+CREATE INDEX idx_fees_date ON fees(date);
+
+-- ============================================
+-- 3. COMPANY PROFILES TABLE
+-- ============================================
+-- Stores company information and fundamentals
+DROP TABLE IF EXISTS companies CASCADE;
+
+CREATE TABLE companies (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  ticker TEXT NOT NULL,
-  name TEXT NOT NULL,
-  sector TEXT,
+  
+  ticker TEXT NOT NULL,                  -- Primary identifier
+  name TEXT NOT NULL,                    -- Company name
+  sector TEXT,                           -- Business sector
+  
+  -- Contact Information
   headquarters TEXT,
   website TEXT,
   phone TEXT,
   fax TEXT,
-  auditors TEXT[],
+  
+  -- Company Details
+  auditors TEXT[],                       -- Array of auditor names
   date_of_incorporation TEXT,
-  introduction_date_bourse TEXT,
+  introduction_date_bourse TEXT,         -- Date listed on exchange
   fiscal_year_duration_months INTEGER,
+  
+  -- Investor Relations
   investor_relations_person TEXT,
   investor_relations_email TEXT,
   investor_relations_phone TEXT,
-  flottant NUMERIC,
+  
+  -- Market Data
+  flottant NUMERIC,                      -- Free float percentage
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
   UNIQUE(user_id, ticker)
 );
 
--- 4. Management Table
-CREATE TABLE IF NOT EXISTS management (
+CREATE INDEX idx_companies_user_id ON companies(user_id);
+CREATE INDEX idx_companies_ticker ON companies(ticker);
+
+-- ============================================
+-- 4. MANAGEMENT TABLE
+-- ============================================
+-- Stores company management/board members
+DROP TABLE IF EXISTS management CASCADE;
+
+CREATE TABLE management (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  ticker TEXT NOT NULL,
-  role TEXT NOT NULL,
-  name TEXT NOT NULL,
+  
+  ticker TEXT NOT NULL,                  -- Company ticker
+  role TEXT NOT NULL,                    -- Position/role
+  name TEXT NOT NULL,                    -- Person's name
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 5. Financial Figures Table
-CREATE TABLE IF NOT EXISTS financial_figures (
+CREATE INDEX idx_management_user_id ON management(user_id);
+CREATE INDEX idx_management_ticker ON management(ticker);
+
+-- ============================================
+-- 5. FINANCIAL FIGURES TABLE
+-- ============================================
+-- Annual financial data for companies
+DROP TABLE IF EXISTS financial_figures CASCADE;
+
+CREATE TABLE financial_figures (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  
   ticker TEXT NOT NULL,
   year INTEGER NOT NULL,
+  
   consolidated_accounts BOOLEAN DEFAULT FALSE,
-  revenue NUMERIC,
-  operating_income NUMERIC,
-  net_income_group_share NUMERIC,
-  shareholders_equity NUMERIC,
-  shares_outstanding NUMERIC,
-  capital_social NUMERIC,
+  revenue NUMERIC,                       -- Revenue/Chiffre d'affaires
+  operating_income NUMERIC,              -- Operating income/Résultat d'exploitation
+  net_income_group_share NUMERIC,        -- Net income/Bénéfice net
+  shareholders_equity NUMERIC,           -- Shareholders' equity/Capitaux propres
+  shares_outstanding NUMERIC,            -- Number of shares outstanding
+  capital_social NUMERIC,                -- Share capital
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
   UNIQUE(user_id, ticker, year)
 );
 
--- 6. Financial Ratios Table
-CREATE TABLE IF NOT EXISTS financial_ratios (
+CREATE INDEX idx_financial_figures_user_id ON financial_figures(user_id);
+CREATE INDEX idx_financial_figures_ticker ON financial_figures(ticker);
+
+-- ============================================
+-- 6. FINANCIAL RATIOS TABLE
+-- ============================================
+-- Calculated financial ratios
+DROP TABLE IF EXISTS financial_ratios CASCADE;
+
+CREATE TABLE financial_ratios (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  
   ticker TEXT NOT NULL,
   year INTEGER NOT NULL,
-  eps_bpa NUMERIC,
-  roe_percent NUMERIC,
-  per NUMERIC,
-  pbr NUMERIC,
-  payout_percent NUMERIC,
-  dividend_yield_percent NUMERIC,
+  
+  eps_bpa NUMERIC,                       -- Earnings per share/Bénéfice par action
+  roe_percent NUMERIC,                   -- Return on equity
+  per NUMERIC,                           -- Price to earnings ratio
+  pbr NUMERIC,                           -- Price to book ratio
+  payout_percent NUMERIC,                -- Payout ratio
+  dividend_yield_percent NUMERIC,        -- Dividend yield
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
   UNIQUE(user_id, ticker, year)
 );
 
--- 7. Dividends Table
-CREATE TABLE IF NOT EXISTS dividends (
+CREATE INDEX idx_financial_ratios_user_id ON financial_ratios(user_id);
+CREATE INDEX idx_financial_ratios_ticker ON financial_ratios(ticker);
+
+-- ============================================
+-- 7. DIVIDENDS TABLE
+-- ============================================
+-- Dividend payment history
+DROP TABLE IF EXISTS dividends CASCADE;
+
+CREATE TABLE dividends (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  
   ticker TEXT NOT NULL,
   year INTEGER NOT NULL,
-  amount NUMERIC NOT NULL,
-  type TEXT,
-  ex_date DATE,
-  detachment_date DATE,
-  payment_date DATE,
+  amount NUMERIC NOT NULL,               -- Dividend per share
+  type TEXT,                             -- Type: Ordinaire, Exceptionnel, etc.
+  ex_date DATE,                          -- Ex-dividend date
+  detachment_date DATE,                  -- Detachment date
+  payment_date DATE,                     -- Payment date
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
   UNIQUE(user_id, ticker, year)
 );
 
--- 8. Shareholders Table
-CREATE TABLE IF NOT EXISTS shareholders (
+CREATE INDEX idx_dividends_user_id ON dividends(user_id);
+CREATE INDEX idx_dividends_ticker ON dividends(ticker);
+
+-- ============================================
+-- 8. SHAREHOLDERS TABLE
+-- ============================================
+-- Major shareholders information
+DROP TABLE IF EXISTS shareholders CASCADE;
+
+CREATE TABLE shareholders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  
   ticker TEXT NOT NULL,
-  name TEXT NOT NULL,
-  percentage NUMERIC NOT NULL,
-  as_of_date DATE,
+  name TEXT NOT NULL,                    -- Shareholder name
+  percentage NUMERIC NOT NULL,           -- Ownership percentage
+  as_of_date DATE,                       -- Date of information
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 9. Capital Events Table
-CREATE TABLE IF NOT EXISTS capital_events (
+CREATE INDEX idx_shareholders_user_id ON shareholders(user_id);
+CREATE INDEX idx_shareholders_ticker ON shareholders(ticker);
+
+-- ============================================
+-- 9. CAPITAL EVENTS TABLE
+-- ============================================
+-- Capital increases, threshold crossings, etc.
+DROP TABLE IF EXISTS capital_events CASCADE;
+
+CREATE TABLE capital_events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  
   ticker TEXT NOT NULL,
-  date DATE NOT NULL,
+  date DATE NOT NULL,                    -- Event date
   event_type TEXT NOT NULL CHECK (event_type IN ('capital_increase', 'threshold_crossing')),
-  description TEXT NOT NULL,
-  shares_variation NUMERIC,
-  nature TEXT,
-  threshold_percent NUMERIC,
-  declarant TEXT,
-  direction TEXT CHECK (direction IN ('Hausse', 'Baisse')),
+  description TEXT NOT NULL,             -- Event description
+  
+  -- Optional details
+  shares_variation NUMERIC,              -- Change in shares outstanding
+  nature TEXT,                           -- Nature of operation
+  threshold_percent NUMERIC,             -- Threshold crossed (if applicable)
+  declarant TEXT,                        -- Who declared the crossing
+  direction TEXT CHECK (direction IN ('Hausse', 'Baisse')),  -- Increase or decrease
+  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable Row Level Security on all tables
+CREATE INDEX idx_capital_events_user_id ON capital_events(user_id);
+CREATE INDEX idx_capital_events_ticker ON capital_events(ticker);
+
+-- ============================================
+-- ROW LEVEL SECURITY (RLS)
+-- ============================================
+-- Enable RLS on all tables
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
@@ -194,28 +310,68 @@ CREATE POLICY "Users can only access their own capital_events"
   ON capital_events FOR ALL 
   USING (auth.uid() = user_id);
 
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_ticker ON transactions(ticker);
-CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(parsed_date);
-CREATE INDEX IF NOT EXISTS idx_fees_user_id ON fees(user_id);
-CREATE INDEX IF NOT EXISTS idx_companies_user_id ON companies(user_id);
-CREATE INDEX IF NOT EXISTS idx_companies_ticker ON companies(ticker);
-CREATE INDEX IF NOT EXISTS idx_dividends_user_id ON dividends(user_id);
-CREATE INDEX IF NOT EXISTS idx_dividends_ticker ON dividends(ticker);
-
--- Create updated_at trigger function
+-- ============================================
+-- TRIGGERS FOR UPDATED_AT
+-- ============================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
--- Create triggers for updated_at
-CREATE TRIGGER update_transactions_updated_at BEFORE UPDATE ON transactions
+CREATE TRIGGER update_transactions_updated_at 
+  BEFORE UPDATE ON transactions 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_companies_updated_at BEFORE UPDATE ON companies
+CREATE TRIGGER update_companies_updated_at 
+  BEFORE UPDATE ON companies 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
+-- MIGRATION HELPERS
+-- ============================================
+-- Function to migrate existing transactions with 0 fees/tax to NULL
+CREATE OR REPLACE FUNCTION migrate_transaction_fees_to_null()
+RETURNS void AS $$
+BEGIN
+  UPDATE transactions 
+  SET 
+    fees = CASE 
+      WHEN (operation ILIKE 'achat' OR operation ILIKE 'buy' OR operation ILIKE 'vente' OR operation ILIKE 'sell') 
+        AND fees = 0 
+      THEN NULL 
+      ELSE fees 
+    END,
+    tax = CASE 
+      WHEN (operation ILIKE 'achat' OR operation ILIKE 'buy' OR operation ILIKE 'vente' OR operation ILIKE 'sell') 
+        AND tax = 0 
+      THEN NULL 
+      ELSE tax 
+    END,
+    realized_pl = CASE 
+      WHEN (operation ILIKE 'achat' OR operation ILIKE 'buy' OR operation ILIKE 'vente' OR operation ILIKE 'sell') 
+        AND realized_pl = 0 
+      THEN NULL 
+      ELSE realized_pl 
+    END
+  WHERE operation ILIKE 'achat' 
+     OR operation ILIKE 'vente' 
+     OR operation ILIKE 'buy' 
+     OR operation ILIKE 'sell';
+END;
+$$ LANGUAGE plpgsql;
+
+-- ============================================
+-- COMMENTS FOR DOCUMENTATION
+-- ============================================
+COMMENT ON TABLE transactions IS 'Stores all portfolio transactions. fees, tax, and realized_pl columns allow NULL values to enable automatic calculation/inference';
+COMMENT ON COLUMN transactions.fees IS 'Transaction fees. NULL values will be automatically calculated based on standard fee rates';
+COMMENT ON COLUMN transactions.tax IS 'Tax amount (TPCVM). NULL values will be automatically calculated for profitable sells';
+COMMENT ON COLUMN transactions.realized_pl IS 'Realized profit/loss. NULL values will be automatically calculated';
+COMMENT ON TABLE fees IS 'Stores custody fees (CUS) and subscription fees (SUB) separate from transactions';
+
+-- ============================================
+-- END OF SCHEMA
+-- ============================================
