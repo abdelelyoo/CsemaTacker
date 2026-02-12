@@ -190,8 +190,24 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
   let netTaxImpact = 0;
   const enrichedTransactions: Transaction[] = [];
 
+  // Ensure transactions are processed in strict chronological and logical order
+  const sortedTransactions = [...transactions].sort((a, b) => {
+    const timeDiff = a.parsedDate.getTime() - b.parsedDate.getTime();
+    if (timeDiff !== 0) return timeDiff;
+
+    // Same-day priority: Depot > Achat > (Others like Dividende) > Vente
+    const getPriority = (op: string) => {
+      const o = op.toLowerCase();
+      if (o === 'depot') return 0;
+      if (o === 'achat' || o === 'buy') return 1;
+      if (o === 'vente' || o === 'sell') return 3;
+      return 2;
+    };
+    return getPriority(a.Operation) - getPriority(b.Operation);
+  });
+
   // Process transactions chronologically
-  transactions.forEach(tx => {
+  sortedTransactions.forEach(tx => {
     const ticker = tx.Ticker;
     const op = tx.Operation.toLowerCase();
 
