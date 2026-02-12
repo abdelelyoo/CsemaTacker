@@ -301,6 +301,7 @@ export const calculatePortfolio = (
   // --- Process Bank Operations (Depot/Retrait/Frais/Taxe/Dividende) ---
   let totalWithdrawals = 0;
   let totalBankFees = 0;
+  // totalSubscriptionFees already declared above for separate fees table
   
   bankOperations.forEach(op => {
     cashBalance += op.Amount;
@@ -320,6 +321,9 @@ export const calculatePortfolio = (
         break;
       case 'BANK_FEE':
         totalBankFees += Math.abs(op.Amount);
+        break;
+      case 'SUBSCRIPTION':
+        totalSubscriptionFees += Math.abs(op.Amount);
         break;
     }
   });

@@ -9,7 +9,8 @@ export enum BankOperationType {
   WITHDRAWAL = 'Retrait',
   DIVIDEND = 'Dividende',
   TAX = 'Taxe',
-  BANK_FEE = 'Frais'
+  BANK_FEE = 'Frais',
+  SUBSCRIPTION = 'Abonnement'
 }
 
 export type FeeType = 'CUS' | 'SUB';
@@ -50,7 +51,7 @@ export interface BankOperation {
   Operation: BankOperationType;
   Description?: string; // e.g., "Tax Authority", "Monthly Fee"
   Amount: number; // Positive for deposits/dividends, negative for fees/taxes/withdrawals
-  Category: 'DEPOSIT' | 'WITHDRAWAL' | 'DIVIDEND' | 'TAX' | 'BANK_FEE';
+  Category: 'DEPOSIT' | 'WITHDRAWAL' | 'DIVIDEND' | 'TAX' | 'BANK_FEE' | 'SUBSCRIPTION';
   Reference?: string; // Optional reference number
 }
 

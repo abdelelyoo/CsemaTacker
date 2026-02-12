@@ -65,10 +65,18 @@ export const useBankOperations = () => {
             amount = Math.abs(amount); // Dividends are positive
         } else if (op.includes('taxe') || op.includes('tax')) {
             category = 'TAX';
-            amount = -Math.abs(amount); // Taxes are negative (money out)
+            // Tax is always positive (you owe tax quarterly)
+            // But it's money going OUT, so make it negative for cash flow
+            amount = Math.abs(amount); // Store as positive in DB
         } else if (op.includes('frais') || op.includes('fee')) {
             category = 'BANK_FEE';
-            amount = -Math.abs(amount); // Fees are negative (money out)
+            // Frais Bancaires/CUS are already entered as negative
+            // Keep the sign as-is (should be negative)
+            amount = amount < 0 ? amount : -Math.abs(amount);
+        } else if (op.includes('abonnement') || op.includes('subscription') || op.includes('sub')) {
+            category = 'SUBSCRIPTION';
+            // Subscription fees are money out
+            amount = -Math.abs(amount);
         }
 
         return {
@@ -123,14 +131,24 @@ export const useBankOperations = () => {
             // Clear existing operations first
             await clearCloudBankOperations();
 
-            // Clean and normalize
-            const clean = parsed.map(({ id, ...rest }) => ({
-                ...rest,
-                parsedDate: rest.parsedDate || DateService.parse(rest.Date),
-                Amount: rest.Category === 'DEPOSIT' || rest.Category === 'DIVIDEND' 
-                    ? Math.abs(rest.Amount) 
-                    : -Math.abs(rest.Amount)
-            }));
+            // Clean and normalize - preserve signs for TAX (stored as positive but is expense)
+            const clean = parsed.map(({ id, ...rest }) => {
+                let amount = rest.Amount;
+                // For imports, ensure proper signs:
+                // DEPOSIT/DIVIDEND: positive (money in)
+                // WITHDRAWAL/TAX/BANK_FEE/SUBSCRIPTION: negative (money out)
+                if (rest.Category === 'DEPOSIT' || rest.Category === 'DIVIDEND') {
+                    amount = Math.abs(amount);
+                } else {
+                    // All expenses/withdrawals should be negative
+                    amount = amount < 0 ? amount : -Math.abs(amount);
+                }
+                return {
+                    ...rest,
+                    parsedDate: rest.parsedDate || DateService.parse(rest.Date),
+                    Amount: amount
+                };
+            });
 
             for (const op of clean) {
                 await addCloudBankOperation(op as BankOperation);
@@ -167,7 +185,11 @@ export const useBankOperations = () => {
                     break;
                 case 'BANK_FEE':
                     acc.totalBankFees += Math.abs(op.Amount);
-                    acc.cashBalance -= Math.abs(op.Amount);
+                    acc.cashBalance += op.Amount; // Amount is already negative
+                    break;
+                case 'SUBSCRIPTION':
+                    acc.totalSubscriptions += Math.abs(op.Amount);
+                    acc.cashBalance += op.Amount; // Amount is already negative
                     break;
             }
             return acc;
@@ -177,6 +199,7 @@ export const useBankOperations = () => {
             totalDividends: 0,
             totalTaxes: 0,
             totalBankFees: 0,
+            totalSubscriptions: 0,
             cashBalance: 0
         });
     };
