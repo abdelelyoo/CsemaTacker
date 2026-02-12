@@ -1,0 +1,212 @@
+company_information:
+  name: SOCIETE DE PROMOTION PHARMACEUTIQUE DU MAGHREB S.A
+  headquarters: Rue 7 zone industrielle du Sahel. BP 96/97. 26 400. Had Soualem.
+  website: www.promopharm.co.ma
+  phone: +212 5 22 96 45 67 / 43 – 06 62 35 12 46
+  fax: +212 5 22 96 31 84
+  auditors:
+  - PWC Maroc Sarl
+  - Horwath Maroc Audit (Crowe)
+  date_of_incorporation: 28/08/1947
+  introduction_date_bourse: 15/06/2007
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: ABUAWAD Eyad
+- role: Directeur Général
+  name: AL ALAMI Mohamed
+- role: Directeur Général Délégué aux affaires pharmaceutiques
+  name: BEIGHITI ALAOUI Mohamed Amine
+shareholders:
+  as_of_date: 25/08/2025
+  ownership_structure:
+  - name: HIKMA MENA FZE
+    percentage: 94.12
+  - name: HIKMA INVESTMENT LLC
+    percentage: 0.0
+  - name: HIKMA PHARMACEUTICALS LLC
+    percentage: 0.0
+  - name: ARAB MANUFACTURING COMPANY PLC
+    percentage: 0.0
+  - name: DARWAZEH MAZEN
+    percentage: 0.0
+  - name: ALARAIDEH MA'MON SALAMEH MUHAISEN
+    percentage: 0.0
+  - name: DARWAZEH Tareq
+    percentage: 0.0
+  - name: ABUAWAD Eyad
+    percentage: 0.0
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 100000000.0
+  shareholders_equity: 530925751.86
+  shares_outstanding: 1000000
+  revenue: 898713862.91
+  operating_income: 106205594.23
+  net_income_group_share: 55159969.69
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 100000000.0
+  shareholders_equity: 475765782.17
+  shares_outstanding: 1000000
+  revenue: 805516174.9
+  operating_income: 100662043.33
+  net_income_group_share: 56897946.82
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 100000000.0
+  shareholders_equity: 458867835.35
+  shares_outstanding: 1000000
+  revenue: 704639805.16
+  operating_income: 134115436.66
+  net_income_group_share: 75278244.8
+financial_ratios:
+- year: 2024
+  eps_bpa: 55.16
+  roe_percent: 10.39
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 17.22
+  pbr: 1.79
+- year: 2023
+  eps_bpa: 56.9
+  roe_percent: 11.96
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 17.58
+  pbr: 2.1
+- year: 2022
+  eps_bpa: 75.28
+  roe_percent: 16.41
+  payout_percent: 53.14
+  dividend_yield_percent: 3.75
+  per: 14.19
+  pbr: 2.33
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2022
+    amount: 40.0
+    type: Ordinaire
+    ex_date: 11/09/2023
+    payment_date: 20/09/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 40.0
+    type: Ordinaire
+    ex_date: 08/07/2022
+    payment_date: 20/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 12/07/2021
+    payment_date: 26/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 148.0
+    type: Ordinaire
+    ex_date: 09/05/2017
+    payment_date: 18/05/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 169.0
+    type: Ordinaire
+    ex_date: 20/05/2016
+    payment_date: 31/05/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 80.0
+    type: Ordinaire
+    ex_date: 15/09/2015
+    payment_date: 28/09/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 75.0
+    type: Ordinaire
+    ex_date: 17/07/2014
+    payment_date: 31/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 130.0
+    type: Ordinaire
+    ex_date: 11/07/2013
+    payment_date: 22/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 45.0
+    type: Ordinaire
+    ex_date: 18/07/2012
+    payment_date: 27/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 05/01/2012
+  declarant: RCAR
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/11/2011
+  declarant: HIKMA MENA HOLDING LIMITED
+  threshold_percent: 66.66
+  direction: Hausse
+- date: 29/11/2011
+  declarant: RMA CAPITAL
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 03/10/2011
+  declarant: CHAMI RACHIDA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 03/10/2011
+  declarant: MOUSSAHAMA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 03/10/2011
+  declarant: MERNISSI MOHAMMED KAMAL
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 03/10/2011
+  declarant: Chiesi Farmaceutici
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 03/10/2011
+  declarant: HIKMA MENA FZE
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 02/08/2011
+  declarant: MERNISSI MOHAMMED KAMAL
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 16/08/2007
+  declarant: RCAR
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: null
+  email: null
+  fax: null
+  phone: null

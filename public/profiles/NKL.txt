@@ -1,0 +1,207 @@
+company_information:
+  name: ENNAKL AUTOMOBILES
+  headquarters: Z.I Chaguia II BP 129-1080 -Tunis-Tunisie
+  website: www.ennakl.com
+  phone: 00(216)36036036
+  fax: 00(216)36036020
+  auditors:
+  - FMBZ KPMG Tunisie
+  - Cabinet Salah MEZIOU
+  date_of_incorporation: 06/02/1965
+  introduction_date_bourse: 13/07/2010
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: DEBACHE Ibrahim
+- role: Directeur Général Adjoint grosse
+  name: LASRAM Habib
+- role: Directeur Général Adjoint détail
+  name: HAJ ROMDHANE Aziz
+- role: Directeur Général
+  name: BEN AMMAR Mohamed Anouar
+- role: Secrétaire général
+  name: BEN YEDDER Laroussi
+shareholders:
+  as_of_date: 30/06/2025
+  ownership_structure:
+  - name: GROUPE AMEN
+    percentage: 54.17
+  - name: GROUPE POULINA
+    percentage: 28.7
+  - name: DIVERS ACTIONNAIRES
+    percentage: 10.0
+  - name: FLOTTANT BOURSE TUNIS
+    percentage: 7.12
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 180000000.0
+  shareholders_equity: 959644224.7
+  shares_outstanding: 30000000
+  revenue: 2152542441.0
+  operating_income: 221708234.6
+  net_income_group_share: 150120027.6
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 180000000.0
+  shareholders_equity: 814074939.65
+  shares_outstanding: 30000000
+  revenue: 2304378518.49
+  operating_income: 208155366.55
+  net_income_group_share: 134394890.74
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 180000000.0
+  shareholders_equity: 690564193.5
+  shares_outstanding: 30000000
+  revenue: 1930430227.0
+  operating_income: 197011752.6
+  net_income_group_share: 126880122.1
+financial_ratios:
+- year: 2024
+  eps_bpa: 5.0
+  roe_percent: 15.64
+  payout_percent: 47.56
+  dividend_yield_percent: 7.21
+  per: 6.6
+  pbr: 1.03
+- year: 2023
+  eps_bpa: 4.48
+  roe_percent: 16.51
+  payout_percent: 44.42
+  dividend_yield_percent: 6.42
+  per: 6.92
+  pbr: 1.14
+- year: 2022
+  eps_bpa: 4.23
+  roe_percent: 18.37
+  payout_percent: 44.69
+  dividend_yield_percent: 6.02
+  per: 7.42
+  pbr: 1.36
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 2.38
+    type: Ordinaire
+    ex_date: 27/05/2025
+    payment_date: 05/06/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 1.99
+    type: Ordinaire
+    ex_date: 10/07/2024
+    payment_date: 19/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 1.89
+    type: Ordinaire
+    ex_date: 21/06/2023
+    payment_date: 04/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 1.85
+    type: Ordinaire
+    ex_date: 21/06/2022
+    payment_date: 30/06/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 1.83
+    type: Ordinaire
+    ex_date: 16/06/2021
+    payment_date: 25/06/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 0.79
+    type: Ordinaire
+    ex_date: 16/09/2020
+    payment_date: 25/09/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 1.72
+    type: Ordinaire
+    ex_date: 29/07/2019
+    payment_date: 08/08/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 2.26
+    type: Ordinaire
+    ex_date: 13/07/2018
+    payment_date: 24/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 2.52
+    type: Ordinaire
+    ex_date: 06/07/2017
+    payment_date: 17/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 2.88
+    type: Ordinaire
+    ex_date: 11/07/2016
+    payment_date: 20/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 2.47
+    type: Ordinaire
+    ex_date: 23/06/2015
+    payment_date: 02/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 1.92
+    type: Ordinaire
+    ex_date: 22/08/2014
+    payment_date: 02/09/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 1.67
+    type: Ordinaire
+    ex_date: 26/07/2013
+    payment_date: 07/08/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 1.36
+    type: Ordinaire
+    ex_date: 16/07/2012
+    payment_date: 25/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 05/07/2012
+  declarant: SOCIETE PARTNER INVESTISSEMENT
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: null
+  email: contact@ennakl.com
+  fax: null
+  phone: null

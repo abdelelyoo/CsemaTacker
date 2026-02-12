@@ -34,10 +34,10 @@ export const usePortfolio = (transactions: Transaction[], fees: FeeRecord[] = []
     // Derived Portfolio Summary
     const portfolio: PortfolioSummary = useMemo(() => {
         if (!transactions.length) {
-            return {
+        return {
                 totalValue: 0, totalCost: 0, totalRealizedPL: 0, totalUnrealizedPL: 0,
                 totalDividends: 0, totalDeposits: 0, holdings: [], cashBalance: 0,
-                totalTradingFees: 0, totalCustodyFees: 0, netTaxImpact: 0, history: [],
+                totalTradingFees: 0, totalCustodyFees: 0, totalSubscriptionFees: 0, netTaxImpact: 0, history: [],
                 enrichedTransactions: []
             };
         }

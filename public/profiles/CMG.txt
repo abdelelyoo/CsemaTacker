@@ -1,0 +1,130 @@
+company_information:
+  name: CMGP Group
+  headquarters: Parc Industriel Sapino, lot 102 à 105 Nouaceur, Casablanca, Maroc
+  website: https://cmgp-group.com/
+  phone: 05 22 49 56 10
+  fax: null
+  auditors:
+  - KPMG
+  - BDO Audit,Tax & Advisory
+  date_of_incorporation: 29/08/2018
+  introduction_date_bourse: 16/12/2024
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: Moamah Youssef
+- role: Directeur Général Délégué Finance et Corporate Development
+  name: Al Abadan Younes
+- role: Directeur Général Délégué Opérations
+  name: ALLÉON Jacques
+shareholders:
+  as_of_date: 07/07/2025
+  ownership_structure:
+  - name: DIVERS ACTIONNAIRES
+    percentage: 49.78
+  - name: ADP II Holding 10 Luxembourg
+    percentage: 26.72
+  - name: Africa Agriculture
+    percentage: 9.12
+  - name: FIPAR HOLDING
+    percentage: 7.83
+  - name: MOAMAH Youssef
+    percentage: 5.02
+  - name: ALLÉON Jacques
+    percentage: 1.0
+  - name: MPEF IV
+    percentage: 0.54
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 1700090000.0
+  shareholders_equity: 2634396857.0
+  shares_outstanding: 17000900
+  revenue: 2327559142.0
+  operating_income: 315815469.0
+  net_income_group_share: 182532410.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 1550090000.0
+  shareholders_equity: 2180200658.0
+  shares_outstanding: 17000900
+  revenue: 2074209407.0
+  operating_income: 257353806.0
+  net_income_group_share: 122564612.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 1550090000.0
+  shareholders_equity: 2056539491.0
+  shares_outstanding: 1550090
+  revenue: 2060745428.0
+  operating_income: 289742734.0
+  net_income_group_share: 142167544.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 10.74
+  roe_percent: 6.93
+  payout_percent: 58.68
+  dividend_yield_percent: 2.17
+  per: 27.01
+  pbr: 1.87
+- year: 2023
+  eps_bpa: null
+  roe_percent: 5.62
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2022
+  eps_bpa: null
+  roe_percent: 6.91
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 6.3
+    type: Ordinaire
+    ex_date: 16/09/2025
+    payment_date: 25/09/2025
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 20/12/2024
+  declarant: Africa Agriculture
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 19/12/2024
+  declarant: ADP II Holding 10 Luxembourg
+  threshold_percent: 33.33
+  direction: Baisse
+- date: 19/12/2024
+  declarant: FIPAR HOLDING
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 19/12/2024
+  declarant: FIPAR HOLDING
+  threshold_percent: 10.0
+  direction: Baisse
+investor_relations_contact:
+  person: Younes Al Abadan
+  email: y.alabadan@cmgp.com
+  fax: null
+  phone: null

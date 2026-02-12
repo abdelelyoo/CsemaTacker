@@ -1,0 +1,337 @@
+company_information:
+  name: BANQUE MAROCAINE POUR LE COMMERCE ET L'INDUSTRIE
+  headquarters: 26. Place des Nations Unies. Casablanca
+  website: www.bmci.ma
+  phone: (212) 0522 46 10 00
+  fax: (212) 0522 22 46 04
+  auditors:
+  - Price Waterhouse Coopers
+  - Ernst & Young
+  date_of_incorporation: 01/01/1964
+  introduction_date_bourse: 28/02/1972
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Directoire
+  name: SEFFA Hicham
+- role: Directeur Général
+  name: MEZINE Samir
+- role: Secrétaire général - membre du Directoire
+  name: BELHASSAN Karim
+shareholders:
+  as_of_date: 26/06/2023
+  ownership_structure:
+  - name: BNP PARIBAS IRB PARTICIPATIONS
+    percentage: 66.74
+  - name: DIVERS ACTIONNAIRES
+    percentage: 15.93
+  - name: AXA ASSURANCES MAROC
+    percentage: 8.9
+  - name: ATLANTASANAD
+    percentage: 8.44
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 1327928600.0
+  shareholders_equity: 7345468000.0
+  shares_outstanding: 13279286
+  revenue: 3788722000.0
+  operating_income: 737757000.0
+  net_income_group_share: 325146000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 1327928600.0
+  shareholders_equity: 7217709000.0
+  shares_outstanding: 13279286
+  revenue: 3437749000.0
+  operating_income: 613822000.0
+  net_income_group_share: 171224000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 1327928600.0
+  shareholders_equity: 7278300000.0
+  shares_outstanding: 13279286
+  revenue: 3054229000.0
+  operating_income: 420321000.0
+  net_income_group_share: 228615000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 24.49
+  roe_percent: 4.43
+  payout_percent: 73.51
+  dividend_yield_percent: 3.1
+  per: 23.69
+  pbr: 1.05
+- year: 2023
+  eps_bpa: 12.89
+  roe_percent: 2.37
+  payout_percent: 139.6
+  dividend_yield_percent: 3.33
+  per: 41.88
+  pbr: 0.99
+- year: 2022
+  eps_bpa: 17.22
+  roe_percent: 3.14
+  payout_percent: 104.55
+  dividend_yield_percent: 5.08
+  per: 20.59
+  pbr: 0.65
+financial_operations:
+  capital_increases:
+  - date: 15/08/2014
+    nature: Apport en nature
+    shares_variation: 443
+    share_variation: null
+    type: null
+    amount: null
+  - date: 24/07/2009
+    nature: Conversion des dividendes
+    shares_variation: 442925
+    share_variation: null
+    type: null
+    amount: null
+  - date: 06/01/2009
+    nature: Souscription en numéraire avec droit préférentiel
+    shares_variation: 2139319
+    share_variation: null
+    type: null
+    amount: null
+  - date: 11/08/2008
+    nature: Conversion des dividendes
+    shares_variation: 145248
+    share_variation: null
+    type: null
+    amount: null
+  - date: 16/01/2008
+    nature: Conversion d'obligation en actions
+    shares_variation: 202149
+    share_variation: null
+    type: null
+    amount: null
+  - date: 12/07/2007
+    nature: Conversion des dividendes
+    shares_variation: 346451
+    share_variation: null
+    type: null
+    amount: null
+  - date: 18/05/2007
+    nature: Conversion d'obligation en actions
+    shares_variation: 32
+    share_variation: null
+    type: null
+    amount: null
+  - date: 28/12/2006
+    nature: Conversion d'obligation en actions
+    shares_variation: 10716
+    share_variation: null
+    type: null
+    amount: null
+  - date: 06/06/2006
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 1657595
+    share_variation: null
+    type: null
+    amount: null
+  - date: 02/06/2006
+    nature: Conversion d'obligation en actions
+    shares_variation: 1986
+    share_variation: null
+    type: null
+    amount: null
+  - date: 02/06/2006
+    nature: Conversion d'obligation en actions
+    shares_variation: 46429
+    share_variation: null
+    type: null
+    amount: null
+  - date: 31/12/2004
+    nature: Conversion d'obligation en actions
+    shares_variation: 534259
+    share_variation: null
+    type: null
+    amount: null
+  - date: 10/12/2002
+    nature: Conversion des dividendes
+    shares_variation: 122093
+    share_variation: null
+    type: null
+    amount: null
+  - date: 20/11/2001
+    nature: Apport en nature
+    shares_variation: 3645
+    share_variation: null
+    type: null
+    amount: null
+  - date: 05/10/2001
+    nature: Conversion des dividendes
+    shares_variation: 200996
+    share_variation: null
+    type: null
+    amount: null
+  - date: 07/08/1997
+    nature: Souscription en numéraire avec droit préférentiel
+    shares_variation: 1237500
+    share_variation: null
+    type: null
+    amount: null
+  - date: 29/05/1996
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 1031250
+    share_variation: null
+    type: null
+    amount: null
+  - date: 17/10/1994
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 550000
+    share_variation: null
+    type: null
+    amount: null
+  - date: 17/10/1994
+    nature: Souscription en numéraire avec droit préférentiel
+    shares_variation: 2406250
+    share_variation: null
+    type: null
+    amount: null
+  - date: 19/03/1992
+    nature: Souscription en numéraire avec droit préférentiel
+    shares_variation: 700000
+    share_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 18.0
+    type: Ordinaire
+    ex_date: 16/06/2025
+    payment_date: 25/06/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 18.0
+    type: Ordinaire
+    ex_date: 17/07/2024
+    payment_date: 26/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 18.0
+    type: Ordinaire
+    ex_date: 13/07/2023
+    payment_date: 27/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 10.0
+    type: Ordinaire
+    ex_date: 15/06/2022
+    payment_date: 24/06/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 43.0
+    type: Ordinaire
+    ex_date: 20/05/2021
+    payment_date: 31/05/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 20/05/2019
+    payment_date: 29/05/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 06/07/2018
+    payment_date: 17/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 67.0
+    type: Exceptionnel
+    ex_date: 06/07/2018
+    payment_date: 17/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 09/05/2017
+    payment_date: 18/05/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 13/06/2016
+    payment_date: 22/06/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 11/06/2015
+    payment_date: 22/06/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 26/05/2014
+    payment_date: 04/06/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 24/05/2013
+    payment_date: 04/06/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 25.0
+    type: Ordinaire
+    ex_date: 23/05/2012
+    payment_date: 01/06/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: OBCIA
+    label: 22NOV2012 6.04% 10A 100K BCI
+    type: Subordonné
+    amount_issued: 255000000.0
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 02/10/2020
+  declarant: ATLANTA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 17/07/2009
+  declarant: BNP PARIBAS IRB PARTICIPATIONS
+  threshold_percent: 66.66
+  direction: Hausse
+- date: 06/01/2009
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 31/08/2007
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 26/12/2005
+  declarant: ATLANTA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 12/02/2004
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 10.0
+  direction: Baisse
+investor_relations_contact:
+  person: null
+  email: null
+  fax: null
+  phone: null

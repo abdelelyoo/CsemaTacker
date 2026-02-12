@@ -83,6 +83,7 @@ describe('portfolioCalc utility functions', () => {
       expect(result.totalCost).toBe(1010.00);
       expect(result.totalUnrealizedPL).toBe(190.00);
       expect(result.cashBalance).toBeCloseTo(-1010.00);
+      expect(result.totalSubscriptionFees).toBe(0);
       expect(result.holdings.length).toBe(1);
       expect(result.holdings[0].ticker).toBe('TEST');
       expect(result.holdings[0].quantity).toBe(10);
@@ -172,6 +173,33 @@ describe('portfolioCalc utility functions', () => {
       expect(breakEven).toBeCloseTo(102.0099, 4);
     });
   });
+
+    it('should track subscription fees correctly', () => {
+      const transactions: Transaction[] = [
+        {
+          Date: '2023-01-01',
+          Company: 'Test Company',
+          ISIN: 'MA123456',
+          Operation: 'Achat',
+          Ticker: 'TEST',
+          Qty: 10,
+          Price: 100.00,
+          Total: -1010.00,
+          parsedDate: new Date('2023-01-01')
+        }
+      ];
+
+      const fees = [
+        { date: new Date('2023-01-01'), type: 'SUB' as const, amount: 50.00 },
+        { date: new Date('2023-01-01'), type: 'CUS' as const, amount: 25.00 }
+      ];
+
+      const result = calculatePortfolio(transactions, {}, fees);
+
+      expect(result.totalSubscriptionFees).toBe(50.00);
+      expect(result.totalCustodyFees).toBe(25.00);
+      expect(result.cashBalance).toBeCloseTo(-1010.00 - 50.00 - 25.00);
+    });
 
   describe('Edge Cases', () => {
     it('should handle transactions with missing optional fields', () => {

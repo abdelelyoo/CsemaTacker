@@ -55,45 +55,65 @@ export const analyzePortfolio = async (portfolio: PortfolioSummary): Promise<AIA
 
 
   const prompt = `
-    You are a senior financial analyst specializing in the Moroccan Stock Market (Bourse de Casablanca).
-    Analyze the following portfolio data:
+You are a holistic financial advisor and portfolio strategist for the Moroccan stock market (Bourse de Casablanca).
+Your analysis must be comprehensive, insightful, and presented as if you are advising a client.
 
-    **Portfolio Stats:**
-    - Total Equity Value: ${portfolio.totalValue.toFixed(2)} MAD
-    - Available Cash: ${portfolio.cashBalance.toFixed(2)} MAD
-    - Unrealized P/L: ${portfolio.totalUnrealizedPL.toFixed(2)} MAD
-    - Realized P/L: ${portfolio.totalRealizedPL.toFixed(2)} MAD
-    - Total Dividends: ${portfolio.totalDividends.toFixed(2)} MAD
-    
-    **Risk & Concentration Metrics:**
-    - HHI Score (Concentration): ${hhiScore.toFixed(0)} 
-      *(Reference: <1500 Diversified, 1500-2500 Moderate, >2500 Concentrated)*
-    - Fee Drag: ${feeDragPercent.toFixed(2)}% of Portfolio Value
-    - Total Trading Fees Paid: ${portfolio.totalTradingFees.toFixed(2)} MAD
+**Client Portfolio Analysis:**
 
-    **Execution Quality (VWAP Analysis):**
-    - Aggregate Execution Score: ${executionScore > 0 ? '+' : ''}${executionScore.toFixed(2)}%
-    - Status: ${executionStatus}
-    (This metric compares Volume Weighted Average Price of holdings vs Current Market Price).
+**I. Core Performance Metrics:**
+- **Total Equity Value:** ${portfolio.totalValue.toFixed(2)} MAD
+- **Unrealized P/L:** ${portfolio.totalUnrealizedPL.toFixed(2)} MAD
+- **Realized P/L (YTD):** ${portfolio.totalRealizedPL.toFixed(2)} MAD
+- **Total Dividends Received:** ${portfolio.totalDividends.toFixed(2)} MAD
+- **Cash Balance:** ${portfolio.cashBalance.toFixed(2)} MAD
 
-    **Sector Allocation:**
-    ${sectorSummary}
+**II. Risk & Diversification Profile:**
+- **HHI Score (Concentration):** ${hhiScore.toFixed(0)}
+  - *(Reference: < 1500 Diversified, 1500-2500 Moderate, > 2500 Concentrated)*
+- **Fee Drag (Efficiency):** ${feeDragPercent.toFixed(2)}% of total equity
+  - *(This measures the impact of trading and custody fees on performance.)*
+- **Sector Allocation:**
+  ${sectorSummary}
 
-    **Holdings:**
-    ${holdingsSummary}
+**III. Execution & Trading Quality:**
+- **Aggregate VWAP Execution Score:** ${executionScore > 0 ? '+' : ''}${executionScore.toFixed(2)}%
+  - *(This compares your average entry prices to the market's Volume-Weighted Average Price. A positive score indicates buying at a discount.)*
 
-    **Task:**
-    1. **Financial Health**: Evaluate performance considering the fee drag. Is the strategy profitable after costs?
-    2. **Execution Timing**: Analyze the VWAP Score. Are trades generally timed well?
-    3. **Strategy**: Suggest moves to optimize returns.
-    4. **Potential Red Flags 🚩**: Create a dedicated section highlighting specific risks:
-       - **Over-Concentration**: Use the HHI score to warn if the portfolio is too dependent on specific stocks or sectors (e.g. Banks or Construction).
-       - **Excessive Churn**: Analyze the 'Fee Drag'. If > 2%, warn about over-trading or high brokerage costs.
-       - **Loser Retention**: Identify if large allocations are tied up in losing positions (Loss Aversion bias).
-       - **Sector Risk**: Flag if the portfolio is missing key defensive sectors or is over-exposed to cyclical ones.
-    
-    Format the response in clean Markdown with headers. Keep it professional but direct.
-  `;
+**IV. Holdings Details:**
+${holdingsSummary}
+
+---
+
+**Advisor's Mandate:**
+
+Provide a full portfolio audit structured exactly as follows:
+
+### 1. Executive Summary
+- Start with a brief, high-level overview of the portfolio's current state.
+- Is the portfolio well-positioned, or does it require immediate attention?
+
+### 2. Performance & Profitability Analysis
+- Evaluate the overall profitability. Is the realized P/L justifying the unrealized risk?
+- How significant is the dividend income stream?
+- Comment on the **Fee Drag**. Is it hampering returns? A Fee Drag > 1.5% is generally considered high for a long-term portfolio.
+
+### 3. Risk & Diversification Audit
+- Analyze the **HHI Score**. Is the portfolio dangerously concentrated in a few names?
+- Scrutinize the **Sector Allocation**. Is there an over-reliance on cyclical sectors (e.g., Banks, Real Estate) or a lack of defensive ones (e.g., Utilities, Consumer Staples)?
+- Does the cash balance seem appropriate for the portfolio's size and risk profile?
+
+### 4. Strategic Recommendations & Red Flags 🚩
+- Based on your analysis, create a bulleted list of the **top 3-5 most critical observations and actionable recommendations**.
+- For each point, clearly state the **Risk/Opportunity** and the **Suggested Action**.
+- Example:
+  - **🚩 High Concentration in CTM:** *Risk:* Over-exposure to the transport sector. *Action:* Consider trimming the position by 25% on the next rally and reallocating capital to a defensive stock like IAM.
+  - **✅ Excellent Execution:** *Opportunity:* Your positive VWAP score shows good market timing. *Action:* Continue using limit orders and avoid chasing momentum.
+
+---
+
+Format the response in clean, professional Markdown. Use bolding to highlight key terms and metrics.
+The tone should be that of a trusted, expert financial advisor.
+    `;
 
   try {
     const response = await ai.models.generateContent({

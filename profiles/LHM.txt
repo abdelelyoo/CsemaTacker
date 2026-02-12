@@ -1,0 +1,275 @@
+company_information:
+  name: LAFARGEHOLCIM MAROC
+  headquarters: '6. Route de Mekka. Quartier Les Crêtes. BP: 7234 - Casablanca'
+  website: null
+  phone: (212) 0522 52 49 72 à 87
+  fax: (212) 0522 50 55 55 / 022 52 49 49
+  auditors:
+  - Price Water House
+  - Deloitte & Touche
+  date_of_incorporation: 01/01/1981
+  introduction_date_bourse: 19/02/1997
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: ELHADI Said
+- role: Directeur Général
+  name: SAMAKA Khalid
+- role: Directeur Financier
+  name: CHERRAT Mohamed Amine
+shareholders:
+  as_of_date: 15/09/2025
+  ownership_structure:
+  - name: LAFARGE MAROC
+    percentage: 64.68
+  - name: DIVERS ACTIONNAIRES
+    percentage: 34.84
+  - name: LafargeHolcim Maroc
+    percentage: 0.48
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 702937200.0
+  shareholders_equity: 11665123000.0
+  shares_outstanding: 23431240
+  revenue: 8154838000.0
+  operating_income: 3094353000.0
+  net_income_group_share: 1825688000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 702937200.0
+  shareholders_equity: 11417059000.0
+  shares_outstanding: 23431240
+  revenue: 8212021000.0
+  operating_income: 2585400000.0
+  net_income_group_share: 1547820000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 702937200.0
+  shareholders_equity: 11340575000.0
+  shares_outstanding: 23431240
+  revenue: 7985055000.0
+  operating_income: 2506045000.0
+  net_income_group_share: 1391685000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 77.92
+  roe_percent: 15.65
+  payout_percent: 89.41
+  dividend_yield_percent: 3.6
+  per: 24.83
+  pbr: 3.89
+- year: 2023
+  eps_bpa: 66.06
+  roe_percent: 13.56
+  payout_percent: 99.44
+  dividend_yield_percent: 3.42
+  per: 29.07
+  pbr: 3.94
+- year: 2022
+  eps_bpa: 59.39
+  roe_percent: 12.27
+  payout_percent: 110.59
+  dividend_yield_percent: 4.87
+  per: 22.73
+  pbr: 2.79
+financial_operations:
+  capital_increases:
+  - date: 05/01/2017
+    type: Apport en nature
+    shares_variation: 26 615
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 14/07/2016
+    type: Apport en nature
+    shares_variation: 5 935 512
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 19/11/2007
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 12 704 808
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 70.0
+    type: Ordinaire
+    ex_date: 13/06/2025
+    payment_date: 24/06/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 06/06/2024
+    payment_date: 20/06/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 13/07/2023
+    payment_date: 27/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 01/06/2022
+    payment_date: 10/06/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 03/05/2021
+    payment_date: 12/05/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 32.0
+    type: Ordinaire
+    ex_date: 21/09/2020
+    payment_date: 30/09/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 27/05/2019
+    payment_date: 10/06/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 28/05/2018
+    payment_date: 06/06/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 12/05/2017
+    payment_date: 23/05/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 66.0
+    type: Exceptionnel
+    ex_date: 25/09/2017
+    payment_date: 04/10/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 20.0
+    type: Exceptionnel
+    ex_date: 17/05/2016
+    payment_date: 26/05/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 170.0
+    type: Exceptionnel
+    ex_date: 01/12/2016
+    payment_date: 14/12/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 17/05/2016
+    payment_date: 26/05/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 17.5
+    type: Exceptionnel
+    ex_date: 23/07/2015
+    payment_date: 04/08/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 15/05/2015
+    payment_date: 26/05/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 19.0
+    type: Exceptionnel
+    ex_date: 25/08/2014
+    payment_date: 03/09/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 16/05/2014
+    payment_date: 27/05/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 14/05/2013
+    payment_date: 23/05/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 11/05/2012
+    payment_date: 22/05/2012
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 21.4
+    type: Exceptionnel
+    ex_date: 09/08/2012
+    payment_date: 23/08/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 15/09/2025
+  declarant: BANQUE ISLAMIQUE DE DEVELOPPEMENT (BID)
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 25/07/2016
+  declarant: SNI
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 25/07/2016
+  declarant: HOLCIBEL SA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 18/07/2016
+  declarant: SNI
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 18/07/2016
+  declarant: HOLCIBEL SA
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 27/12/2011
+  declarant: CDG (Caisse de Dépôt et de Gestion)
+  threshold_percent: 5.0
+  direction: Baisse
+investor_relations_contact:
+  person: Mohamed Amine CHERRAT
+  email: amine.cherrat@lafarge.com
+  fax: null
+  phone: null

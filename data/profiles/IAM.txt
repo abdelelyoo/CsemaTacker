@@ -1,0 +1,231 @@
+company_information:
+  name: ITISSALAT AL-MAGHRIB
+  headquarters: Avenue Annakhil. Hay Riad. Rabat
+  website: www.iam.ma
+  phone: (212) 537 28 50 84
+  fax: (212) 537 71 69 69
+  auditors:
+  - Cabinet Deloitte Audit
+  - Cabinet BDO Audit, Tax & Advisory
+  date_of_incorporation: 03/02/1998
+  introduction_date_bourse: 13/12/2004
+  fiscal_year_duration_months: 12
+management_team:
+- role: Présidente du Conseil de Surveillance
+  name: FETTAH ALAOUI Nadia
+- role: Directeur Général
+  name: BENCHÂABOUN Mohamed
+- role: Directeur général Administratif et Financier (membre du Directoire)
+  name: VITTE Francois
+- role: Directeur général Réglementation et Affaires Juridiques (membre du Directoire)
+  name: BOUDAOUD Brahim
+- role: Directeur général Réseaux et Systèmes (membre du Directoire)
+  name: RACHAD Hassan
+- role: Directeur général Services (membre du Directoire)
+  name: MAAMAR Abdelkader
+shareholders:
+  as_of_date: 30/06/2024
+  ownership_structure:
+  - name: SPT (Société de Participation dans les Télécommunications)
+    percentage: 53.0
+  - name: Etat
+    percentage: 22.0
+  - name: DIVERS ACTIONNAIRES
+    percentage: 19.64
+  - name: RCAR
+    percentage: 5.32
+  - name: Itissalat Al Maghrib
+    percentage: 0.04
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 5274572040.0
+  shareholders_equity: 18702000000.0
+  shares_outstanding: 879095340
+  revenue: 36699000000.0
+  operating_income: 6062000000.0
+  net_income_group_share: 1801000000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 5274572040.0
+  shareholders_equity: 21004000000.0
+  shares_outstanding: 879095340
+  revenue: 36786000000.0
+  operating_income: 11605000000.0
+  net_income_group_share: 5283000000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 5274572040.0
+  shareholders_equity: 18002000000.0
+  shares_outstanding: 879095340
+  revenue: 35731000000.0
+  operating_income: 8987000000.0
+  net_income_group_share: 2750000000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 2.05
+  roe_percent: 9.63
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 40.03
+  pbr: 3.85
+- year: 2023
+  eps_bpa: 6.01
+  roe_percent: 25.15
+  payout_percent: 69.89
+  dividend_yield_percent: 4.2
+  per: 16.64
+  pbr: 4.19
+- year: 2022
+  eps_bpa: 3.13
+  roe_percent: 15.28
+  payout_percent: 70.01
+  dividend_yield_percent: 2.31
+  per: 30.37
+  pbr: 4.64
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 1.43
+    type: Ordinaire
+    ex_date: 01/09/2025
+    payment_date: 12/09/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 4.2
+    type: Ordinaire
+    ex_date: 03/09/2024
+    payment_date: 12/09/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 2.19
+    type: Ordinaire
+    ex_date: 06/09/2023
+    payment_date: 15/09/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 4.78
+    type: Ordinaire
+    ex_date: 06/09/2022
+    payment_date: 15/09/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 4.01
+    type: Ordinaire
+    ex_date: 06/09/2021
+    payment_date: 15/09/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 5.54
+    type: Ordinaire
+    ex_date: 03/08/2020
+    payment_date: 12/08/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 6.83
+    type: Ordinaire
+    ex_date: 24/05/2019
+    payment_date: 04/06/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 6.48
+    type: Ordinaire
+    ex_date: 25/05/2018
+    payment_date: 05/06/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 6.36
+    type: Ordinaire
+    ex_date: 24/05/2017
+    payment_date: 02/06/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 6.36
+    type: Ordinaire
+    ex_date: 24/05/2016
+    payment_date: 02/06/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 6.9
+    type: Ordinaire
+    ex_date: 22/05/2015
+    payment_date: 02/06/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 6.0
+    type: Ordinaire
+    ex_date: 23/05/2014
+    payment_date: 03/06/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 7.4
+    type: Ordinaire
+    ex_date: 23/05/2013
+    payment_date: 03/06/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 9.26
+    type: Ordinaire
+    ex_date: 22/05/2012
+    payment_date: 31/05/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 17/06/2019
+  declarant: RCAR
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 14/05/2014
+  declarant: VIVENDI
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 14/05/2014
+  declarant: Etisalat Investment North Africa LLC
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 02/07/2007
+  declarant: Etat
+  threshold_percent: 33.33
+  direction: Baisse
+- date: 19/04/2005
+  declarant: VIVENDI TELECOM INTERNATIONAL
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 30/03/2005
+  declarant: VIVENDI TELECOM INTERNATIONAL
+  threshold_percent: 20.0
+  direction: Baisse
+investor_relations_contact:
+  person: null
+  email: relations.investisseurs@iam.ma
+  fax: null
+  phone: null

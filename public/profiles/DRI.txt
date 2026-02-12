@@ -1,0 +1,228 @@
+company_information:
+  name: DARI COUSPATE
+  headquarters: 234 Parc Industriel Aviation - Salé 11000
+  website: www.couscousdari.com
+  phone: (212) 0537 80 87 21
+  fax: (212) 0537 80 87 43
+  auditors:
+  - cabinet OREA
+  - cabinet BAHMAD
+  date_of_incorporation: 06/12/1994
+  introduction_date_bourse: 11/07/2005
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: KHALIL Mohammed
+- role: Directeur Général
+  name: KHALIL El Hassan
+- role: Directeur Général Délégué
+  name: KHALIL Saïda
+- role: Directeur Général Délégué
+  name: KHALIL Mohamed Amine
+shareholders:
+  as_of_date: 11/07/2025
+  ownership_structure:
+  - name: FAMILLE KHALIL
+    percentage: 70.6
+  - name: DIVERS ACTIONNAIRES
+    percentage: 29.4
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 29837500.0
+  shareholders_equity: 354210236.0
+  shares_outstanding: 298375
+  revenue: 858916922.0
+  operating_income: 70653767.0
+  net_income_group_share: 43660239.0
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 29837500.0
+  shareholders_equity: 348080554.0
+  shares_outstanding: 298375
+  revenue: 874239467.0
+  operating_income: 44466177.0
+  net_income_group_share: 35228715.0
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 29837500.0
+  shareholders_equity: 338213713.8
+  shares_outstanding: 298375
+  revenue: 781517094.46
+  operating_income: 12051372.19
+  net_income_group_share: 19875027.13
+financial_ratios:
+- year: 2024
+  eps_bpa: 146.33
+  roe_percent: 12.33
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 23.58
+  pbr: 2.91
+- year: 2023
+  eps_bpa: 118.07
+  roe_percent: 10.12
+  payout_percent: 101.64
+  dividend_yield_percent: 3.75
+  per: 27.1
+  pbr: 2.74
+- year: 2022
+  eps_bpa: 66.61
+  roe_percent: 5.88
+  payout_percent: 127.61
+  dividend_yield_percent: 2.15
+  per: 59.37
+  pbr: 3.49
+financial_operations:
+  capital_increases:
+  - date: 29/06/2006
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 27 125
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 140.0
+    type: Ordinaire
+    ex_date: 18/07/2025
+    payment_date: 29/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 120.0
+    type: Ordinaire
+    ex_date: 18/07/2024
+    payment_date: 29/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 85.0
+    type: Ordinaire
+    ex_date: 21/07/2023
+    payment_date: 31/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 95.0
+    type: Ordinaire
+    ex_date: 20/07/2022
+    payment_date: 29/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 120.0
+    type: Ordinaire
+    ex_date: 14/07/2021
+    payment_date: 28/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 95.0
+    type: Ordinaire
+    ex_date: 20/07/2020
+    payment_date: 29/07/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 110.0
+    type: Ordinaire
+    ex_date: 12/07/2019
+    payment_date: 23/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 90.0
+    type: Ordinaire
+    ex_date: 17/07/2018
+    payment_date: 26/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 50.0
+    type: Exceptionnel
+    ex_date: 17/07/2018
+    payment_date: 26/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 80.0
+    type: Ordinaire
+    ex_date: 12/07/2017
+    payment_date: 21/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 65.0
+    type: Ordinaire
+    ex_date: 14/07/2016
+    payment_date: 25/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 55.0
+    type: Ordinaire
+    ex_date: 20/07/2015
+    payment_date: 29/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 10/07/2014
+    payment_date: 21/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 40.0
+    type: Ordinaire
+    ex_date: 12/06/2013
+    payment_date: 21/06/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 12/07/2012
+    payment_date: 23/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 01/02/2023
+  declarant: KHALIL Mohamed
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 01/02/2023
+  declarant: KHALIL Saïda
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 23/12/2013
+  declarant: KHALIL Mohamed Amine
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 23/12/2013
+  declarant: KHALIL Mohamed
+  threshold_percent: 20.0
+  direction: Baisse
+- date: 04/12/2008
+  declarant: KHALIL Saïda
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 07/12/2005
+  declarant: KHALIL Saïda
+  threshold_percent: 10.0
+  direction: Baisse
+investor_relations_contact:
+  person: Saïda KHALIL
+  email: finance@couscousdari.com
+  fax: null
+  phone: null

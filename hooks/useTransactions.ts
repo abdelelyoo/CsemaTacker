@@ -1,18 +1,45 @@
-
-import { useState } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
+import { useState, useEffect, useCallback } from 'react';
 import { Transaction } from '../types';
 import { DateService } from '../services/dateService';
+import {
+  getTransactions,
+  addTransaction as addCloudTransaction,
+  addTransactions,
+  deleteTransaction as deleteCloudTransaction,
+  clearTransactions as clearCloudTransactions
+} from '../services/cloudDatabase';
+import { supabase } from '../lib/supabase';
 
 export const useTransactions = () => {
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Fetch all transactions, sorted chronologically
-    const transactions = useLiveQuery(
-        () => db.transactions.orderBy('parsedDate').toArray(),
-        []
-    ) || [];
+    // Load transactions on mount and when auth state changes
+    const loadTransactions = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const data = await getTransactions();
+            setTransactions(data);
+            setError(null);
+        } catch (err) {
+            console.error('Failed to load transactions:', err);
+            setError('Failed to load transactions');
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadTransactions();
+
+        // Subscribe to auth changes to reload data
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+            loadTransactions();
+        });
+
+        return () => subscription.unsubscribe();
+    }, [loadTransactions]);
 
     /**
      * Normalizes a transaction object before DB operations.
@@ -49,7 +76,8 @@ export const useTransactions = () => {
     const addTransaction = async (data: any) => {
         try {
             const tx = normalizeTransaction(data);
-            await db.transactions.add(tx as Transaction);
+            await addCloudTransaction(tx as Transaction);
+            await loadTransactions();
             return true;
         } catch (e) {
             console.error(e);
@@ -60,9 +88,8 @@ export const useTransactions = () => {
 
     const deleteTransaction = async (id: number | string) => {
         try {
-            const numericId = Number(id);
-            if (isNaN(numericId)) throw new Error("Invalid ID");
-            await db.transactions.delete(numericId);
+            await deleteCloudTransaction(id);
+            await loadTransactions();
             return true;
         } catch (e) {
             console.error(e);
@@ -73,10 +100,11 @@ export const useTransactions = () => {
 
     const updateTransaction = async (id: number | string, data: any) => {
         try {
-            const numericId = Number(id);
-            if (isNaN(numericId)) throw new Error("Invalid ID");
+            // For cloud DB, we'll delete and re-add since we don't have a direct update
+            await deleteCloudTransaction(id);
             const tx = normalizeTransaction(data);
-            await db.transactions.update(numericId, tx);
+            await addCloudTransaction(tx as Transaction);
+            await loadTransactions();
             return true;
         } catch (e) {
             console.error(e);
@@ -87,7 +115,8 @@ export const useTransactions = () => {
 
     const clearTransactions = async () => {
         try {
-            await db.transactions.clear();
+            await clearCloudTransactions();
+            await loadTransactions();
             return true;
         } catch (e) {
             setError("Failed to clear database.");
@@ -97,7 +126,10 @@ export const useTransactions = () => {
 
     const deleteTransactions = async (ids: number[]) => {
         try {
-            await db.transactions.bulkDelete(ids);
+            for (const id of ids) {
+                await deleteCloudTransaction(id);
+            }
+            await loadTransactions();
             return true;
         } catch (e) {
             setError("Failed to delete transactions.");
@@ -107,8 +139,10 @@ export const useTransactions = () => {
 
     const importTransactions = async (parsed: Transaction[]) => {
         try {
-            // Preparation step outside the transaction if it involves complex mapping
-            // ensuring we have proper parsedDate objects
+            // Clear existing transactions first
+            await clearCloudTransactions();
+
+            // Preparation step
             const clean = parsed.map(({ id, ...rest }) => {
                 const normalizedOp = (rest.Operation || '').toLowerCase();
                 const ticker = (rest.Ticker || '').toLowerCase();
@@ -122,15 +156,12 @@ export const useTransactions = () => {
                 return {
                     ...rest,
                     parsedDate: rest.parsedDate || DateService.parse(rest.Date),
-                    Operation: isBankFee ? 'Frais Bancaires' : rest.Operation // Standardize bank fees
+                    Operation: isBankFee ? 'Frais Bancaires' : rest.Operation
                 };
             });
 
-            // Use an atomic transaction for clear + add
-            await db.transaction('rw', db.transactions, async () => {
-                await db.transactions.clear();
-                await db.transactions.bulkAdd(clean as Transaction[]);
-            });
+            await addTransactions(clean as Transaction[]);
+            await loadTransactions();
             return true;
         } catch (e) {
             console.error(e);
@@ -143,7 +174,6 @@ export const useTransactions = () => {
         const groups = new Map<string, Transaction[]>();
 
         transactions.forEach(tx => {
-            // Key: Date + Ticker + Operation + Qty + Price
             const key = `${tx.Date}|${tx.Ticker}|${tx.Operation}|${tx.Qty}|${tx.Price}`;
             if (!groups.has(key)) groups.set(key, []);
             groups.get(key)!.push(tx);
@@ -161,6 +191,7 @@ export const useTransactions = () => {
 
     return {
         transactions,
+        isLoading,
         addTransaction,
         deleteTransaction,
         deleteTransactions,
@@ -169,6 +200,7 @@ export const useTransactions = () => {
         importTransactions,
         findDuplicates,
         error,
-        clearError: () => setError(null)
+        clearError: () => setError(null),
+        refreshTransactions: loadTransactions
     };
 };

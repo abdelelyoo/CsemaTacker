@@ -1,0 +1,143 @@
+company_information:
+  name: SOCIETE NATIONALE D'ELECTROLYSE ET DE PETROCHIMIE
+  headquarters: 233. boulevard Mohammed V. Casablanca
+  website: www.snep.ma
+  phone: 0523 32 43 28
+  fax: 0523 32 43 44
+  auditors:
+  - Deloitte Audit
+  - Fidaroc Grant Thornton
+  date_of_incorporation: 01/11/1973
+  introduction_date_bourse: 07/11/2007
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: TAJMOUATI Mama
+- role: Directeur Administratif et Financier
+  name: SMAD Adil
+- role: Directeur Général
+  name: EL KADIRI Fayçal
+shareholders:
+  as_of_date: 24/06/2025
+  ownership_structure:
+  - name: Yma Holding
+    percentage: 62.92
+  - name: DIVERS ACTIONNAIRES
+    percentage: 37.08
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 240000000.0
+  shareholders_equity: 672236000.0
+  shares_outstanding: 2400000
+  revenue: 633333207.77
+  operating_income: -26755000.0
+  net_income_group_share: -43811000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 240000000.0
+  shareholders_equity: 716048210.0
+  shares_outstanding: 2400000
+  revenue: 794476380.0
+  operating_income: 14620380.0
+  net_income_group_share: -46627950.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 240000000.0
+  shareholders_equity: 801076000.0
+  shares_outstanding: 2400000
+  revenue: 1107442000.0
+  operating_income: 173181000.0
+  net_income_group_share: 86964000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: -18.25
+  roe_percent: -6.52
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: 2.12
+- year: 2023
+  eps_bpa: -19.43
+  roe_percent: -6.51
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: 1.64
+- year: 2022
+  eps_bpa: 36.24
+  roe_percent: 10.86
+  payout_percent: 44.16
+  dividend_yield_percent: 2.58
+  per: 17.11
+  pbr: 1.86
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2022
+    amount_per_share: 16.0
+    type: Ordinaire
+    detachment_date: 14/09/2023
+    payment_date: 25/09/2023
+    ex_date: null
+    amount: null
+  - year: 2021
+    amount_per_share: 20.0
+    type: Ordinaire
+    detachment_date: 06/09/2022
+    payment_date: 15/09/2022
+    ex_date: null
+    amount: null
+  - year: 2020
+    amount_per_share: 15.0
+    type: Ordinaire
+    detachment_date: 09/09/2021
+    payment_date: 20/09/2021
+    ex_date: null
+    amount: null
+  - year: 2018
+    amount_per_share: 10.0
+    type: Ordinaire
+    detachment_date: 16/09/2019
+    payment_date: 25/09/2019
+    ex_date: null
+    amount: null
+  - year: 2017
+    amount_per_share: 7.0
+    type: Ordinaire
+    detachment_date: 14/09/2018
+    payment_date: 25/09/2018
+    ex_date: null
+    amount: null
+  - year: 2016
+    amount_per_share: 5.0
+    type: Ordinaire
+    detachment_date: 14/09/2017
+    payment_date: 26/09/2017
+    ex_date: null
+    amount: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 06/10/2017
+  declarant: SNEP
+  threshold_percent: 5.0
+  direction: Baisse
+investor_relations_contact:
+  person: Fayçal EL KADIRI
+  email: f.elkadiri@snep.ma
+  phone: 0523 32 43 28
+  fax: 0523 32 43 44

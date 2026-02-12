@@ -1,0 +1,117 @@
+company_information:
+  name: SOCIETE GENERALE DES TRAVAUX DU MAROC
+  headquarters: 2, Boulevard Zerktouni - Casablanca
+  website: www.sgtm-maroc.ma
+  phone: +212 5 22 88 80 00
+  fax: null
+  auditors:
+  - PwC Maroc
+  - JS conseil
+  date_of_incorporation: 03/01/1972
+  introduction_date_bourse: 16/12/2025
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: Kabbaj M'hammed
+- role: Directeur Général Délégué
+  name: Kabbaj Hamza
+- role: Directeur Général Délégué
+  name: Kabbaj Mohamed Ali
+shareholders:
+  as_of_date: 16/12/2025
+  ownership_structure:
+  - name: M'HAMMED KABBAJ
+    percentage: 37.0
+  - name: AKMH INVEST
+    percentage: 35.25
+  - name: DIVERS ACTIONNAIRES
+    percentage: 20.0
+  - name: KABBAJ Mohammed
+    percentage: 1.44
+  - name: KABBAJ Hamza
+    percentage: 1.44
+  - name: KABBAJ Hicham
+    percentage: 1.44
+  - name: KABBAJ Jihane
+    percentage: 1.0
+  - name: KABBAJ Mohamed Ali
+    percentage: 1.0
+  - name: KABBAJ Brahim
+    percentage: 1.0
+  - name: KABBAJ Myriam
+    percentage: 0.44
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: null
+  shareholders_equity: null
+  shares_outstanding: 12000000
+  revenue: 11098839000.0
+  operating_income: 1411168000.0
+  net_income_group_share: 589759000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: null
+  shareholders_equity: null
+  shares_outstanding: 3000000
+  revenue: 8505804000.0
+  operating_income: 1134308000.0
+  net_income_group_share: 645225000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: null
+  shareholders_equity: null
+  shares_outstanding: 3000000
+  revenue: 8787114000.0
+  operating_income: 1236293000.0
+  net_income_group_share: 767552000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: null
+  roe_percent: 22.53
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2023
+  eps_bpa: null
+  roe_percent: 28.62
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2022
+  eps_bpa: null
+  roe_percent: 44.39
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+financial_operations:
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+  capital_increases:
+  - date: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: null
+    amount: null
+    type: null
+    ex_date: null
+    payment_date: null
+    amount_per_share: null
+    detachment_date: null
+threshold_crossings: []
+investor_relations_contact:
+  person: Anouar Hajji
+  email: a.hajji@sgtm-maroc.com
+  phone: +212 5 22 88 80 00
+  fax: null

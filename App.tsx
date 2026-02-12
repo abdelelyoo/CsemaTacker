@@ -11,6 +11,15 @@ import { Upload, Database, RefreshCw, CheckCircle2, Download, AlertCircle } from
 import { db } from './db';
 import { DuplicateManager } from './components/DuplicateManager';
 import { PortfolioProvider, usePortfolioContext } from './context/PortfolioContext';
+import { ProfileImportButton } from './components/ProfileImportButton';
+import { DividendCalendar } from './components/DividendCalendar';
+import { FundamentalsPanel } from './components/FundamentalsPanel';
+import { ValuationScreener } from './components/ValuationScreener';
+import { QualityDashboard } from './components/QualityDashboard';
+import { RiskDashboard } from './components/RiskDashboard';
+import { AIInsights } from './components/AIInsights';
+import { CloudSyncStatus } from './components/CloudSyncStatus';
+
 
 const AppInner = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -146,12 +155,13 @@ const AppInner = () => {
           <div className="flex flex-col">
             <span className="font-semibold text-slate-800 flex items-center gap-2">
               <Database size={18} className="text-emerald-600" />
-              Local Database Active
+              Database Active
             </span>
             <span className="text-sm text-slate-500">
-              {transactions.length} records stored securely in browser.
+              {transactions.length} records stored securely.
             </span>
           </div>
+          <CloudSyncStatus onMigrationComplete={() => setSuccessMsg('Data migrated to cloud successfully!')} />
           <div className="flex flex-wrap items-center gap-2">
             <button onClick={handleExportCSV} className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg flex items-center space-x-2 font-medium">
               <Download size={16} />
@@ -205,12 +215,21 @@ const AppInner = () => {
       )}
 
       {activeTab === 'dashboard' && (
-        <Dashboard />
+        <>
+          <ProfileImportButton />
+          <Dashboard />
+        </>
       )}
       {activeTab === 'transactions' && (
         <TransactionsList />
       )}
       {activeTab === 'moneymgmt' && <MoneyManagement />}
+      {activeTab === 'dividends' && <DividendCalendar />}
+      {activeTab === 'fundamentals' && <FundamentalsPanel />}
+      {activeTab === 'valuation' && <ValuationScreener />}
+      {activeTab === 'quality' && <QualityDashboard />}
+      {activeTab === 'risk' && <RiskDashboard />}
+      {activeTab === 'insights' && <AIInsights />}
     </Layout>
   );
 };

@@ -1,0 +1,225 @@
+company_information:
+  name: AFRIQUIA GAZ
+  headquarters: Rue Ibnou El Ouennane. Aîn Sebaâ - Casablanca
+  website: www.akwagroup.com
+  phone: (212) 05 22 63 96 00
+  fax: (212) 05 22 63 96 66
+  auditors:
+  - M. Mostapha FRAIHA (BDO AUDIT)
+  - M. Tarik ROUISSAM (ELYX CONSULTING)
+  date_of_incorporation: 01/01/1992
+  introduction_date_bourse: 03/05/1999
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: WAKRIM Ali
+- role: Directeur Général Délégué
+  name: AMINE Abdelhakim
+- role: Directeur Financier
+  name: BENCHEKROUN Ghassane
+shareholders:
+  as_of_date: 18/09/2024
+  ownership_structure:
+  - name: Afriquia SMDC
+    percentage: 38.0
+  - name: AKWA GROUP S.A.
+    percentage: 30.01
+  - name: DIVERS ACTIONNAIRES
+    percentage: 20.96
+  - name: RMA WATANYA
+    percentage: 5.0
+  - name: ATLANTA
+    percentage: 4.0
+  - name: CDG (Caisse de Dépôt et de Gestion)
+    percentage: 2.0
+  - name: RCAR
+    percentage: 0.03
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 343750000.0
+  shareholders_equity: 3238073000.0
+  shares_outstanding: 3437500
+  revenue: 8773051000.0
+  operating_income: 1194616000.0
+  net_income_group_share: 747392000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 343750000.0
+  shareholders_equity: 2971927000.0
+  shares_outstanding: 3437500
+  revenue: 8257014000.0
+  operating_income: 815000000.0
+  net_income_group_share: 481467000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 343750000.0
+  shareholders_equity: 2971708000.0
+  shares_outstanding: 3437500
+  revenue: 9510065000.0
+  operating_income: 881924000.0
+  net_income_group_share: 516887000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 217.42
+  roe_percent: 23.08
+  payout_percent: 80.49
+  dividend_yield_percent: 4.65
+  per: 17.29
+  pbr: 3.99
+- year: 2023
+  eps_bpa: 140.06
+  roe_percent: 16.2
+  payout_percent: 99.95
+  dividend_yield_percent: 3.5
+  per: 28.56
+  pbr: 4.63
+- year: 2022
+  eps_bpa: 150.37
+  roe_percent: 17.39
+  payout_percent: 29.8
+  dividend_yield_percent: 0.96
+  per: 30.92
+  pbr: 5.38
+financial_operations:
+  capital_increases:
+  - date: 28/07/2005
+    nature: Souscription en numéraire avec droit préférentiel
+    shares_variation: 2406250
+    share_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 175.0
+    type: Ordinaire
+    ex_date: 25/03/2025
+    payment_date: 08/04/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 140.0
+    type: Ordinaire
+    ex_date: 02/04/2024
+    payment_date: 16/04/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 140.0
+    type: Ordinaire
+    ex_date: 22/05/2023
+    payment_date: 31/05/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 140.0
+    type: Ordinaire
+    ex_date: 05/05/2022
+    payment_date: 16/05/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 125.0
+    type: Ordinaire
+    ex_date: 07/04/2021
+    payment_date: 16/04/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 125.0
+    type: Ordinaire
+    ex_date: 21/04/2020
+    payment_date: 30/04/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 125.0
+    type: Ordinaire
+    ex_date: 05/04/2019
+    payment_date: 16/04/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 125.0
+    type: Ordinaire
+    ex_date: 17/04/2018
+    payment_date: 26/04/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 105.0
+    type: Ordinaire
+    ex_date: 12/04/2017
+    payment_date: 21/04/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 105.0
+    type: Ordinaire
+    ex_date: 08/04/2016
+    payment_date: 19/04/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 105.0
+    type: Ordinaire
+    ex_date: 18/03/2015
+    payment_date: 27/03/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 105.0
+    type: Ordinaire
+    ex_date: 17/04/2014
+    payment_date: 28/04/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 100.0
+    type: Ordinaire
+    ex_date: 10/04/2013
+    payment_date: 19/04/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 84.0
+    type: Ordinaire
+    ex_date: 11/04/2012
+    payment_date: 20/04/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: OGAZA
+    label: 16JUL2015 4.00% 5A 100K GAZ
+    type: Ordinaire
+    amount_issued: 42800000.0
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+  - ticker: OB138
+    label: DU 210710 4.80% 5A GAZ 100000
+    type: Ordinaire
+    amount_issued: 44200000.0
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 23/03/2010
+  declarant: AL AJIAL INVESTMENT FUND HOLDING
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 26/04/2005
+  declarant: Afriquia SMDC
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 26/04/2005
+  declarant: AKWA GROUP S.A.
+  threshold_percent: 33.33
+  direction: Baisse
+investor_relations_contact:
+  person: Ghassane Benchekroun
+  email: G.BENCHEKROUN@akwagroup.com
+  fax: null
+  phone: null

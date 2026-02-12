@@ -1,0 +1,174 @@
+company_information:
+  name: SOCIETE D'EXPLOITATION DES PORTS - MARSA MAROC
+  headquarters: 175, BD Zerktouni
+  website: null
+  phone: 05 22 77 67 94
+  fax: 05 22 99 97 07
+  auditors:
+  - Fidaroc Grant Thorton
+  date_of_incorporation: 03/11/2006
+  introduction_date_bourse: 19/07/2016
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Directoire
+  name: EL AROUSSI Tarik
+shareholders:
+  as_of_date: 26/06/2025
+  ownership_structure:
+  - name: Tanger Med Dev Log SA
+    percentage: 35.0
+  - name: DIVERS ACTIONNAIRES
+    percentage: 30.26
+  - name: Etat
+    percentage: 25.0
+  - name: RCAR
+    percentage: 3.33
+  - name: CAISSE MAROCAINE DE RETRAITE (CMR)
+    percentage: 3.33
+  - name: WAFA ASSURANCE
+    percentage: 3.07
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 733956000.0
+  shareholders_equity: 3665891000.0
+  shares_outstanding: 73395600
+  revenue: 5008150000.0
+  operating_income: 2087731000.0
+  net_income_group_share: 1266978000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 733956000.0
+  shareholders_equity: 2983274000.0
+  shares_outstanding: 73395600
+  revenue: 4320173000.0
+  operating_income: 1554657000.0
+  net_income_group_share: 852234000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 733956000.0
+  shareholders_equity: 2685460000.0
+  shares_outstanding: 73395600
+  revenue: 3949069000.0
+  operating_income: 1363416000.0
+  net_income_group_share: 816793000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 17.26
+  roe_percent: 34.56
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 31.05
+  pbr: 10.73
+- year: 2023
+  eps_bpa: 11.61
+  roe_percent: 28.57
+  payout_percent: 73.2
+  dividend_yield_percent: 3.06
+  per: 23.94
+  pbr: 6.84
+- year: 2022
+  eps_bpa: 11.13
+  roe_percent: 30.42
+  payout_percent: 71.89
+  dividend_yield_percent: 3.7
+  per: 19.41
+  pbr: 5.9
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 9.5
+    type: Ordinaire
+    ex_date: 17/07/2025
+    payment_date: 28/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 8.5
+    type: Ordinaire
+    ex_date: 24/07/2024
+    payment_date: 07/08/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 8.0
+    type: Ordinaire
+    ex_date: 13/07/2023
+    payment_date: 26/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 7.2
+    type: Ordinaire
+    ex_date: 06/06/2022
+    payment_date: 15/06/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 8.0
+    type: Ordinaire
+    ex_date: 26/07/2021
+    payment_date: 05/08/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 9.7
+    type: Ordinaire
+    ex_date: 21/07/2020
+    payment_date: 03/08/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 9.3
+    type: Ordinaire
+    ex_date: 05/07/2019
+    payment_date: 16/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 8.0
+    type: Ordinaire
+    ex_date: 01/06/2018
+    payment_date: 12/06/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 2.7
+    type: Exceptionnel
+    ex_date: 01/06/2018
+    payment_date: 12/06/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 8.0
+    type: Ordinaire
+    ex_date: 01/06/2017
+    payment_date: 12/06/2017
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: null
+  declarant: null
+  threshold_percent: null
+  direction: null
+investor_relations_contact:
+  person: Meriem DIOURI
+  email: m_diouri@marsamaroc.co.ma
+  fax: null
+  phone: null

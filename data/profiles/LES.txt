@@ -1,0 +1,239 @@
+company_information:
+  name: LESIEUR CRISTAL
+  headquarters: Casa Business Towers, Tour Mainstreet, étages 20-21 & 22, boulevard
+    Main Street, Casa Anfa, Casablanca
+  website: www.lesieur-cristal.com
+  phone: (212) 0522 67 93 00
+  fax: null
+  auditors:
+  - Mazars Maroc
+  - HDID & Associés
+  date_of_incorporation: 01/01/1940
+  introduction_date_bourse: 07/12/1972
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: BOULAKNADAL Hassan
+- role: Directeur Général
+  name: TAGGE Peter
+- role: Directeur Administratif et Financier
+  name: MOUKAFIE Nadia
+shareholders:
+  as_of_date: 20/05/2025
+  ownership_structure:
+  - name: OLEOSUD
+    percentage: 48.6
+  - name: DIVERS ACTIONNAIRES
+    percentage: 16.66
+  - name: CIMR
+    percentage: 9.98
+  - name: CAISSE MAROCAINE DE RETRAITE (CMR)
+    percentage: 7.37
+  - name: WAFA ASSURANCE
+    percentage: 7.35
+  - name: MCMA
+    percentage: 5.91
+  - name: MUTUELLE ATTAMINE CHAABI
+    percentage: 2.74
+  - name: MAMDA
+    percentage: 1.39
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 276315100.0
+  shareholders_equity: 1753000000.0
+  shares_outstanding: 27631510
+  revenue: 5455000000.0
+  operating_income: 334000000.0
+  net_income_group_share: 24000000.0
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 276315100.0
+  shareholders_equity: 1802000000.0
+  shares_outstanding: 27631510
+  revenue: 5934000000.0
+  operating_income: 74000000.0
+  net_income_group_share: 3000000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 276315100.0
+  shareholders_equity: 1871000000.0
+  shares_outstanding: 27631510
+  revenue: 6897000000.0
+  operating_income: 463000000.0
+  net_income_group_share: 206000000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 0.87
+  roe_percent: 1.37
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 345.39
+  pbr: 4.73
+- year: 2023
+  eps_bpa: 0.11
+  roe_percent: 0.17
+  payout_percent: 1842.1
+  dividend_yield_percent: 0.74
+  per: 2486.84
+  pbr: 4.14
+- year: 2022
+  eps_bpa: 7.46
+  roe_percent: 11.01
+  payout_percent: 60.36
+  dividend_yield_percent: 1.96
+  per: 30.85
+  pbr: 3.4
+financial_operations:
+  capital_increases:
+  - date: 03/10/1995
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 460 525
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 30/07/1993
+    type: Apport en nature
+    shares_variation: 718 045
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 30/06/2025
+    payment_date: 09/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 2.0
+    type: Ordinaire
+    ex_date: 26/06/2024
+    payment_date: 05/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 4.5
+    type: Ordinaire
+    ex_date: 06/07/2023
+    payment_date: 14/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 3.5
+    type: Ordinaire
+    ex_date: 24/06/2022
+    payment_date: 05/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 3.0
+    type: Exceptionnel
+    ex_date: 17/11/2021
+    payment_date: 29/11/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 3.0
+    type: Exceptionnel
+    ex_date: 01/10/2020
+    payment_date: 12/10/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 3.5
+    type: Ordinaire
+    ex_date: 24/06/2019
+    payment_date: 03/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 18/07/2018
+    payment_date: 27/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 11/07/2017
+    payment_date: 20/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 23/06/2016
+    payment_date: 04/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 5.2
+    type: Ordinaire
+    ex_date: 25/06/2015
+    payment_date: 06/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 04/07/2014
+    payment_date: 15/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 4.2
+    type: Ordinaire
+    ex_date: 26/06/2013
+    payment_date: 05/07/2013
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 09/06/2014
+  declarant: SNI
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 10/02/2012
+  declarant: OLEOSUD
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 10/02/2012
+  declarant: CIMR
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 10/02/2012
+  declarant: CMR
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 10/02/2012
+  declarant: SNI
+  threshold_percent: 33.33
+  direction: Baisse
+- date: 07/01/2011
+  declarant: SNI
+  threshold_percent: 66.66
+  direction: Hausse
+- date: 26/12/2008
+  declarant: WAFA ASSURANCE
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 29/02/2008
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 5.0
+  direction: Baisse
+investor_relations_contact:
+  person: null
+  email: info.finance@lesieur-cristal.co.ma
+  fax: null
+  phone: null

@@ -1,0 +1,252 @@
+company_information:
+  name: UNIMER
+  headquarters: Km 11. Rue L. Route des Zanatas Afin Sebaâ Sidi Bernoussi Q.l - Casablanca
+    20 252
+  website: www.unimergroup.com
+  phone: (212) 522 79 14 80
+  fax: (212) 522 36 29 42
+  auditors:
+  - FIDAROC GRANT THORNTON
+  - H2B EXPERTS
+  date_of_incorporation: 01/01/1973
+  introduction_date_bourse: 29/03/2001
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: ALJ Mehdi
+- role: Directeur Général Délégué
+  name: BERRADA Mehdi
+- role: Directeur Général Délégué
+  name: BENWAHHOUD Jalil
+- role: Directeur Administratif et Financier
+  name: ZAID Mourad
+shareholders:
+  as_of_date: 31/12/2024
+  ownership_structure:
+  - name: SANAM AGRO
+    percentage: 50.8
+  - name: SANAM HOLDING
+    percentage: 24.37
+  - name: DIVERS ACTIONNAIRES
+    percentage: 15.27
+  - name: SANLAM MAROC
+    percentage: 6.08
+  - name: ALJIA HOLDING
+    percentage: 3.48
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 114138800.0
+  shareholders_equity: 1265299000.0
+  shares_outstanding: 11413880
+  revenue: 1259642000.0
+  operating_income: -3278000.0
+  net_income_group_share: -81242000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 114138800.0
+  shareholders_equity: 1352047000.0
+  shares_outstanding: 11413880
+  revenue: 1393751000.0
+  operating_income: 45716000.0
+  net_income_group_share: -34095000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 114138800.0
+  shareholders_equity: 1404019000.0
+  shares_outstanding: 11413880
+  revenue: 1367951000.0
+  operating_income: 73616000.0
+  net_income_group_share: 45917000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: -7.12
+  roe_percent: -6.42
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: 1.53
+- year: 2023
+  eps_bpa: -2.99
+  roe_percent: -2.52
+  payout_percent: null
+  dividend_yield_percent: 0.56
+  per: null
+  pbr: 1.49
+- year: 2022
+  eps_bpa: 4.02
+  roe_percent: 3.27
+  payout_percent: 24.86
+  dividend_yield_percent: 0.63
+  per: 39.26
+  pbr: 1.28
+financial_operations:
+  capital_increases:
+  - date: 07/12/2012
+    nature: Apport en nature
+    shares_variation: 1400000
+    share_variation: null
+    type: null
+    amount: null
+  - date: 14/01/2011
+    nature: Apport en nature
+    shares_variation: 451388
+    share_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2023
+    amount: 1.0
+    type: Ordinaire
+    ex_date: 09/09/2024
+    payment_date: 20/09/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 1.0
+    type: Ordinaire
+    ex_date: 13/09/2023
+    payment_date: 22/09/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 1.5
+    type: Ordinaire
+    ex_date: 17/09/2021
+    payment_date: 28/09/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 21/09/2020
+    payment_date: 30/09/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 18/09/2019
+    payment_date: 27/09/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 18/09/2018
+    payment_date: 27/09/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 12/09/2017
+    payment_date: 21/09/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 19/09/2016
+    payment_date: 28/09/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 15/09/2015
+    payment_date: 28/09/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 11/09/2014
+    payment_date: 22/09/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 09/09/2013
+    payment_date: 18/09/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 2.3
+    type: Ordinaire
+    ex_date: 04/09/2012
+    payment_date: 13/09/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 07/01/2015
+  declarant: SANAM AGRO
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 17/10/2012
+  declarant: SARETAM S.A
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 17/10/2012
+  declarant: HOMER
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 17/10/2012
+  declarant: UNIMACO
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 13/04/2011
+  declarant: CNIA SAADA ASSURANCE
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 04/03/2011
+  declarant: SANAM HOLDING
+  threshold_percent: 33.33
+  direction: Baisse
+- date: 14/01/2011
+  declarant: MACAPA FINANCES
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 06/01/2011
+  declarant: SANAM HOLDING
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 06/01/2011
+  declarant: CNIA SAADA ASSURANCE
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 06/01/2011
+  declarant: UNIMACO
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 06/01/2011
+  declarant: SARETAM S.A
+  threshold_percent: 33.33
+  direction: Baisse
+- date: 06/01/2011
+  declarant: HOMER
+  threshold_percent: 20.0
+  direction: Baisse
+- date: 06/01/2011
+  declarant: MACAPA FINANCES
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 26/02/2010
+  declarant: CNIA SAADA ASSURANCE
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Jalil BENWAHHOUD
+  email: jalil.benwahhoud@unimergroup.com
+  phone: (212) 522 79 14 80
+  fax: (212) 522 36 29 42

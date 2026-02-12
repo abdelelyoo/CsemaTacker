@@ -1,0 +1,117 @@
+company_information:
+  name: IB MAROC.COM SA
+  headquarters: N°42, Boulevard Abdelmoumen Immeuble Wallii Street - 7ème étage Plateau
+    49 Casablanca - Maroc
+  website: null
+  phone: '(212) 0522 43 63 04 / Mob: 0661 22 47 32'
+  fax: (212) 0522 43 63 64/65
+  auditors:
+  - KPMG
+  - BDO ASMOUN & ASSOCIES
+  date_of_incorporation: 05/09/1994
+  introduction_date_bourse: 10/07/2001
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: HADEF Abdellatif
+- role: Directeur Général
+  name: DECORPS Bernard
+- role: Directeur Financier
+  name: EL HABRITI El Mostafa
+shareholders:
+  as_of_date: 29/06/2018
+  ownership_structure:
+  - name: IB CORP
+    percentage: 56.74
+  - name: DIVERS ACTIONNAIRES
+    percentage: 43.26
+financial_figures:
+- year: 2021
+  consolidated_accounts: false
+  capital_social: 41748600.0
+  shareholders_equity: -103890012.34
+  shares_outstanding: 417486
+  revenue: 3528460.64
+  operating_income: -22236325.57
+  net_income_group_share: -23073176.57
+- year: 2020
+  consolidated_accounts: false
+  capital_social: 41748600.0
+  shareholders_equity: -80816835.77
+  shares_outstanding: 417486
+  revenue: 11328779.06
+  operating_income: -13722403.71
+  net_income_group_share: -15999744.68
+- year: 2019
+  consolidated_accounts: false
+  capital_social: 41748600.0
+  shareholders_equity: -64817091.09
+  shares_outstanding: 417486
+  revenue: 34522566.48
+  operating_income: -13352168.69
+  net_income_group_share: -26332613.99
+financial_ratios:
+- year: 2021
+  eps_bpa: -55.27
+  roe_percent: 22.21
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2020
+  eps_bpa: -38.32
+  roe_percent: 19.8
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2019
+  eps_bpa: -63.07
+  roe_percent: 40.63
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+financial_operations:
+  capital_increases:
+  - date: 29/10/2001
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 208 743
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: null
+    amount: null
+    type: null
+    ex_date: null
+    payment_date: null
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 10/08/2006
+  declarant: SOPHIA INVEST Holding
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 10/08/2006
+  declarant: SOPHIA INVEST Holding
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 10/08/2006
+  declarant: MIBS (EX IB Solution)
+  threshold_percent: 5.0
+  direction: Baisse
+investor_relations_contact:
+  person: El Mostafa EL HABRITI
+  email: e.elhabriti@ib-maroc.com
+  fax: null
+  phone: null

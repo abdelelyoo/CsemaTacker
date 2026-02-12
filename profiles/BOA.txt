@@ -1,0 +1,415 @@
+company_information:
+  name: BANK OF AFRICA
+  headquarters: 140. Avenue Hassan II . Casablanca
+  website: ir-bankofafrica.ma // bankofafrica.ma
+  phone: +212 522 46 21 97 / +212 522 46 28 10
+  fax: +212 522 26 49 65
+  auditors:
+  - FIDAROC GRANT THORNTON
+  - BDO AUDIT TAX ADVISORY
+  date_of_incorporation: 31/08/1959
+  introduction_date_bourse: 16/06/1975
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: BENJELLOUN Othman
+- role: Directeur Général Exécutif en charge des Fonctions Groupe et Opérations
+  name: CHRAIBI Mounir
+- role: Directeur Général Exécutif en charge du CIB et Maroc
+  name: NASR Khalid
+shareholders:
+  as_of_date: 31/12/2024
+  ownership_structure:
+  - name: RMA WATANYA
+    percentage: 27.41
+  - name: BANQUE FEDERATIVE DU CREDIT MUTUEL
+    percentage: 24.56
+  - name: DIVERS ACTIONNAIRES
+    percentage: 17.32
+  - name: CDG (Caisse de Dépôt et de Gestion)
+    percentage: 8.13
+  - name: O CAPITAL GROUP
+    percentage: 7.16
+  - name: Groupe MCMA-MAMDA
+    percentage: 5.01
+  - name: British International Investment
+    percentage: 4.48
+  - name: CIMR
+    percentage: 3.93
+  - name: Personnel
+    percentage: 1.07
+  - name: SFCM
+    percentage: 0.94
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 2157863330.0
+  shareholders_equity: 36814698000.0
+  shares_outstanding: 215786333
+  revenue: 18716574000.0
+  operating_income: 6848936000.0
+  net_income_group_share: 3427420000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 2125656420.0
+  shareholders_equity: 33893817000.0
+  shares_outstanding: 212565642
+  revenue: 16952830000.0
+  operating_income: 5394899000.0
+  net_income_group_share: 2662160000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 2087698270.0
+  shareholders_equity: 31841759000.0
+  shares_outstanding: 208769827
+  revenue: 15624409000.0
+  operating_income: 4697135000.0
+  net_income_group_share: 2304613000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 15.88
+  roe_percent: 9.31
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 12.91
+  pbr: null
+- year: 2023
+  eps_bpa: 12.52
+  roe_percent: 7.85
+  payout_percent: 31.94
+  dividend_yield_percent: 2.23
+  per: 14.33
+  pbr: null
+- year: 2022
+  eps_bpa: 11.04
+  roe_percent: 7.24
+  payout_percent: 36.24
+  dividend_yield_percent: 2.33
+  per: 15.58
+  pbr: null
+financial_operations:
+  capital_increases:
+  - date: 27/10/2025
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 4 495 548
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 15/10/2024
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 3 220 691
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 11/10/2023
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 3 795 815
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 06/10/2022
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 3 163 179
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 30/09/2020
+    type: Conversion des dividendes
+    shares_variation: 5 786 188
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 05/11/2019
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 10 723 555
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 19/08/2019
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 5 550 414
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 19/08/2019
+    type: Conversion des dividendes
+    shares_variation: 4 083 101
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 18/12/2012
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 7 500 000
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 20/12/2010
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 2 500 000
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 06/10/2010
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 10 712 000
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 03/07/2000
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 1 443 194
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 14/10/1996
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 205 409
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 14/10/1996
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 1 369 394
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 01/03/1996
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 2 857 142
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 29/07/1992
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 1 750 000
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 29/07/1992
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 750 000
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 10/07/2025
+    payment_date: 21/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 4.0
+    type: Ordinaire
+    ex_date: 17/07/2024
+    payment_date: 26/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 4.0
+    type: Ordinaire
+    ex_date: 06/07/2023
+    payment_date: 17/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 4.0
+    type: Ordinaire
+    ex_date: 14/07/2022
+    payment_date: 25/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 15/07/2021
+    payment_date: 29/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 10/08/2020
+    payment_date: 28/09/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 03/07/2019
+    payment_date: 15/08/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 29/06/2018
+    payment_date: 10/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 30/06/2017
+    payment_date: 11/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 5.0
+    type: Ordinaire
+    ex_date: 29/06/2016
+    payment_date: 13/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 4.4
+    type: Ordinaire
+    ex_date: 30/06/2015
+    payment_date: 09/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 4.0
+    type: Ordinaire
+    ex_date: 30/06/2014
+    payment_date: 09/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 3.3
+    type: Ordinaire
+    ex_date: 28/06/2013
+    payment_date: 09/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 29/06/2012
+    payment_date: 10/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - name: OBOAE
+    description: 28JUN2016 3.74% 10A 100K BOA
+    type: Subordonné
+    amount: 78 900 000,00
+    label: null
+    ticker: null
+    amount_issued: null
+    amount_issued_kmad: null
+  - name: OBOAD
+    description: 21JAN2013 6.18% 10A 100K BOA
+    type: Subordonné
+    amount: 160 000 000,00
+    label: null
+    ticker: null
+    amount_issued: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 14/02/2023
+  declarant: CDC Group PLC
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 14/05/2021
+  declarant: O CAPITAL GROUP
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 05/11/2019
+  declarant: CDC Group PLC
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 19/08/2011
+  declarant: FINANCE.COM
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 06/10/2010
+  declarant: BANQUE FEDERATIVE DU CREDIT MUTUEL
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 06/10/2010
+  declarant: Caja de Ahorras del Mediterraneo
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 06/10/2010
+  declarant: FINANCE.COM
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 22/03/2010
+  declarant: CDG (Caisse de Dépôt et de Gestion)
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 22/03/2010
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 17/11/2009
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 05/02/2009
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 30/12/2008
+  declarant: BANQUE FEDERATIVE DU CREDIT MUTUEL
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 30/12/2008
+  declarant: CIC (Caisse Industrielle et Commerciale)
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 25/09/2008
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 26/03/2008
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 14/03/2008
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 27/09/2007
+  declarant: CIMR
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 19/04/2007
+  declarant: BMCE
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 19/04/2007
+  declarant: Caja de Ahorras del Mediterraneo
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 27/04/2006
+  declarant: BMCE
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 24/05/2005
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 22/02/2005
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 04/02/2005
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 04/02/2005
+  declarant: BANK OF AFRICA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 24/06/2004
+  declarant: FINANCE.COM
+  threshold_percent: 10.0
+  direction: Baisse
+investor_relations_contact:
+  person: Meriem OUGHLA
+  email: mbarakat@bankofafrica.ma
+  fax: null
+  phone: null

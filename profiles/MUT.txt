@@ -1,0 +1,172 @@
+company_information:
+  name: MUTANDIS SCA
+  headquarters: 22, boulevard Abdelkrim Al Khattabi – Casablanca
+  website: www.mutandis.com
+  phone: 05.22.98.43.88
+  fax: 05.22.98.34.60
+  auditors:
+  - Mazars
+  - Hdid & Associés
+  date_of_incorporation: 14/03/2008
+  introduction_date_bourse: 18/12/2018
+  fiscal_year_duration_months: 12
+management_team:
+- role: Gérant statutaire
+  name: DOUIRI Adil
+shareholders:
+  as_of_date: 28/08/2025
+  ownership_structure:
+  - name: DIVERS ACTIONNAIRES
+    percentage: 73.49
+  - name: BANK OF AFRICA
+    percentage: 9.0
+  - name: DOUIRI Adil
+    percentage: 6.81
+  - name: RMA WATANYA
+    percentage: 6.3
+  - name: PATRIMOINE GESTION ET PLACEMENTS
+    percentage: 4.4
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 924673700.0
+  shareholders_equity: 1568571000.0
+  shares_outstanding: 9246737
+  revenue: 2116550000.0
+  operating_income: 260397000.0
+  net_income_group_share: 159408000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 924673700.0
+  shareholders_equity: 1411468000.0
+  shares_outstanding: 9246737
+  revenue: 2166503000.0
+  operating_income: 185297000.0
+  net_income_group_share: 93059000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 924673700.0
+  shareholders_equity: 1332878000.0
+  shares_outstanding: 9246737
+  revenue: 2328908000.0
+  operating_income: 171588000.0
+  net_income_group_share: 99524000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 17.24
+  roe_percent: 10.16
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 17.63
+  pbr: 1.79
+- year: 2023
+  eps_bpa: 10.06
+  roe_percent: 6.59
+  payout_percent: 104.33
+  dividend_yield_percent: 4.2
+  per: 24.84
+  pbr: 1.64
+- year: 2022
+  eps_bpa: 10.76
+  roe_percent: 7.47
+  payout_percent: 78.97
+  dividend_yield_percent: 3.9
+  per: 20.25
+  pbr: 1.51
+financial_operations:
+  capital_increases:
+  - date: 15/02/2022
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 1 250 000
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 10.5
+    type: Ordinaire
+    ex_date: 30/06/2025
+    payment_date: 09/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 10.5
+    type: Ordinaire
+    ex_date: 27/06/2024
+    payment_date: 10/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 8.5
+    type: Ordinaire
+    ex_date: 20/06/2023
+    payment_date: 03/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 8.5
+    type: Ordinaire
+    ex_date: 23/06/2022
+    payment_date: 04/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 8.5
+    type: Ordinaire
+    ex_date: 23/06/2021
+    payment_date: 02/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 8.5
+    type: Ordinaire
+    ex_date: 09/07/2020
+    payment_date: 20/07/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 7.5
+    type: Ordinaire
+    ex_date: 30/04/2019
+    payment_date: 10/05/2019
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 08/10/2024
+  declarant: PATRIMOINE GESTION ET PLACEMENTS
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 22/02/2022
+  declarant: AMETHIS MAGHREB FUND I
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 22/02/2022
+  declarant: BMCE
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 30/04/2021
+  declarant: CHAABI CAPITAL INVESTISSEMENT
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 24/12/2019
+  declarant: TAZI Mohamed ben Thami
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 24/12/2019
+  declarant: PATRIMOINE GESTION ET PLACEMENTS
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Fatima-Zahra MEDIOUNI
+  email: fmediouni@mutandis.com; contact@mutandis.com
+  fax: null
+  phone: null

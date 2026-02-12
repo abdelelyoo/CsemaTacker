@@ -1,0 +1,170 @@
+company_information:
+  name: SOCIETE METALLURGIQUE D'IMITER
+  headquarters: 'Twin Center, Tour A, angle Bd Zerktouni et Al Massira Al Khadra -
+    BP: 5199 - Casablanca'
+  website: www.managemgroup.com
+  phone: (212) 0522 95 65 65 / 05 22 95 65 19 / 05 22 95 65 51 / 05 22 95 65 73
+  fax: (212) 05 22 95 64 97 / 05 22 95 65 52 / 05 22 95 64 51 / 0522 95 65 67
+  auditors:
+  - Deloitte Audit et Price Waterhouse
+  date_of_incorporation: 12/06/1969
+  introduction_date_bourse: 18/06/1997
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: TOUMI Imad
+shareholders:
+  as_of_date: 23/06/2025
+  ownership_structure:
+  - name: MANAGEM
+    percentage: 80.26
+  - name: DIVERS ACTIONNAIRES
+    percentage: 14.71
+  - name: CIMR
+    percentage: 5.03
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 164509000.0
+  shareholders_equity: 1394721764.07
+  shares_outstanding: 0
+  revenue: 1052712641.87
+  operating_income: 261012619.34
+  net_income_group_share: 186719660.9
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 164509000.0
+  shareholders_equity: 1339609303.17
+  shares_outstanding: 1645090
+  revenue: 1065943396.96
+  operating_income: 235322765.97
+  net_income_group_share: 168455584.33
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 164509000.0
+  shareholders_equity: 1171153718.84
+  shares_outstanding: 1645090
+  revenue: 798391526.94
+  operating_income: 33435662.57
+  net_income_group_share: 35186691.01
+financial_ratios:
+- year: 2024
+  eps_bpa: null
+  roe_percent: 13.39
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2023
+  eps_bpa: 102.4
+  roe_percent: 12.57
+  payout_percent: 78.13
+  dividend_yield_percent: 6.05
+  per: 12.92
+  pbr: 1.62
+- year: 2022
+  eps_bpa: 21.39
+  roe_percent: 3.0
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 71.06
+  pbr: 2.14
+financial_operations:
+  dividends_paid:
+  - year: 2024
+    amount_per_share: 80.0
+    type: Ordinaire
+    detachment_date: 30/06/2025
+    payment_date: 08/07/2025
+    ex_date: null
+    amount: 80.0
+  - year: 2023
+    amount_per_share: 80.0
+    type: Ordinaire
+    detachment_date: 20/06/2024
+    payment_date: 01/07/2024
+    ex_date: null
+    amount: 80.0
+  - year: 2020
+    amount_per_share: 50.0
+    type: Ordinaire
+    detachment_date: 22/06/2021
+    payment_date: 01/07/2021
+    ex_date: null
+    amount: 50.0
+  - year: 2017
+    amount_per_share: 87.0
+    type: Ordinaire
+    detachment_date: 21/06/2018
+    payment_date: 02/07/2018
+    ex_date: null
+    amount: 87.0
+  - year: 2016
+    amount_per_share: 150.0
+    type: Ordinaire
+    detachment_date: 06/07/2017
+    payment_date: 17/07/2017
+    ex_date: null
+    amount: 150.0
+  - year: 2015
+    amount_per_share: 220.0
+    type: Ordinaire
+    detachment_date: 22/06/2016
+    payment_date: 01/07/2016
+    ex_date: null
+    amount: 220.0
+  - year: 2014
+    amount_per_share: 200.0
+    type: Ordinaire
+    detachment_date: 22/06/2015
+    payment_date: 01/07/2015
+    ex_date: null
+    amount: 200.0
+  - year: 2013
+    amount_per_share: 170.0
+    type: Ordinaire
+    detachment_date: 20/06/2014
+    payment_date: 01/07/2014
+    ex_date: null
+    amount: 170.0
+  - year: 2012
+    amount_per_share: 120.0
+    type: Ordinaire
+    detachment_date: 20/06/2013
+    payment_date: 01/07/2013
+    ex_date: null
+    amount: 120.0
+  - year: 2011
+    amount_per_share: 100.0
+    type: Ordinaire
+    detachment_date: 20/06/2012
+    payment_date: 29/06/2012
+    ex_date: null
+    amount: 100.0
+  capital_increases:
+  - date: null
+    nature: null
+    amount: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 31/12/2014
+  declarant: CIMR
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 25/04/2008
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 5.0
+  direction: Baisse
+investor_relations_contact:
+  person: Meryem TAZI, Hassan EL HANIMI, Mouna MAHFOUD
+  email: me.tazi@managemgroup.com; i.elhanimi@managemgroup.com; m.mahfoud@managemgroup.com
+  phone: (212) 0522 95 65 65 / 05 22 95 65 19 / 05 22 95 65 51 / 05 22 95 65 73
+  fax: (212) 05 22 95 64 97 / 05 22 95 65 52 / 05 22 95 64 51/ 0522 95 65 67

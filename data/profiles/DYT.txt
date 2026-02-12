@@ -1,0 +1,137 @@
+company_information:
+  name: DISTY TECHNOLOGIES
+  headquarters: 12, rue Mohamed Abdou, Casablanca
+  website: www.disty.ma
+  phone: 05 22 99 85 00
+  fax: 05 22 98 53 55
+  auditors:
+  - Orsia Audit
+  - Mazars
+  date_of_incorporation: 21/02/2011
+  introduction_date_bourse: 20/07/2022
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: EL HIMDY Younès
+- role: Responsable administratif et financier
+  name: BOUDDA Issmail
+shareholders:
+  as_of_date: 24/07/2024
+  ownership_structure:
+  - name: DIVERS ACTIONNAIRES
+    percentage: 65.59
+  - name: EL HIMDY Younès
+    percentage: 29.86
+  - name: CHAMI Ahmed Reda
+    percentage: 4.55
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 99811000.0
+  shareholders_equity: 175625645.78
+  shares_outstanding: 998110
+  revenue: 547834555.13
+  operating_income: 29705667.09
+  net_income_group_share: 19364056.78
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 99811000.0
+  shareholders_equity: 171233239.0
+  shares_outstanding: 998110
+  revenue: 540829892.43
+  operating_income: 29145302.52
+  net_income_group_share: 18784423.86
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 99811000.0
+  shareholders_equity: 162429915.14
+  shares_outstanding: 998110
+  revenue: 496585926.06
+  operating_income: 26343905.35
+  net_income_group_share: 4134452.49
+financial_ratios:
+- year: 2024
+  eps_bpa: 19.4
+  roe_percent: 11.03
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 13.38
+  pbr: 1.47
+- year: 2023
+  eps_bpa: 18.82
+  roe_percent: 10.97
+  payout_percent: 79.7
+  dividend_yield_percent: 7.84
+  per: 10.17
+  pbr: 1.12
+- year: 2022
+  eps_bpa: 4.14
+  roe_percent: 2.55
+  payout_percent: 241.41
+  dividend_yield_percent: 4.76
+  per: 50.7
+  pbr: 1.29
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 16.5
+    type: Ordinaire
+    ex_date: 09/07/2025
+    payment_date: 18/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 15.0
+    type: Ordinaire
+    ex_date: 09/07/2024
+    payment_date: 18/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 10.0
+    type: Ordinaire
+    ex_date: 28/07/2023
+    payment_date: 08/08/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 15.0
+    type: Exceptionnel
+    ex_date: 13/09/2022
+    payment_date: 22/09/2022
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 24/07/2024
+  declarant: PME Croissance
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 15/03/2024
+  declarant: PME Croissance
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 15/03/2024
+  declarant: AD MOROCCAN EQUITY FUND
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Hajar TAGRA
+  email: htagra@disty.ma
+  fax: null
+  phone: null

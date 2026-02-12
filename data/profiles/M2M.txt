@@ -1,0 +1,154 @@
+company_information:
+  name: M2M GROUP
+  headquarters: 16, Rue Abdellah Ben Mehyou, Palmiers -20340 - Casablanca
+  website: www.m2mgroup.com
+  phone: 212 22 43 53 00
+  fax: 212 522 43 53 13
+  auditors:
+  - Cabinet PKF Maroc
+  date_of_incorporation: 17/07/2002
+  introduction_date_bourse: 04/07/2007
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président
+  name: BAYED Redouan
+- role: Directeur Administratif et Financier
+  name: EDDAHBI Brahim
+- role: Directeur Général Délégué
+  name: MOUKHLIS Mohamed
+shareholders:
+  as_of_date: 19/06/2025
+  ownership_structure:
+  - name: RMK SA
+    percentage: 65.43
+  - name: DIVERS ACTIONNAIRES
+    percentage: 26.24
+  - name: RMA Asset Management
+    percentage: 8.32
+  - name: BAYED Redouan
+    percentage: 0.0
+  - name: PETEAU AUDE
+    percentage: 0.0
+  - name: LAMACQUE Dominique
+    percentage: 0.0
+  - name: DERDER Damia
+    percentage: 0.0
+  - name: MAIZI Mohamed
+    percentage: 0.0
+  - name: HANANE Rachid
+    percentage: 0.0
+  - name: HABLI Mostapha
+    percentage: 0.0
+  - name: MOUKHLIS Mohammed
+    percentage: 0.0
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 64777700.0
+  shareholders_equity: 144832311.0
+  shares_outstanding: 647777
+  revenue: 102625950.86
+  operating_income: 5246162.83
+  net_income_group_share: 14651274.93
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 64777700.0
+  shareholders_equity: 127412013.0
+  shares_outstanding: 647777
+  revenue: 78581596.0
+  operating_income: -10333151.0
+  net_income_group_share: -14777197.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 64777700.0
+  shareholders_equity: 127856846.21
+  shares_outstanding: 647777
+  revenue: 61898665.79
+  operating_income: -45334315.83
+  net_income_group_share: -44995968.07
+financial_ratios:
+- year: 2024
+  eps_bpa: 22.62
+  roe_percent: 10.12
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 23.39
+  pbr: 2.37
+- year: 2023
+  eps_bpa: -22.81
+  roe_percent: -11.6
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: 3.15
+- year: 2022
+  eps_bpa: -69.46
+  roe_percent: -35.19
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: 4.0
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2017
+    amount: 25.0
+    type: Ordinaire
+    ex_date: 19/09/2018
+    payment_date: 28/09/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 12.0
+    type: Ordinaire
+    ex_date: 21/09/2016
+    payment_date: 30/09/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 12.0
+    type: Ordinaire
+    ex_date: 17/09/2015
+    payment_date: 30/09/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 10.0
+    type: Ordinaire
+    ex_date: 19/09/2014
+    payment_date: 30/09/2014
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 25/11/2019
+  declarant: ESSAYEGH Mounir
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 19/02/2010
+  declarant: Capital Morocco LP
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 20/11/2007
+  declarant: RMA WATANYA
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Mr Brahim EDDAHBI
+  email: beddahbi@m2mgroup.com
+  fax: null
+  phone: null

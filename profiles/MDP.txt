@@ -1,0 +1,216 @@
+company_information:
+  name: MED PAPER
+  headquarters: 'Zone Industrielle Mghogha. Route de Tetuan - Allée n°1. Lot 19 -
+    (BP: n°400) - TANGER'
+  website: null
+  phone: (212) 0539 36 21 00
+  fax: (212) 0539 35 11 44
+  auditors:
+  - Price Waterhouse / KPMG
+  date_of_incorporation: 01/01/1948
+  introduction_date_bourse: 28/07/1998
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: SEFRIOUI Mohsine
+shareholders:
+  as_of_date: 26/06/2023
+  ownership_structure:
+  - name: SEFRIOUI MOHSIN
+    percentage: 67.61
+  - name: DIVERS ACTIONNAIRES
+    percentage: 24.34
+  - name: ALIKEN
+    percentage: 5.8
+  - name: SEFRIOUI ILHAM
+    percentage: 0.74
+  - name: SEFRIOUI ANAS
+    percentage: 0.35
+  - name: SEFRIOUI KHALID
+    percentage: 0.35
+  - name: SEFRIOUI AFIFA
+    percentage: 0.17
+  - name: SEFRIOUI AMINA
+    percentage: 0.17
+  - name: SEFRIOUI DOUNIA
+    percentage: 0.17
+  - name: SEFRIOUI SAAD
+    percentage: 0.12
+  - name: SEFRIOUI ABDESSLAM
+    percentage: 0.12
+  - name: SEFRIOUI SOFIA
+    percentage: 0.06
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 47838230.0
+  shareholders_equity: 34432862.61
+  shares_outstanding: 4783823
+  revenue: 105563865.54
+  operating_income: 6199680.89
+  net_income_group_share: 7985231.64
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 47838230.0
+  shareholders_equity: 26447630.97
+  shares_outstanding: 4783823
+  revenue: 107863480.33
+  operating_income: 10873215.57
+  net_income_group_share: 5750865.13
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 47838230.0
+  shareholders_equity: 20696765.84
+  shares_outstanding: 4783823
+  revenue: 134730962.47
+  operating_income: 13785376.2
+  net_income_group_share: 7429125.3
+financial_ratios:
+- year: 2024
+  eps_bpa: 1.67
+  roe_percent: 23.19
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 12.3
+  pbr: 2.85
+- year: 2023
+  eps_bpa: 1.2
+  roe_percent: 21.74
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 17.04
+  pbr: 3.71
+- year: 2022
+  eps_bpa: 1.55
+  roe_percent: 35.9
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 17.55
+  pbr: 6.3
+financial_operations:
+  capital_increases:
+  - date: 19/12/2022
+    type: Incorporation de réserves et élévation de la valeur nominale
+    shares_variation: '-'
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 15/12/2022
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 2 201 268
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 07/12/2022
+    type: Incorporation de réserves et élévation de la valeur nominale
+    shares_variation: '-'
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 24/12/2008
+    type: Apport en nature
+    shares_variation: 1 563 180
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 05/08/2005
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 1 120 000
+    share_variation: null
+    nature: Incorporation de réserves et élévation de la valeur nominale
+    amount: null
+  dividends_paid:
+  - year: null
+    amount: null
+    type: null
+    ex_date: null
+    payment_date: null
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 15/12/2022
+  declarant: SEFRIOUI Mohsine
+  threshold_percent: 66.66
+  direction: Hausse
+- date: 18/03/2019
+  declarant: SEFRIOUI MOHSIN
+  threshold_percent: 50.0
+  direction: Baisse
+- date: 18/03/2019
+  declarant: ALIKEN
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 01/02/2019
+  declarant: SEFRIOUI MOHSIN
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 03/07/2017
+  declarant: ALIKEN
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 03/07/2017
+  declarant: CDG DEVELOPPEMENT
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/06/2017
+  declarant: CDG DEVELOPPEMENT
+  threshold_percent: 20.0
+  direction: Baisse
+- date: 13/01/2011
+  declarant: CDG DEVELOPPEMENT
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 13/01/2011
+  declarant: CELLULOSE DU MAROC
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 18/12/2008
+  declarant: SEFRIOUI MED FOUAD
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 18/12/2008
+  declarant: SEFRIOUI AFIFA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 18/12/2008
+  declarant: CDG (Caisse de Dépôt et de Gestion)
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 18/12/2008
+  declarant: SEFRIOUI MOHSIN
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 18/12/2008
+  declarant: SEFRIOUI ILHAM
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 18/12/2008
+  declarant: BENNANI HABIBA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 18/12/2008
+  declarant: CDG DEVELOPPEMENT
+  threshold_percent: 20.0
+  direction: Baisse
+- date: 18/12/2008
+  declarant: CELLULOSE DU MAROC
+  threshold_percent: 33.33
+  direction: Baisse
+- date: 05/08/2005
+  declarant: FCP CDG ACTIONS
+  threshold_percent: 5.0
+  direction: Baisse
+investor_relations_contact:
+  person: Mohsine SEFRIOUI
+  email: s.sefrioui@medpaper.ma
+  fax: null
+  phone: null

@@ -1,0 +1,115 @@
+company_information:
+  name: STROC INDUSTRIE
+  headquarters: 4, Rue des Tabors, Oasis, Casablanca
+  website: www.stroc.com
+  phone: 0522991570-72
+  fax: (212) 522 99 09 80
+  auditors:
+  - KPMG
+  date_of_incorporation: 01/01/1989
+  introduction_date_bourse: 30/06/2011
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: ZIAT Nabil
+- role: Directeur général Délégué
+  name: OULDHENIA Mohammed
+- role: Directeur adjoint Administratif et Financier
+  name: BAGHAZI Mohamed
+- role: Secrétaire général
+  name: LE GUELLEC Ronan
+shareholders:
+  as_of_date: 07/05/2025
+  ownership_structure:
+  - name: AL ISTIMRAR HOLDING
+    percentage: 55.62
+  - name: DIVERS ACTIONNAIRES
+    percentage: 26.94
+  - name: ZIATT NABIL
+    percentage: 14.6
+  - name: ZIATT REDA
+    percentage: 1.54
+  - name: ZIATT MOUNA
+    percentage: 1.31
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 62425750.0
+  shareholders_equity: -341368455.65
+  shares_outstanding: 0
+  revenue: 117669378.45
+  operating_income: -13952952.65
+  net_income_group_share: -12577347.63
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 62425750.0
+  shareholders_equity: -328791108.02
+  shares_outstanding: 1248515
+  revenue: 86658706.15
+  operating_income: -22398851.16
+  net_income_group_share: -39711526.96
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 62425750.0
+  shareholders_equity: -289079581.06
+  shares_outstanding: 1248515
+  revenue: 77471731.39
+  operating_income: 1017008.72
+  net_income_group_share: -14994674.62
+financial_ratios:
+- year: 2024
+  eps_bpa: null
+  roe_percent: 3.68
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2023
+  eps_bpa: -31.81
+  roe_percent: 12.08
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2022
+  eps_bpa: -12.01
+  roe_percent: 5.19
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2011
+    amount_per_share: 4.0
+    type: Ordinaire
+    detachment_date: 24/05/2012
+    payment_date: 04/06/2012
+    amount: null
+    ex_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: null
+  declarant: null
+  threshold_percent: null
+  direction: null
+investor_relations_contact:
+  person: Ronan Le Guellec
+  email: r.leguellec@stroc.ma
+  phone: 0522991570-72
+  fax: (212) 522 99 09 80

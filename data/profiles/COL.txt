@@ -1,0 +1,340 @@
+company_information:
+  name: COLORADO
+  headquarters: Route My Thami Km 15 Commune Rurale Oulad Azouz Dar Bouâzza. Casablanca
+  website: www.colorado.ma
+  phone: 0522 35 23 35
+  fax: 0522 35 41 54
+  auditors:
+  - Cabinet Hdid & Associés
+  - Fidaroc Grant Thornton
+  date_of_incorporation: 30/05/1962
+  introduction_date_bourse: 27/10/2006
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: CHAGAR Abed
+- role: Directeur Général Délégué en charge du pôle Finances et Support
+  name: LOTFI Merième
+shareholders:
+  as_of_date: 14/07/2025
+  ownership_structure:
+  - name: COLBERT FINANCES SA
+    percentage: 67.94
+  - name: DIVERS ACTIONNAIRES
+    percentage: 23.64
+  - name: YAN SASU
+    percentage: 4.0
+  - name: BERRADA Soleiman
+    percentage: 2.09
+  - name: CHAGAR Abed
+    percentage: 1.99
+  - name: DUCASTEL Josette
+    percentage: 0.35
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 161176110.0
+  shareholders_equity: 335546322.65
+  shares_outstanding: 16117611
+  revenue: 605017873.46
+  operating_income: 93174163.54
+  net_income_group_share: 45337135.25
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 161176110.0
+  shareholders_equity: 326473812.0
+  shares_outstanding: 16117611
+  revenue: 611402242.0
+  operating_income: 64945730.0
+  net_income_group_share: 38639257.0
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 161176110.0
+  shareholders_equity: 320069776.22
+  shares_outstanding: 16117611
+  revenue: 609918644.62
+  operating_income: 59790939.5
+  net_income_group_share: 35351868.48
+financial_ratios:
+- year: 2024
+  eps_bpa: 2.81
+  roe_percent: 13.51
+  payout_percent: 92.43
+  dividend_yield_percent: 4.64
+  per: 19.91
+  pbr: 2.69
+- year: 2023
+  eps_bpa: 2.4
+  roe_percent: 11.84
+  payout_percent: 93.85
+  dividend_yield_percent: 4.84
+  per: 19.4
+  pbr: 2.3
+- year: 2022
+  eps_bpa: 2.19
+  roe_percent: 11.05
+  payout_percent: 91.18
+  dividend_yield_percent: 4.4
+  per: 20.74
+  pbr: 2.29
+financial_operations:
+  capital_increases:
+  - date: 20/06/2022
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 4029403
+    share_variation: null
+    type: null
+    amount: null
+  - date: 19/01/2016
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 3022052
+    share_variation: null
+    type: null
+    amount: null
+  - date: 17/12/2014
+    nature: Souscription en numéraire sans droit préférentiel
+    shares_variation: 66156
+    share_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 2.6
+    type: Ordinaire
+    ex_date: 12/06/2025
+    payment_date: 23/06/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 2.25
+    type: Ordinaire
+    ex_date: 06/06/2024
+    payment_date: 20/06/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 2.0
+    type: Ordinaire
+    ex_date: 09/06/2023
+    payment_date: 20/06/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 2.7
+    type: Ordinaire
+    ex_date: 19/05/2022
+    payment_date: 30/05/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 2.7
+    type: Exceptionnel
+    ex_date: 18/05/2021
+    payment_date: 27/05/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 1.45
+    type: Ordinaire
+    ex_date: 18/05/2021
+    payment_date: 27/05/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 2.9
+    type: Ordinaire
+    ex_date: 14/06/2019
+    payment_date: 25/06/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 1.65
+    type: Exceptionnel
+    ex_date: 13/06/2018
+    payment_date: 25/06/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 13/06/2018
+    payment_date: 25/06/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 1.25
+    type: Exceptionnel
+    ex_date: 26/05/2017
+    payment_date: 06/06/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 26/05/2017
+    payment_date: 06/06/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 1.25
+    type: Exceptionnel
+    ex_date: 18/05/2016
+    payment_date: 27/05/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 18/05/2016
+    payment_date: 27/05/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 2.5
+    type: Exceptionnel
+    ex_date: 11/05/2015
+    payment_date: 20/05/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 11/05/2015
+    payment_date: 20/05/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 2.7
+    type: Exceptionnel
+    ex_date: 19/05/2014
+    payment_date: 28/05/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 2.7
+    type: Ordinaire
+    ex_date: 19/05/2014
+    payment_date: 28/05/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 2.2
+    type: Ordinaire
+    ex_date: 16/07/2013
+    payment_date: 25/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 12/07/2012
+    payment_date: 23/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 01/10/2024
+  declarant: CHAGAR Abed
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 31/03/2016
+  declarant: The Africa Emerging Markets Fund
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 22/07/2015
+  declarant: FIPAR HOLDING
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 22/07/2015
+  declarant: COLBERT FINANCES SA
+  threshold_percent: 66.66
+  direction: Hausse
+- date: 12/06/2013
+  declarant: The Africa Emerging Markets Fund
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 15/04/2013
+  declarant: BERRADA Soleiman
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 15/04/2013
+  declarant: COLBERT FINANCES SA
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 09/04/2013
+  declarant: BERRADA Mohamed Jaouad
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 08/04/2013
+  declarant: BERRADA Mohamed Jawad
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 08/04/2013
+  declarant: BERRADA Soleiman
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 29/03/2010
+  declarant: COLBERT FINANCES SA
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 29/03/2010
+  declarant: BERRADA Soleiman
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/03/2010
+  declarant: BERRADA SOFIA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/03/2010
+  declarant: BERRADA Mohamed Jawad
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/03/2010
+  declarant: DUCASTEL Josette
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/03/2010
+  declarant: BERRADA Farid
+  threshold_percent: 20.0
+  direction: Baisse
+- date: 23/03/2010
+  declarant: BERRADA Farid
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 23/03/2010
+  declarant: BERRADA Mohamed Jawad
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 23/03/2010
+  declarant: BERRADA Soleiman
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 23/03/2010
+  declarant: BERRADA SOFIA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 23/03/2010
+  declarant: DUCASTEL Josette
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 28/10/2009
+  declarant: Arisaig Africa Consumer Fund limited
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 26/06/2008
+  declarant: Arisaig Africa Consumer Fund limited
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Merième LOTFI
+  email: lotfi@colorado.ma
+  fax: null
+  phone: null

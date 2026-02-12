@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { ArrowUpRight, ArrowDownRight, DollarSign, PieChart as PieIcon, Activity, Banknote, Info, Globe, TrendingUp, Radio, Check } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, DollarSign, PieChart as PieIcon, Activity, Banknote, Info, Globe, TrendingUp, Radio, Check, Award, TrendingDown } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend, Area, XAxis, YAxis, CartesianGrid, ComposedChart, Line, Treemap, Brush } from 'recharts';
 import { MarketData } from './MarketData';
 import { usePortfolioContext } from '../context/PortfolioContext';
@@ -11,7 +11,12 @@ import { ReturnsHeatmap } from './ReturnsHeatmap';
 import { AllocationSunburst } from './AllocationSunburst';
 import { CashFlowCard } from './CashFlowCard';
 import { ExpensesBreakdown } from './ExpensesBreakdown';
+import { FundamentalsPanel } from './FundamentalsPanel';
+import { ValuationScreener } from './ValuationScreener';
+import { QualityDashboard } from './QualityDashboard';
+import { RiskDashboard } from './RiskDashboard';
 import { motion, Variants } from 'framer-motion';
+
 
 const containerVariants: any = {
   hidden: { opacity: 0 },
@@ -86,11 +91,11 @@ const StatCard = ({ title, value, subValue, isPositive, icon, sparklineData, col
 );
 
 export const Dashboard: React.FC = () => {
-  const { portfolio, currentPrices, updateManualPrices: onUpdatePrices, isFeedConnected } = usePortfolioContext();
-  const [isMarketDataOpen, setIsMarketDataOpen] = useState(false);
-  const [isFeesManagerOpen, setIsFeesManagerOpen] = useState(false);
-  const [chartScale, setChartScale] = useState<'linear' | 'log'>('linear');
-  const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('ALL');
+const { portfolio, currentPrices, updateManualPrices: onUpdatePrices, isFeedConnected } = usePortfolioContext();
+const [isMarketDataOpen, setIsMarketDataOpen] = useState(false);
+const [isFeesManagerOpen, setIsFeesManagerOpen] = useState(false);
+const [chartScale, setChartScale] = useState<'linear' | 'log'>('linear');
+const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('ALL');
 
   const treemapData = useMemo(() => {
     const sectors: Record<string, { name: string; children: any[] }> = {};
@@ -202,31 +207,28 @@ export const Dashboard: React.FC = () => {
           </button>
         </div>
       </motion.div>
-
-
-
-      {/* Top Movers Bar */}
-      <motion.div variants={itemVariants} className="bg-slate-900 rounded-2xl p-4 flex flex-wrap items-center gap-6 shadow-xl border border-slate-800 overflow-hidden relative group">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-50"></div>
-        <div className="flex items-center gap-2 relative z-10 shrink-0">
-          <TrendingUp size={16} className="text-emerald-400" />
-          <span className="text-xs font-bold text-white uppercase tracking-wider">Top Movers</span>
-        </div>
-        <div className="h-4 w-px bg-slate-700 hidden md:block relative z-10"></div>
-        <div className="flex flex-wrap items-center gap-6 relative z-10 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
-          {portfolio.holdings
-            .sort((a, b) => Math.abs(b.unrealizedPLPercent) - Math.abs(a.unrealizedPLPercent))
-            .slice(0, 6)
-            .map(h => (
-              <div key={h.ticker} className="flex items-center gap-2 group/mover cursor-default">
-                <span className="text-xs font-bold text-slate-300 group-hover/mover:text-white transition-colors uppercase">{h.ticker}</span>
-                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${h.unrealizedPLPercent >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
-                  {h.unrealizedPLPercent >= 0 ? '▲' : '▼'} {Math.abs(h.unrealizedPLPercent).toFixed(2)}%
-                </span>
-              </div>
-            ))}
-        </div>
-      </motion.div>
+          {/* Top Movers Bar */}
+          <motion.div variants={itemVariants} className="bg-slate-900 rounded-2xl p-4 flex flex-wrap items-center gap-6 shadow-xl border border-slate-800 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-50"></div>
+            <div className="flex items-center gap-2 relative z-10 shrink-0">
+              <TrendingUp size={16} className="text-emerald-400" />
+              <span className="text-xs font-bold text-white uppercase tracking-wider">Top Movers</span>
+            </div>
+            <div className="h-4 w-px bg-slate-700 hidden md:block relative z-10"></div>
+            <div className="flex flex-wrap items-center gap-6 relative z-10 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
+              {portfolio.holdings
+                .sort((a, b) => Math.abs(b.unrealizedPLPercent) - Math.abs(a.unrealizedPLPercent))
+                .slice(0, 6)
+                .map(h => (
+                  <div key={h.ticker} className="flex items-center gap-2 group/mover cursor-default">
+                    <span className="text-xs font-bold text-slate-300 group-hover/mover:text-white transition-colors uppercase">{h.ticker}</span>
+                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${h.unrealizedPLPercent >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                      {h.unrealizedPLPercent >= 0 ? '▲' : '▼'} {Math.abs(h.unrealizedPLPercent).toFixed(2)}%
+                    </span>
+                  </div>
+                ))}
+            </div>
+          </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <CashFlowCard />
@@ -461,7 +463,6 @@ export const Dashboard: React.FC = () => {
         </div>
 
       </motion.div>
-
     </motion.div>
   );
 };

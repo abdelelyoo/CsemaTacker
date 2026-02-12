@@ -1,0 +1,217 @@
+company_information:
+  name: MANAGEM
+  headquarters: 'Twin Center, Tour A, angle Bd Zerktouni et Al Massira Al Khadra -
+    BP: 5199 Casablanca'
+  website: www.managemgroup.com
+  phone: (212) 05 22 95 67 43 / 05 22 95 65 19 / 05 22 95 65 51 / 05 22 95 65 73 /
+    0522 95 65 67
+  fax: (212) 0522 95 65 65/ 05 22 95 65 52 / 05 22 95 64 51
+  auditors:
+  - Deloitte Audit
+  - Price Waterhouse
+  date_of_incorporation: 17/11/1930
+  introduction_date_bourse: 11/07/2000
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: TOUMI Imad
+- role: Directrice Exécutive Financière
+  name: MAHFOUD Mouna
+shareholders:
+  as_of_date: 23/06/2025
+  ownership_structure:
+  - name: AL MADA
+    percentage: 81.63
+  - name: DIVERS ACTIONNAIRES
+    percentage: 10.1
+  - name: CIMR
+    percentage: 8.27
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 1186467600.0
+  shareholders_equity: 11418700000.0
+  shares_outstanding: 11864676
+  revenue: 8859400000.0
+  operating_income: 1252300000.0
+  net_income_group_share: 619800000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 999130800.0
+  shareholders_equity: 8227700000.0
+  shares_outstanding: 9991308
+  revenue: 7507600000.0
+  operating_income: 1044700000.0
+  net_income_group_share: 514400000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 999130800.0
+  shareholders_equity: 8208000000.0
+  shares_outstanding: 9991308
+  revenue: 9645200000.0
+  operating_income: 1993000000.0
+  net_income_group_share: 1614500000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 52.24
+  roe_percent: 5.43
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 55.3
+  pbr: 3.0
+- year: 2023
+  eps_bpa: 51.48
+  roe_percent: 6.25
+  payout_percent: 69.2
+  dividend_yield_percent: 2.02
+  per: 34.18
+  pbr: 2.14
+- year: 2022
+  eps_bpa: 161.59
+  roe_percent: 19.67
+  payout_percent: 18.57
+  dividend_yield_percent: 1.19
+  per: 15.66
+  pbr: 3.08
+financial_operations:
+  capital_increases:
+  - date: 17/04/2024
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 937 500
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 17/04/2024
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 935 868
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 03/08/2017
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 832 609
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 29/12/2011
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 567 181
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 29/12/2011
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 83 797
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 40.0
+    type: Ordinaire
+    ex_date: 30/06/2025
+    payment_date: 08/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 20/06/2024
+    payment_date: 01/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 30.0
+    type: Ordinaire
+    ex_date: 06/07/2023
+    payment_date: 14/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 20.0
+    type: Ordinaire
+    ex_date: 22/06/2022
+    payment_date: 01/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 15.0
+    type: Ordinaire
+    ex_date: 20/06/2019
+    payment_date: 01/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 23.0
+    type: Ordinaire
+    ex_date: 21/06/2018
+    payment_date: 02/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 21.0
+    type: Ordinaire
+    ex_date: 06/07/2017
+    payment_date: 17/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 20.0
+    type: Ordinaire
+    ex_date: 22/06/2016
+    payment_date: 01/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 25.0
+    type: Ordinaire
+    ex_date: 22/06/2015
+    payment_date: 01/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 25.0
+    type: Ordinaire
+    ex_date: 20/06/2014
+    payment_date: 01/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 20.0
+    type: Ordinaire
+    ex_date: 20/06/2013
+    payment_date: 01/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 15.0
+    type: Ordinaire
+    ex_date: 20/06/2012
+    payment_date: 29/06/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 20/03/2014
+  declarant: CIMR
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 07/01/2011
+  declarant: SNI
+  threshold_percent: 66.66
+  direction: Hausse
+investor_relations_contact:
+  person: Azzouzi Maha, Meryem BELMOKADEM, Hassan EL HANIMI, Badia BOUCHAMA, Mouna
+    MAHFOUD
+  email: m.azzouzi@managemgroup.com; M.BELMOKADEM@MANAGEMGROUP.COM; I.elhanimi@managemgroup.com
+    ; b.bouchama@managemgroup.com ; m.mahfoud@managemgroup.com
+  fax: null
+  phone: null

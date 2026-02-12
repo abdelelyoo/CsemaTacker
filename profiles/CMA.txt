@@ -1,0 +1,337 @@
+company_information:
+  name: CIMENTS DU MAROC
+  headquarters: 621. Boulevard Panoramique. 20150 Casablanca
+  website: www.cimentsdumaroc.com
+  phone: +212 522 85 95 17
+  fax: (212) 0522 50 10 99 / 022 50 45 80
+  auditors:
+  - MAZARS
+  - Ernst & Young
+  date_of_incorporation: 07/07/1951
+  introduction_date_bourse: 24/06/1969
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d'Administration
+  name: CHAIBI Mohamed
+- role: Directeur Général
+  name: WEIG Severin
+- role: Directeur Général Délégué
+  name: BOUJNAOUI Mohamed
+- role: Directeur Financier
+  name: ALLOUCHERY Christophe
+shareholders:
+  as_of_date: 10/09/2025
+  ownership_structure:
+  - name: Heidelberg Materials AMWA Holding GmbH i.G
+    percentage: 41.0
+  - name: DIVERS ACTIONNAIRES
+    percentage: 25.31
+  - name: PROCIMAR
+    percentage: 10.0
+  - name: CIMR
+    percentage: 9.52
+  - name: CAISSE MAROCAINE DE RETRAITE (CMR)
+    percentage: 6.5
+  - name: Abu Dhabi Fund for Development
+    percentage: 4.79
+  - name: FIPAR HOLDING
+    percentage: 2.88
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 1443600400.0
+  shareholders_equity: 3329472000.0
+  shares_outstanding: 14436004
+  revenue: 4386567000.0
+  operating_income: 1557451000.0
+  net_income_group_share: 914161000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 1443600400.0
+  shareholders_equity: 3428715000.0
+  shares_outstanding: 14436004
+  revenue: 4333153000.0
+  operating_income: 1428162000.0
+  net_income_group_share: 970195000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 1443600400.0
+  shareholders_equity: 3321526000.0
+  shares_outstanding: 14436004
+  revenue: 4067756000.0
+  operating_income: 1327103000.0
+  net_income_group_share: 905080000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 63.33
+  roe_percent: 27.46
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 29.69
+  pbr: 8.15
+- year: 2023
+  eps_bpa: 67.21
+  roe_percent: 28.3
+  payout_percent: 104.16
+  dividend_yield_percent: 4.17
+  per: 25.0
+  pbr: 7.07
+- year: 2022
+  eps_bpa: 62.7
+  roe_percent: 27.25
+  payout_percent: 95.7
+  dividend_yield_percent: 4.69
+  per: 20.42
+  pbr: 5.56
+financial_operations:
+  capital_increases:
+  - date: 14/07/2010
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 7 218 002
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 13/12/1999
+    type: Apport en nature
+    shares_variation: 2 845 920
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 14/09/1994
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 1 282 443
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 14/09/1994
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 427 481
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 06/01/1994
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 899 960
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 17/02/1993
+    type: Apport en nature
+    shares_variation: 904 400
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 14/01/1993
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 899 960
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 14/01/1993
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 269 988
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 60.0
+    type: Ordinaire
+    ex_date: 18/07/2025
+    payment_date: 29/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 10.0
+    type: Exceptionnel
+    ex_date: 02/07/2024
+    payment_date: 15/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 60.0
+    type: Ordinaire
+    ex_date: 02/07/2024
+    payment_date: 15/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 60.0
+    type: Ordinaire
+    ex_date: 06/07/2023
+    payment_date: 17/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 95.0
+    type: Ordinaire
+    ex_date: 04/07/2022
+    payment_date: 15/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 10.0
+    type: Exceptionnel
+    ex_date: 06/07/2021
+    payment_date: 15/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 90.0
+    type: Ordinaire
+    ex_date: 06/07/2021
+    payment_date: 15/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 100.0
+    type: Ordinaire
+    ex_date: 10/06/2020
+    payment_date: 19/06/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 85.0
+    type: Ordinaire
+    ex_date: 24/06/2019
+    payment_date: 03/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 25.0
+    type: Exceptionnel
+    ex_date: 26/06/2018
+    payment_date: 05/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 75.0
+    type: Ordinaire
+    ex_date: 26/06/2018
+    payment_date: 05/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 65.0
+    type: Ordinaire
+    ex_date: 21/06/2017
+    payment_date: 04/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 55.0
+    type: Ordinaire
+    ex_date: 23/06/2016
+    payment_date: 04/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 28.0
+    type: Exceptionnel
+    ex_date: 21/09/2015
+    payment_date: 02/10/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 23/06/2015
+    payment_date: 02/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 45.0
+    type: Ordinaire
+    ex_date: 25/06/2014
+    payment_date: 04/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 40.0
+    type: Ordinaire
+    ex_date: 26/06/2013
+    payment_date: 05/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 35.0
+    type: Ordinaire
+    ex_date: 06/06/2012
+    payment_date: 15/06/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 17/07/2025
+  declarant: HEIDELBERG MATERIALS ITALIA CEMENTI S.P.A
+  threshold_percent: 20.0
+  direction: Baisse
+- date: 11/07/2025
+  declarant: Heidelberg Materials AMWA Holding GmbH i.G
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 11/07/2025
+  declarant: HEIDELBERG MATERIALS ITALIA CEMENTI S.P.A
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/11/2024
+  declarant: FIPAR HOLDING
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 26/12/2023
+  declarant: PROCIMAR
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 30/11/2022
+  declarant: Italcementi Fabbriche Riunite Cemento SPA Bergamo
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 28/11/2019
+  declarant: COCIMAR
+  threshold_percent: 50.0
+  direction: Baisse
+- date: 21/02/2019
+  declarant: CAISSE MAROCAINE DE RETRAITE (CMR)
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 21/02/2018
+  declarant: Abu Dhabi Fund for Development
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 01/07/2016
+  declarant: HeidelbergCement France SAS
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 16/07/2009
+  declarant: COCIMAR
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 16/07/2009
+  declarant: CIMENTS FRANCAIS
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/12/2003
+  declarant: BANQUE NATIONALE POUR LE DEVELOPPEMENT ECONOMIQUE
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/12/2003
+  declarant: BANQUE NATIONALE POUR LE DEVELOPPEMENT ECONOMIQUE
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 29/12/2003
+  declarant: FIPAR HOLDING
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Christophe ALLOUCHERY
+  email: christophe.allouchery@cimar.co.ma
+  fax: null
+  phone: null

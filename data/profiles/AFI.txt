@@ -1,0 +1,196 @@
+company_information:
+  name: AFRIC INDUSTRIES SA
+  headquarters: Zone Industrielle, Route de Tétouan, Lot 107, BP 368
+  website: www.africindustries.com
+  phone: '539351235'
+  fax: '539351500'
+  auditors:
+  - A & T Auditeurs Consultants
+  - A.Saaidi & Associés
+  date_of_incorporation: 17/12/1980
+  introduction_date_bourse: 05/01/2012
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Conseil d’Administration
+  name: EL ALAMI Malika
+- role: Directeur Général
+  name: SAKKAT Mohammed Mehdi
+- role: Directeur Administratif et Financier
+  name: HAJAJI Adil
+shareholders:
+  as_of_date: 06/05/2025
+  ownership_structure:
+  - name: Aluminium du Maroc SA
+    percentage: 51.0
+  - name: DIVERS ACTIONNAIRES
+    percentage: 49.0
+financial_figures:
+- year: 2024
+  consolidated_accounts: false
+  capital_social: 14575000.0
+  shareholders_equity: 48036443.24
+  shares_outstanding: 291500
+  revenue: 43110076.58
+  operating_income: 9586463.63
+  net_income_group_share: 9916766.71
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 14575000.0
+  shareholders_equity: 43949676.53
+  shares_outstanding: 291500
+  revenue: 43090761.16
+  operating_income: 7186342.8
+  net_income_group_share: 4456706.78
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 14575000.0
+  shareholders_equity: 45322969.75
+  shares_outstanding: 291500
+  revenue: 39857163.88
+  operating_income: 8699587.03
+  net_income_group_share: 6187228.07
+financial_ratios:
+- year: 2024
+  eps_bpa: 34.02
+  roe_percent: 20.64
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 8.93
+  pbr: 1.84
+- year: 2023
+  eps_bpa: 15.29
+  roe_percent: 10.14
+  payout_percent: 130.81
+  dividend_yield_percent: 5.97
+  per: 21.91
+  pbr: 2.22
+- year: 2022
+  eps_bpa: 21.23
+  roe_percent: 13.65
+  payout_percent: 94.23
+  dividend_yield_percent: 5.9
+  per: 15.97
+  pbr: 2.18
+financial_operations:
+  dividends_paid:
+  - year: 2024
+    amount: 22.0
+    type: Ordinaire
+    detachment_date: 06/05/2025
+    payment_date: 15/05/2025
+    ex_date: null
+    amount_per_share: null
+  - year: 2023
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 07/05/2024
+    payment_date: 16/05/2024
+    ex_date: null
+    amount_per_share: null
+  - year: 2022
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 04/05/2023
+    payment_date: 15/05/2023
+    ex_date: null
+    amount_per_share: null
+  - year: 2021
+    amount: 22.0
+    type: Ordinaire
+    detachment_date: 05/05/2022
+    payment_date: 13/05/2022
+    ex_date: null
+    amount_per_share: null
+  - year: 2020
+    amount: 22.0
+    type: Ordinaire
+    detachment_date: 06/05/2021
+    payment_date: 14/05/2021
+    ex_date: null
+    amount_per_share: null
+  - year: 2019
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 07/05/2020
+    payment_date: 15/05/2020
+    ex_date: null
+    amount_per_share: null
+  - year: 2018
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 06/05/2019
+    payment_date: 14/05/2019
+    ex_date: null
+    amount_per_share: null
+  - year: 2017
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 04/05/2018
+    payment_date: 14/05/2018
+    ex_date: null
+    amount_per_share: null
+  - year: 2016
+    amount: 15.0
+    type: Ordinaire
+    detachment_date: 05/05/2017
+    payment_date: 15/05/2017
+    ex_date: null
+    amount_per_share: null
+  - year: 2015
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 06/05/2016
+    payment_date: 16/05/2016
+    ex_date: null
+    amount_per_share: null
+  - year: 2014
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 07/05/2015
+    payment_date: 15/05/2015
+    ex_date: null
+    amount_per_share: null
+  - year: 2013
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 06/05/2014
+    payment_date: 15/05/2014
+    ex_date: null
+    amount_per_share: null
+  - year: 2012
+    amount: 20.0
+    type: Ordinaire
+    detachment_date: 07/05/2013
+    payment_date: 15/05/2013
+    ex_date: null
+    amount_per_share: null
+  - year: 2011
+    amount: 29.0
+    type: Ordinaire
+    detachment_date: 08/05/2012
+    payment_date: 16/05/2012
+    ex_date: null
+    amount_per_share: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+  capital_increases:
+  - date: null
+    nature: null
+    amount: null
+threshold_crossings:
+- date: 12/07/2017
+  declarant: Aluminium du Maroc SA
+  threshold_percent: 50.0
+  direction: Hausse
+investor_relations_contact:
+  person: Bilal BENHIMA
+  email: direction@africindustries.com
+  fax: null
+  phone: null

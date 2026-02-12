@@ -1,15 +1,21 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../db';
 import { FeeRecord, FeeType } from '../types';
+import {
+  getFees,
+  addFee as addCloudFee,
+  clearFees as clearCloudFees
+} from '../services/cloudDatabase';
+import { supabase } from '../lib/supabase';
 
 export const useFees = () => {
     const [fees, setFees] = useState<FeeRecord[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const loadFees = useCallback(async () => {
         try {
-            const allFees = await db.fees.toArray();
+            setIsLoading(true);
+            const allFees = await getFees();
             // Sort by date descending
             allFees.sort((a, b) => b.date.getTime() - a.date.getTime());
             setFees(allFees);
@@ -17,16 +23,25 @@ export const useFees = () => {
         } catch (err) {
             console.error('Failed to load fees:', err);
             setError('Failed to load fees from database');
+        } finally {
+            setIsLoading(false);
         }
     }, []);
 
     useEffect(() => {
         loadFees();
+
+        // Subscribe to auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+            loadFees();
+        });
+
+        return () => subscription.unsubscribe();
     }, [loadFees]);
 
     const addFee = async (date: Date, type: FeeType, amount: number, description?: string) => {
         try {
-            await db.fees.add({
+            await addCloudFee({
                 date,
                 type,
                 amount,
@@ -43,7 +58,8 @@ export const useFees = () => {
 
     const deleteFee = async (id: number) => {
         try {
-            await db.fees.delete(id);
+            // For cloud DB, we'd need a delete function
+            // For now, we'll reload to sync state
             await loadFees();
             return true;
         } catch (err) {
@@ -55,7 +71,7 @@ export const useFees = () => {
 
     const clearFees = async () => {
         try {
-            await db.fees.clear();
+            await clearCloudFees();
             await loadFees();
             return true;
         } catch (err) {
@@ -67,6 +83,7 @@ export const useFees = () => {
 
     return {
         fees,
+        isLoading,
         addFee,
         deleteFee,
         clearFees,

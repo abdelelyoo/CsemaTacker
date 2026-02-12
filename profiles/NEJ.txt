@@ -1,0 +1,232 @@
+company_information:
+  name: AUTO NEJMA
+  headquarters: Km 10. Route d'El Jadida - Casablanca 20 230.
+  website: www.autonejma.ma
+  phone: (212) 0522 65 09 90
+  fax: (212) 0522 65 08 25
+  auditors:
+  - Deloitte & Touche Auditors
+  - KPMG
+  date_of_incorporation: 01/01/1963
+  introduction_date_bourse: 03/05/1999
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président
+  name: HAKAM Abdellatif
+- role: Directeur Général Adjoint
+  name: EL IRAKI Youssef
+shareholders:
+  as_of_date: 06/09/2023
+  ownership_structure:
+  - name: HAKAM ABDELLATIF FINANCE SA
+    percentage: 31.42
+  - name: MAD INVEST
+    percentage: 19.35
+  - name: FINAM SARL
+    percentage: 14.32
+  - name: HAKAM EL ABBES PARTICIPATIONS
+    percentage: 9.67
+  - name: ZAK FINANCE SARL
+    percentage: 8.9
+  - name: BISMILLAH HOLDING
+    percentage: 8.5
+  - name: LOUKSSOS HOLDING
+    percentage: 4.57
+  - name: DIVERS ACTIONNAIRES
+    percentage: 3.26
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 102326400.0
+  shareholders_equity: 1257646000.0
+  shares_outstanding: 1023264
+  revenue: 2902480000.0
+  operating_income: 357914000.0
+  net_income_group_share: 205383000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 102326400.0
+  shareholders_equity: 1148431000.0
+  shares_outstanding: 1023264
+  revenue: 2274525000.0
+  operating_income: 264829000.0
+  net_income_group_share: 157773000.0
+- year: 2022
+  consolidated_accounts: false
+  capital_social: 102326400.0
+  shareholders_equity: 1115741980.46
+  shares_outstanding: 1023264
+  revenue: 2100779386.09
+  operating_income: 286714254.19
+  net_income_group_share: 187153799.62
+financial_ratios:
+- year: 2024
+  eps_bpa: 200.71
+  roe_percent: 16.33
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 10.3
+  pbr: 1.68
+- year: 2023
+  eps_bpa: 154.19
+  roe_percent: 13.74
+  payout_percent: 60.97
+  dividend_yield_percent: 3.81
+  per: 16.02
+  pbr: 2.2
+- year: 2022
+  eps_bpa: 182.9
+  roe_percent: 16.77
+  payout_percent: 68.34
+  dividend_yield_percent: 6.88
+  per: 9.93
+  pbr: 1.67
+financial_operations:
+  capital_increases:
+  - date: 12/09/2008
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 170 544
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 03/07/2006
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 77 520
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 31/07/2000
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 129 200
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 120.0
+    type: Ordinaire
+    ex_date: 22/05/2025
+    payment_date: 02/06/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 94.0
+    type: Ordinaire
+    ex_date: 23/05/2024
+    payment_date: 03/06/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 15.0
+    type: Exceptionnel
+    ex_date: 18/04/2023
+    payment_date: 28/04/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 110.0
+    type: Ordinaire
+    ex_date: 18/04/2023
+    payment_date: 28/04/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 86.0
+    type: Ordinaire
+    ex_date: 20/05/2022
+    payment_date: 31/05/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 60.0
+    type: Ordinaire
+    ex_date: 21/06/2021
+    payment_date: 30/06/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 94.0
+    type: Ordinaire
+    ex_date: 19/06/2020
+    payment_date: 30/06/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 66.0
+    type: Ordinaire
+    ex_date: 11/06/2019
+    payment_date: 20/06/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 77.0
+    type: Ordinaire
+    ex_date: 08/06/2018
+    payment_date: 20/06/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 73.0
+    type: Ordinaire
+    ex_date: 13/06/2017
+    payment_date: 22/06/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 60.0
+    type: Ordinaire
+    ex_date: 17/06/2016
+    payment_date: 28/06/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 19/06/2015
+    payment_date: 30/06/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 30/06/2014
+    payment_date: 09/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 28/06/2013
+    payment_date: 09/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 50.0
+    type: Ordinaire
+    ex_date: 28/06/2012
+    payment_date: 09/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 26/12/2003
+  declarant: FINAM SARL
+  threshold_percent: 20.0
+  direction: Baisse
+- date: 26/12/2003
+  declarant: ZAK FINANCE SARL
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: EL IRAKI Youssef
+  email: youssef.eliraki@autonejma.ma
+  fax: null
+  phone: null

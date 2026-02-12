@@ -1,0 +1,351 @@
+company_information:
+  name: CREDIT IMMOBILIER ET HOTELIER
+  headquarters: 187, Avenue Hassan II, 20019 Casablanca Maroc
+  website: www.cihbank.ma
+  phone: (212) 0522 47 97 65
+  fax: (212) 0522 47 99 46
+  auditors:
+  - Mazars
+  - Fidaroc Grant Thornton
+  date_of_incorporation: 26/05/1920
+  introduction_date_bourse: 23/06/1967
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: SEKKAT Lotfi
+- role: Directeur Général Délégué en charge de la Stratégie, Finances & Développement
+  name: ZOUBIR Younes
+- role: Directeur Général Délégué en charge des Banques des Particuliers & Professionnels
+  name: BENALLA Khalid
+shareholders:
+  as_of_date: 02/09/2024
+  ownership_structure:
+  - name: MASSIRA CAPITAL MANAGEMENT
+    percentage: 55.66
+  - name: DIVERS ACTIONNAIRES
+    percentage: 16.37
+  - name: ATLANTASANAD
+    percentage: 11.61
+  - name: CDG (Caisse de Dépôt et de Gestion)
+    percentage: 6.69
+  - name: RCAR
+    percentage: 5.21
+  - name: Personnel
+    percentage: 4.36
+  - name: HOLMARCOM (Holding Marocaine Commerciale)
+    percentage: 0.12
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 3149728300.0
+  shareholders_equity: 8437448000.0
+  shares_outstanding: 31497283
+  revenue: 4739507000.0
+  operating_income: 1587949000.0
+  net_income_group_share: 875878000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 3051978400.0
+  shareholders_equity: 7543081000.0
+  shares_outstanding: 30519784
+  revenue: 4468202000.0
+  operating_income: 1196020000.0
+  net_income_group_share: 710393000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 3051978400.0
+  shareholders_equity: 7083052000.0
+  shares_outstanding: 30519784
+  revenue: 3517984000.0
+  operating_income: 1066785000.0
+  net_income_group_share: 669086000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 27.81
+  roe_percent: 10.38
+  payout_percent: 50.35
+  dividend_yield_percent: 3.54
+  per: 14.2
+  pbr: 1.47
+- year: 2023
+  eps_bpa: 23.28
+  roe_percent: 9.42
+  payout_percent: 60.15
+  dividend_yield_percent: 3.98
+  per: 15.1
+  pbr: 1.42
+- year: 2022
+  eps_bpa: 21.92
+  roe_percent: 9.45
+  payout_percent: 63.86
+  dividend_yield_percent: 4.61
+  per: 13.87
+  pbr: 1.31
+financial_operations:
+  capital_increases:
+  - date: 05/08/2025
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 4 108 341
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 02/09/2024
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 977 499
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 20/12/2022
+    type: Souscription en numéraire sans droit préférentiel
+    shares_variation: 1 612 903
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 09/12/2022
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 582 146
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 26/09/2019
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 1 716 650
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 27/12/2011
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 3 801 155
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 28/09/2009
+    type: Conversion des dividendes
+    shares_variation: 983 567
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 28/02/2006
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 18 500 000
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 03/10/2001
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 19 967 131
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 30/04/1998
+    type: Souscription en numéraire avec droit préférentiel
+    shares_variation: 3 061 500
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 09/01/1995
+    type: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 1 884 000
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 30/06/2025
+    payment_date: 09/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 09/07/2024
+    payment_date: 18/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 04/07/2023
+    payment_date: 13/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 01/07/2022
+    payment_date: 14/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 8.0
+    type: Ordinaire
+    ex_date: 07/07/2021
+    payment_date: 16/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 21/09/2020
+    payment_date: 30/09/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 26/06/2019
+    payment_date: 05/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 27/06/2018
+    payment_date: 06/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 2.0
+    type: Exceptionnel
+    ex_date: 27/06/2018
+    payment_date: 06/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 28/06/2017
+    payment_date: 07/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 27/06/2016
+    payment_date: 11/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 26/06/2015
+    payment_date: 07/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 2.0
+    type: Exceptionnel
+    ex_date: 26/06/2015
+    payment_date: 07/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 15.0
+    type: Ordinaire
+    ex_date: 25/06/2014
+    payment_date: 04/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 20/06/2013
+    payment_date: 01/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 11.0
+    type: Ordinaire
+    ex_date: 21/06/2012
+    payment_date: 02/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - name: OCHIC
+    description: 18MAI2018 4.02% 10A 100K CHI
+    type: Subordonné
+    amount: 82 600 000,00
+    label: null
+    ticker: null
+    amount_issued: null
+    amount_issued_kmad: null
+  - name: OCHIA
+    description: 09JAN2015 4.75% 10A 100K CHI
+    type: Subordonné
+    amount: 53 300 000,00
+    label: null
+    ticker: null
+    amount_issued: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 02/09/2024
+  declarant: RCAR
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 02/10/2020
+  declarant: ATLANTA
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 22/07/2014
+  declarant: MASSIRA CAPITAL MANAGEMENT
+  threshold_percent: 66.66
+  direction: Baisse
+- date: 22/07/2014
+  declarant: SANAD
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 22/07/2014
+  declarant: ATLANTA
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 22/07/2014
+  declarant: HOLMARCOM (Holding Marocaine Commerciale)
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 21/06/2006
+  declarant: MASSIRA CAPITAL MANAGEMENT
+  threshold_percent: 66.66
+  direction: Hausse
+- date: 21/06/2006
+  declarant: CDG (Caisse de Dépôt et de Gestion)
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 20/03/2006
+  declarant: BANK AL MAGHRIB
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 20/03/2006
+  declarant: MASSIRA CAPITAL MANAGEMENT
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 23/12/2005
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 23/12/2005
+  declarant: HOLMARCOM (Holding Marocaine Commerciale)
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 23/12/2005
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 07/12/2005
+  declarant: AXA ASSURANCES MAROC
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 28/10/2005
+  declarant: CDG (Caisse de Dépôt et de Gestion)
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 28/10/2005
+  declarant: BANQUE CENTRALE POPULAIRE
+  threshold_percent: 5.0
+  direction: Baisse
+investor_relations_contact:
+  person: NASREDDINE EL Haouat
+  email: Nasreddine.ElHaouat@cihbank.ma
+  fax: null
+  phone: null

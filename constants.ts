@@ -227,7 +227,7 @@ export const VAT_RATE = 0.10; // 10%
 export const TPCVM_RATE = 0.15; // 15% on realized gains (usually paid at source for dividends, calculated for sales)
 
 // Dividend Tax (Domestic stocks)
-export const DIVIDEND_TAX_RATE = 0.15; // 15%
+export const DIVIDEND_TAX_RATE = 0.02; // 2% effective tax (10% withholding at source)
 
 // Approximate total sell fee rate (for break-even estimates)
 // (0.6% + 0.2% + 0.1%) * 1.1 = 0.99%

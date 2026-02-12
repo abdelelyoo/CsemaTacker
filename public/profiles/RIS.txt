@@ -1,0 +1,185 @@
+company_information:
+  name: RISMA
+  headquarters: 97, Boulevard Massira El Khadra, 5ème Etage, Casablanca
+  website: null
+  phone: (212) 0520 40 10 10
+  fax: (212) 0520 40 10 11
+  auditors:
+  - Ernst & Young
+  - Deloitte Touch
+  date_of_incorporation: 01/01/1993
+  introduction_date_bourse: 15/05/2006
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Directoire
+  name: ECHCHERKI Amine
+shareholders:
+  as_of_date: 08/08/2024
+  ownership_structure:
+  - name: RMA WATANYA
+    percentage: 36.74
+  - name: Mutris SCA
+    percentage: 33.34
+  - name: CIMR
+    percentage: 12.32
+  - name: DIVERS ACTIONNAIRES
+    percentage: 11.61
+  - name: Groupe MCMA-MAMDA
+    percentage: 5.99
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 1432694700.0
+  shareholders_equity: 1694751000.0
+  shares_outstanding: 14326947
+  revenue: 1263775000.0
+  operating_income: 292842000.0
+  net_income_group_share: 183024000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 1432694700.0
+  shareholders_equity: 1579268000.0
+  shares_outstanding: 14326947
+  revenue: 1174515000.0
+  operating_income: 249799000.0
+  net_income_group_share: 244054000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 1432694700.0
+  shareholders_equity: 1309102000.0
+  shares_outstanding: 14326947
+  revenue: 1036566000.0
+  operating_income: 204004000.0
+  net_income_group_share: 152075000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 12.77
+  roe_percent: 10.8
+  payout_percent: 54.8
+  dividend_yield_percent: 3.12
+  per: 17.54
+  pbr: 1.89
+- year: 2023
+  eps_bpa: 17.03
+  roe_percent: 15.45
+  payout_percent: 35.22
+  dividend_yield_percent: 2.9
+  per: 12.15
+  pbr: 1.88
+- year: 2022
+  eps_bpa: 10.61
+  roe_percent: 11.62
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 10.74
+  pbr: 1.25
+financial_operations:
+  capital_increases:
+  - date: 11/04/2016
+    type: Remboursement d'obligations en actions
+    shares_variation: 6 367 532
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 04/10/2013
+    type: Remboursement d'obligations en actions
+    shares_variation: 76 480
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 02/08/2012
+    type: Remboursement d'obligations en actions
+    shares_variation: 59 250
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 05/08/2011
+    type: Remboursement d'obligations en actions
+    shares_variation: 1 591 673
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 27/11/2006
+    type: Remboursement d'obligations en actions
+    shares_variation: 668 184
+    share_variation: null
+    nature: null
+    amount: null
+  - date: 08/08/2006
+    type: Remboursement d'obligations en actions
+    shares_variation: 147 303
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 7.0
+    type: Ordinaire
+    ex_date: 23/07/2025
+    payment_date: 04/08/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 6.0
+    type: Ordinaire
+    ex_date: 18/07/2024
+    payment_date: 29/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 2.0
+    type: Ordinaire
+    ex_date: 19/07/2019
+    payment_date: 31/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 2.5
+    type: Ordinaire
+    ex_date: 22/09/2015
+    payment_date: 30/09/2015
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - name: ORISA
+    description: 30SEP2014 5.87% 1A06M 100 RIS
+    type: Remboursable en actions
+    amount: 43 528 100,00
+    amount_issued: null
+    label: null
+    ticker: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 02/08/2023
+  declarant: Mutris SCA
+  threshold_percent: 33.33
+  direction: Hausse
+- date: 02/08/2023
+  declarant: Accor SA
+  threshold_percent: 33.33
+  direction: Baisse
+- date: 11/04/2016
+  declarant: RMA WATANYA
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 23/12/2015
+  declarant: RMA WATANYA
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 23/12/2015
+  declarant: T CAPITAL GROUP
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 01/12/2014
+  declarant: RMA WATANYA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 13/06/2013
+  declarant: RMA WATANYA
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Sofia BENHAMIDA
+  email: risma.info@risma.com
+  fax: null
+  phone: null

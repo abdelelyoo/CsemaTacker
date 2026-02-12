@@ -190,7 +190,7 @@ export function validatePortfolioData(portfolio: any): ValidationResult {
   const requiredFields = [
     'totalValue', 'totalCost', 'totalRealizedPL', 'totalUnrealizedPL',
     'totalDividends', 'totalDeposits', 'holdings', 'cashBalance',
-    'totalTradingFees', 'totalCustodyFees', 'netTaxImpact', 'history'
+    'totalTradingFees', 'totalCustodyFees', 'totalSubscriptionFees', 'netTaxImpact', 'history'
   ];
 
   requiredFields.forEach(field => {

@@ -1,0 +1,291 @@
+company_information:
+  name: SOCIETE DE THERAPEUTIQUE MAROCAINE
+  headquarters: Centre de Bouskoura. BP n° 1 – Casablanca.
+  website: www.sothema.com
+  phone: 0522 43 70 40 (LG)
+  fax: 0522 43 70 45
+  auditors:
+  - PWC Maroc-Sarl
+  - Fiduciaire de France et du Maroc
+  date_of_incorporation: 26/01/1976
+  introduction_date_bourse: 21/02/2005
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: TAZI Lamia
+shareholders:
+  as_of_date: 21/05/2025
+  ownership_structure:
+  - name: TAZI MOHAMMED
+    percentage: 17.59
+  - name: DIVERS ACTIONNAIRES
+    percentage: 12.4
+  - name: TAZI Najia
+    percentage: 9.81
+  - name: TAZI Lamiae
+    percentage: 8.19
+  - name: TAZI Selma
+    percentage: 6.94
+  - name: BERRADA Mohammed Karim
+    percentage: 6.71
+  - name: BERRADA BAHIA
+    percentage: 6.5
+  - name: BERRADA Mohammed Amine
+    percentage: 6.41
+  - name: TAHIRI GHALI Consort
+    percentage: 5.37
+  - name: CHAOUI OMAR
+    percentage: 4.28
+  - name: TAZI BADIA
+    percentage: 4.0
+  - name: BERRADA HALIMA
+    percentage: 3.93
+  - name: BERRADA Lina
+    percentage: 3.67
+  - name: DIOURI Amal
+    percentage: 3.02
+  - name: SEFRIOUI MOHAMMED
+    percentage: 1.16
+  - name: TAZI Ali
+    percentage: 0.02
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 360000000.0
+  shareholders_equity: 1707312000.0
+  shares_outstanding: 7200000
+  revenue: 2815902000.0
+  operating_income: 512092000.0
+  net_income_group_share: 315288000.0
+- year: 2023
+  consolidated_accounts: false
+  capital_social: 360000000.0
+  shareholders_equity: 1518510000.0
+  shares_outstanding: 7200000
+  revenue: 2485996000.0
+  operating_income: 388546000.0
+  net_income_group_share: 262758000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 360000000.0
+  shareholders_equity: 1433679000.0
+  shares_outstanding: 7200000
+  revenue: 2301834000.0
+  operating_income: 448289976.0
+  net_income_group_share: 267134000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 43.79
+  roe_percent: 18.47
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 21.12
+  pbr: 3.9
+- year: 2023
+  eps_bpa: 36.49
+  roe_percent: 17.3
+  payout_percent: 46.58
+  dividend_yield_percent: 1.79
+  per: 26.06
+  pbr: 4.51
+- year: 2022
+  eps_bpa: 37.1
+  roe_percent: 18.63
+  payout_percent: 67.38
+  dividend_yield_percent: 1.89
+  per: 35.58
+  pbr: 6.63
+financial_operations:
+  capital_increases:
+  - date: 08/07/2021
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 1800000
+    share_variation: null
+    type: null
+    amount: null
+  - date: 25/08/2010
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 600000
+    share_variation: null
+    type: null
+    amount: null
+  - date: 15/07/2005
+    nature: Incorporation de réserves et attribution d'actions gratuites
+    shares_variation: 200000
+    share_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount_per_share: 28.0
+    type: Ordinaire
+    detachment_date: 20/06/2025
+    payment_date: 02/07/2025
+    ex_date: null
+    amount: null
+  - year: 2023
+    amount_per_share: 17.0
+    type: Ordinaire
+    detachment_date: 21/06/2024
+    payment_date: 02/07/2024
+    ex_date: null
+    amount: null
+  - year: 2022
+    amount_per_share: 25.0
+    type: Ordinaire
+    detachment_date: 03/07/2023
+    payment_date: 11/07/2023
+    ex_date: null
+    amount: null
+  - year: 2021
+    amount_per_share: 25.0
+    type: Ordinaire
+    detachment_date: 24/06/2022
+    payment_date: 05/07/2022
+    ex_date: null
+    amount: null
+  - year: 2020
+    amount_per_share: 21.0
+    type: Ordinaire
+    detachment_date: 15/07/2021
+    payment_date: 29/07/2021
+    ex_date: null
+    amount: null
+  - year: 2019
+    amount_per_share: 67.0
+    type: Ordinaire
+    detachment_date: 15/07/2020
+    payment_date: 24/07/2020
+    ex_date: null
+    amount: null
+  - year: 2018
+    amount_per_share: 67.0
+    type: Ordinaire
+    detachment_date: 25/06/2019
+    payment_date: 04/07/2019
+    ex_date: null
+    amount: null
+  - year: 2017
+    amount_per_share: 56.0
+    type: Ordinaire
+    detachment_date: 26/06/2018
+    payment_date: 05/07/2018
+    ex_date: null
+    amount: null
+  - year: 2016
+    amount_per_share: 56.0
+    type: Ordinaire
+    detachment_date: 29/06/2017
+    payment_date: 10/07/2017
+    ex_date: null
+    amount: null
+  - year: 2015
+    amount_per_share: 48.0
+    type: Ordinaire
+    detachment_date: 23/06/2016
+    payment_date: 04/07/2016
+    ex_date: null
+    amount: null
+  - year: 2014
+    amount_per_share: 40.0
+    type: Ordinaire
+    detachment_date: 29/06/2015
+    payment_date: 08/07/2015
+    ex_date: null
+    amount: null
+  - year: 2013
+    amount_per_share: 45.0
+    type: Ordinaire
+    detachment_date: 04/07/2014
+    payment_date: 15/07/2014
+    ex_date: null
+    amount: null
+  - year: 2012
+    amount_per_share: 40.0
+    type: Ordinaire
+    detachment_date: 04/07/2013
+    payment_date: 15/07/2013
+    ex_date: null
+    amount: null
+  - year: 2011
+    amount_per_share: 30.0
+    type: Ordinaire
+    detachment_date: 20/06/2012
+    payment_date: 29/06/2012
+    ex_date: null
+    amount: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 02/09/2020
+  declarant: BERRADA BAHIA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 02/09/2020
+  declarant: TAZI Selma
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 02/09/2020
+  declarant: TAZI Lamia
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 02/09/2020
+  declarant: TAZI MOHAMMED
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 09/04/2020
+  declarant: TAZI BADIA
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 21/04/2017
+  declarant: BERRADA Mohamed Karim
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 21/04/2017
+  declarant: TAZI Najia
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 15/05/2013
+  declarant: TAZI Najia
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 15/05/2013
+  declarant: BERRADA Mohammed Karim
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 18/02/2013
+  declarant: BERRADA Mohamed Karim
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 18/02/2013
+  declarant: BERRADA Mohammed Amine
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 18/09/2009
+  declarant: RMA WATANYA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 11/05/2007
+  declarant: BERRADA BAHIA
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 11/05/2007
+  declarant: CHRAIBI ABDELMAJID
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 14/11/2005
+  declarant: TAZI MOHAMMED
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: Adnane HILAL
+  email: a.hilal@sothema.ma
+  phone: 0522 43 70 40 (LG)
+  fax: 0522 43 70 45

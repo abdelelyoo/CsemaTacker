@@ -71,7 +71,30 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
-      const values = line.split(delimiter);
+
+      let values = line.split(delimiter);
+
+      // If we have *more* columns than headers, it's very likely because
+      // the last field (typically a MAD amount) contains thousand
+      // separators using the same delimiter, e.g. "-1,010.00 MAD".
+      // In that case we rebuild the last column by joining all remaining
+      // segments so that "Total" keeps the full numeric string.
+      if (values.length > headers.length) {
+        const fixed: string[] = [];
+        const lastHeaderIndex = headers.length - 1;
+
+        for (let hIndex = 0; hIndex < headers.length; hIndex++) {
+          if (hIndex < lastHeaderIndex) {
+            fixed[hIndex] = values[hIndex];
+          } else {
+            fixed[hIndex] = values.slice(hIndex).join(delimiter);
+            break;
+          }
+        }
+
+        values = fixed;
+      }
+
       if (values.length !== headers.length) {
         warnings.push(`Line ${i + 1}: Column count mismatch`);
         continue;
@@ -163,6 +186,7 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
   let totalDeposits = 0;
   let totalTradingFees = 0;
   let totalCustodyFees = 0;
+  let totalSubscriptionFees = 0;
   let netTaxImpact = 0;
   const enrichedTransactions: Transaction[] = [];
 
@@ -243,8 +267,9 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
 
     if (fee.type === 'CUS') {
       totalCustodyFees += fee.amount;
+    } else if (fee.type === 'SUB') {
+      totalSubscriptionFees += fee.amount;
     }
-    // For SUB, we just deduct from cash for now, unless we add totalSubscriptionFees to summary
   });
 
   // Calculate History using dedicated builder
@@ -303,6 +328,7 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
     totalDeposits: roundTo(totalDeposits, 2),
     totalTradingFees: roundTo(totalTradingFees, 2),
     totalCustodyFees: roundTo(totalCustodyFees, 2),
+    totalSubscriptionFees: roundTo(totalSubscriptionFees, 2),
     netTaxImpact: roundTo(netTaxImpact, 2),
     holdings,
     cashBalance: roundTo(cashBalance, 2),

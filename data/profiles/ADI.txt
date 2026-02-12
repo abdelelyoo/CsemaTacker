@@ -1,0 +1,182 @@
+company_information:
+  name: ALLIANCES DEVELOPPEMENT IMMOBILIER SA
+  headquarters: 16. Rue Ali Abderrazak - Casablanca
+  website: www.alliances.co.ma
+  phone: 0522.99.34.84/63
+  fax: 0522.99.34.81
+  auditors:
+  - Fidaroc Grant Thornton
+  - HDID & Associé
+  date_of_incorporation: 13/06/1994
+  introduction_date_bourse: 17/07/2008
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: LAZRAQ Alami
+- role: Directeur Général Délégué
+  name: NAFAKH LAZRAQ Omar
+- role: Conseiller du Président
+  name: AMMOR Ahmed
+- role: Directeur Général Délégué Développement de l’Immobilier Social et Classe Moyenne
+  name: KABBAJ YOUSSEF
+shareholders:
+  as_of_date: 08/08/2025
+  ownership_structure:
+  - name: NAFAKH LAZRAQ ALAMI MOHAMED
+    percentage: 51.68
+  - name: DIVERS ACTIONNAIRES
+    percentage: 38.22
+  - name: RCAR
+    percentage: 8.39
+  - name: EL BELGHAMI FARIDA
+    percentage: 0.62
+  - name: NAFAKH LAZRAQ OTHMAN
+    percentage: 0.36
+  - name: NAFAKH LAZRAQ MOUNA
+    percentage: 0.36
+  - name: NAFAKH LAZRAQ OMAR
+    percentage: 0.36
+  - name: ALAMI LAZRAK Mustapha
+    percentage: 0.01
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 2207858800.0
+  shareholders_equity: 3668286000.0
+  shares_outstanding: 22078588
+  revenue: 2363364000.0
+  operating_income: 445676000.0
+  net_income_group_share: 301915000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 2207858800.0
+  shareholders_equity: 3434211000.0
+  shares_outstanding: 22078588
+  revenue: 2017287000.0
+  operating_income: 410074000.0
+  net_income_group_share: 238874000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 2207858800.0
+  shareholders_equity: 3401448000.0
+  shares_outstanding: 22078588
+  revenue: 1603939000.0
+  operating_income: 320931000.0
+  net_income_group_share: 178385000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: 13.67
+  roe_percent: 8.23
+  payout_percent: 26.33
+  dividend_yield_percent: 0.75
+  per: 35.1
+  pbr: 2.89
+- year: 2023
+  eps_bpa: 10.82
+  roe_percent: 6.96
+  payout_percent: 27.73
+  dividend_yield_percent: 2.6
+  per: 10.68
+  pbr: 0.74
+- year: 2022
+  eps_bpa: 8.08
+  roe_percent: 5.24
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 6.44
+  pbr: 0.34
+financial_operations:
+  capital_increases:
+  - date: 14/02/2020
+    nature: Souscription en numéraire sans droit préférentiel
+    shares_variation: 3 000 000
+    share_variation: null
+    type: null
+    amount: null
+  - date: 09/05/2018
+    nature: Remboursement d'obligations en actions
+    shares_variation: 6 429 660
+    share_variation: null
+    type: null
+    amount: null
+  - date: 08/09/2015
+    nature: Remboursement d'obligations en actions
+    shares_variation: 34 000
+    share_variation: null
+    type: null
+    amount: null
+  - date: 16/04/2014
+    nature: Souscription en numéraire sans droit préférentiel
+    shares_variation: 373 552
+    share_variation: null
+    type: null
+    amount: null
+  - date: 27/09/2013
+    nature: Conversion des dividendes
+    shares_variation: 141 376
+    share_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 3.6
+    type: Ordinaire
+    ex_date: 10/07/2025
+    payment_date: 21/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 3.0
+    type: Ordinaire
+    ex_date: 11/07/2024
+    payment_date: 22/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 12.0
+    type: Ordinaire
+    ex_date: 19/09/2014
+    payment_date: 30/09/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 20.0
+    type: Ordinaire
+    ex_date: 19/08/2013
+    payment_date: 30/09/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 14.0
+    type: Ordinaire
+    ex_date: 06/09/2012
+    payment_date: 17/09/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: OB134
+    label: DU 050310 5.40% 5A ADI 1000
+    type: Ordinaire
+    amount_issued: 49989000.0
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 14/02/2020
+  declarant: NAFAKH LAZRAQ ALAMI MOHAMED
+  threshold_percent: 50.0
+  direction: Hausse
+- date: 09/05/2018
+  declarant: NAFAKH LAZRAQ ALAMI MOHAMED
+  threshold_percent: 50.0
+  direction: Baisse
+- date: 11/04/2012
+  declarant: RCAR
+  threshold_percent: 5.0
+  direction: Hausse
+investor_relations_contact:
+  person: LAHLOU Mohamed
+  email: mohamed.lahlou@alliances.co.ma
+  fax: null
+  phone: null

@@ -1,0 +1,252 @@
+company_information:
+  name: DISWAY
+  headquarters: 8. Lotissement La Colline II - Sidi Maarouf - Casablanca
+  website: www.disway.com
+  phone: 522 957 000
+  fax: null
+  auditors:
+  - BDO AUDIT TAX & ADVISORY
+  - Fidaroc Grant Thornton
+  date_of_incorporation: 01/01/1982
+  introduction_date_bourse: 28/02/2007
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président du Directoire
+  name: BELMAACHI Najib Hakim
+- role: Directeur Général Adjoint
+  name: BENJELLOUN Anas
+- role: Directeur Financier
+  name: EL BAGHDADI Rachid
+shareholders:
+  as_of_date: 31/05/2025
+  ownership_structure:
+  - name: DIVERS ACTIONNAIRES
+    percentage: 30.15
+  - name: HAKAM ABDELLATIF FINANCE SA
+    percentage: 21.81
+  - name: RMA WATANYA
+    percentage: 9.97
+  - name: Millenium Ventures
+    percentage: 9.64
+  - name: RADI BENJELLOUN Karim
+    percentage: 7.5
+  - name: Groupe Azim
+    percentage: 7.36
+  - name: Groupe Belmaachi
+    percentage: 5.73
+  - name: Groupe Anacleto
+    percentage: 5.58
+  - name: ABDELLILAH Sbai
+    percentage: 2.25
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 188576200.0
+  shareholders_equity: 675926208.81
+  shares_outstanding: 1885762
+  revenue: 1904636547.34
+  operating_income: 102652825.62
+  net_income_group_share: 78847540.18
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 188576200.0
+  shareholders_equity: 668495031.74
+  shares_outstanding: 1885762
+  revenue: 1869587153.14
+  operating_income: 126126304.9
+  net_income_group_share: 65518530.74
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 188576200.0
+  shareholders_equity: 669082796.86
+  shares_outstanding: 1885762
+  revenue: 1950400911.41
+  operating_income: 122295664.13
+  net_income_group_share: 84640476.19
+financial_ratios:
+- year: 2024
+  eps_bpa: 41.81
+  roe_percent: 11.67
+  payout_percent: null
+  dividend_yield_percent: null
+  per: 15.26
+  pbr: 1.78
+- year: 2023
+  eps_bpa: 34.74
+  roe_percent: 9.8
+  payout_percent: 100.74
+  dividend_yield_percent: 5.38
+  per: 18.71
+  pbr: 1.83
+- year: 2022
+  eps_bpa: 44.88
+  roe_percent: 12.65
+  payout_percent: 77.98
+  dividend_yield_percent: 5.22
+  per: 14.93
+  pbr: 1.89
+financial_operations:
+  capital_increases:
+  - date: 10/05/2010
+    type: Apport en nature
+    shares_variation: 750 627
+    share_variation: null
+    nature: null
+    amount: null
+  dividends_paid:
+  - year: 2024
+    amount: 40.0
+    type: Ordinaire
+    ex_date: 30/06/2025
+    payment_date: 09/07/2025
+    amount_per_share: null
+    detachment_date: null
+  - year: 2023
+    amount: 35.0
+    type: Ordinaire
+    ex_date: 25/06/2024
+    payment_date: 04/07/2024
+    amount_per_share: null
+    detachment_date: null
+  - year: 2022
+    amount: 35.0
+    type: Ordinaire
+    ex_date: 22/06/2023
+    payment_date: 05/07/2023
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 40.0
+    type: Ordinaire
+    ex_date: 24/06/2022
+    payment_date: 05/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2021
+    amount: 30.0
+    type: Exceptionnel
+    ex_date: 24/06/2022
+    payment_date: 05/07/2022
+    amount_per_share: null
+    detachment_date: null
+  - year: 2020
+    amount: 35.0
+    type: Ordinaire
+    ex_date: 24/06/2021
+    payment_date: 05/07/2021
+    amount_per_share: null
+    detachment_date: null
+  - year: 2019
+    amount: 28.0
+    type: Ordinaire
+    ex_date: 04/09/2020
+    payment_date: 15/09/2020
+    amount_per_share: null
+    detachment_date: null
+  - year: 2018
+    amount: 15.0
+    type: Ordinaire
+    ex_date: 26/06/2019
+    payment_date: 05/07/2019
+    amount_per_share: null
+    detachment_date: null
+  - year: 2017
+    amount: 24.0
+    type: Ordinaire
+    ex_date: 26/06/2018
+    payment_date: 05/07/2018
+    amount_per_share: null
+    detachment_date: null
+  - year: 2016
+    amount: 23.0
+    type: Ordinaire
+    ex_date: 29/06/2017
+    payment_date: 10/07/2017
+    amount_per_share: null
+    detachment_date: null
+  - year: 2015
+    amount: 20.0
+    type: Ordinaire
+    ex_date: 01/07/2016
+    payment_date: 15/07/2016
+    amount_per_share: null
+    detachment_date: null
+  - year: 2014
+    amount: 16.0
+    type: Ordinaire
+    ex_date: 06/07/2015
+    payment_date: 15/07/2015
+    amount_per_share: null
+    detachment_date: null
+  - year: 2013
+    amount: 15.0
+    type: Ordinaire
+    ex_date: 25/06/2014
+    payment_date: 04/07/2014
+    amount_per_share: null
+    detachment_date: null
+  - year: 2012
+    amount: 15.0
+    type: Ordinaire
+    ex_date: 26/06/2013
+    payment_date: 05/07/2013
+    amount_per_share: null
+    detachment_date: null
+  - year: 2011
+    amount: 13.0
+    type: Ordinaire
+    ex_date: 26/06/2012
+    payment_date: 05/07/2012
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: 26/10/2023
+  declarant: HAKAM ABDELLATIF FINANCE SA
+  threshold_percent: 20.0
+  direction: Hausse
+- date: 04/01/2018
+  declarant: AZIM Lemfadel
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 09/06/2017
+  declarant: AZIM Lemfadel
+  threshold_percent: 10.0
+  direction: Baisse
+- date: 16/06/2015
+  declarant: HAKAM ABDELLATIF FINANCE SA
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 28/02/2011
+  declarant: AZIM Lemfadel
+  threshold_percent: 10.0
+  direction: Hausse
+- date: 28/02/2011
+  declarant: ROBIN Nadine Nicole Ep AZIM
+  threshold_percent: 5.0
+  direction: Baisse
+- date: 16/11/2010
+  declarant: RMA WATANYA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 20/10/2009
+  declarant: HAKAM ABDELLATIF FINANCE SA
+  threshold_percent: 5.0
+  direction: Hausse
+- date: 27/09/2007
+  declarant: ROBIN Nadine Nicole Ep AZIM
+  threshold_percent: 10.0
+  direction: Hausse
+investor_relations_contact:
+  person: Rachid EL BAGHDADI
+  email: null
+  fax: null
+  phone: null

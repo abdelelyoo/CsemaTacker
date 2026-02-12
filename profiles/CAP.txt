@@ -1,0 +1,120 @@
+company_information:
+  name: CASH PLUS S.A
+  headquarters: 1 Rue des Pléiades, 3ème étage, Q. des Hôpitaux - Casablanca
+  website: www.cashplus.ma
+  phone: +212 5 22 86 01 00
+  fax: null
+  auditors:
+  - Fidaroc Grant Thornton
+  - Hdid et Associés
+  date_of_incorporation: 05/03/2004
+  introduction_date_bourse: 08/12/2025
+  fiscal_year_duration_months: 12
+management_team:
+- role: Président Directeur Général
+  name: AMAR Nabil
+- role: Directeur Général Délégué
+  name: EL ACHOURI Soufiane
+- role: Directeur Général Délégué
+  name: TAHRI Adil
+shareholders:
+  as_of_date: 08/12/2025
+  ownership_structure:
+  - name: AMAPAR
+    percentage: 27.57
+  - name: DUQUESA
+    percentage: 17.57
+  - name: MERYDINAL
+    percentage: 17.57
+  - name: DIVERS ACTIONNAIRES
+    percentage: 15.48
+  - name: MC IV MONEY
+    percentage: 11.83
+  - name: LDW Holding
+    percentage: 4.43
+  - name: MOBIZ
+    percentage: 3.13
+  - name: MCIV Morocco FPCC - RFA
+    percentage: 2.43
+financial_figures:
+- year: 2024
+  consolidated_accounts: true
+  capital_social: 54250000.0
+  shareholders_equity: 382734000.0
+  shares_outstanding: 542500
+  revenue: 759840000.0
+  operating_income: 377695000.0
+  net_income_group_share: 196468000.0
+- year: 2023
+  consolidated_accounts: true
+  capital_social: 50000000.0
+  shareholders_equity: 166631000.0
+  shares_outstanding: 500000
+  revenue: 522135000.0
+  operating_income: 282315000.0
+  net_income_group_share: 157754000.0
+- year: 2022
+  consolidated_accounts: true
+  capital_social: 50000000.0
+  shareholders_equity: 195375000.0
+  shares_outstanding: 500000
+  revenue: 437412000.0
+  operating_income: 230622000.0
+  net_income_group_share: 133669000.0
+financial_ratios:
+- year: 2024
+  eps_bpa: null
+  roe_percent: 51.33
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2023
+  eps_bpa: null
+  roe_percent: 94.67
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+- year: 2022
+  eps_bpa: null
+  roe_percent: 68.42
+  payout_percent: null
+  dividend_yield_percent: null
+  per: null
+  pbr: null
+financial_operations:
+  capital_increases:
+  - date: null
+    nature: null
+    share_variation: null
+    shares_variation: null
+    type: null
+    amount: null
+  dividends_paid:
+  - year: null
+    amount: null
+    type: null
+    ex_date: null
+    payment_date: null
+    amount_per_share: null
+    detachment_date: null
+  bond_issues:
+  - ticker: null
+    label: null
+    type: null
+    amount_issued: null
+    amount: null
+    description: null
+    name: null
+    amount_issued_kmad: null
+threshold_crossings:
+- date: null
+  declarant: null
+  threshold_percent: null
+  direction: null
+investor_relations_contact:
+  person: null
+  email: null
+  fax: null
+  phone: null
