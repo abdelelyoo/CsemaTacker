@@ -1,6 +1,7 @@
 import Dexie, { Table } from 'dexie';
 import {
   Transaction,
+  BankOperation,
   FeeRecord,
   CompanyProfile,
   ManagementMember,
@@ -13,6 +14,7 @@ import {
 
 export class AtlasPortfolioDB extends Dexie {
   transactions!: Table<Transaction>;
+  bankOperations!: Table<BankOperation>;
   fees!: Table<FeeRecord>;
   companies!: Table<CompanyProfile>;
   management!: Table<ManagementMember>;
@@ -34,6 +36,20 @@ export class AtlasPortfolioDB extends Dexie {
     // Version 3 (new profile data tables)
     (this as any).version(3).stores({
       transactions: '++id, parsedDate, Ticker, Operation, Company',
+      fees: '++id, date, type',
+      companies: '++id, ticker, name, sector',
+      management: '++id, ticker, name',
+      financialFigures: '++id, ticker, year',
+      financialRatios: '++id, ticker, year',
+      dividends: '++id, ticker, year, payment_date',
+      shareholders: '++id, ticker, name',
+      capitalEvents: '++id, ticker, date, event_type'
+    });
+
+    // Version 4 (add bank operations table)
+    (this as any).version(4).stores({
+      transactions: '++id, parsedDate, Ticker, Operation, Company',
+      bankOperations: '++id, parsedDate, Operation, Category',
       fees: '++id, date, type',
       companies: '++id, ticker, name, sector',
       management: '++id, ticker, name',

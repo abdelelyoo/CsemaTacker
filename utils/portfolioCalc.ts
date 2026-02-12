@@ -1,4 +1,4 @@
-import { Transaction, Holding, PortfolioSummary, FeeRecord } from '../types';
+import { Transaction, BankOperation, Holding, PortfolioSummary, FeeRecord } from '../types';
 import { TICKER_TO_SECTOR } from '../constants';
 import { DateService } from '../services/dateService';
 import { roundTo } from './helpers';
@@ -177,7 +177,12 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
 
 // --- Main Portfolio Calculation ---
 
-export const calculatePortfolio = (transactions: Transaction[], currentPrices: Record<string, number> = {}, fees: FeeRecord[] = []): PortfolioSummary => {
+export const calculatePortfolio = (
+  transactions: Transaction[], 
+  currentPrices: Record<string, number> = {}, 
+  fees: FeeRecord[] = [],
+  bankOperations: BankOperation[] = []
+): PortfolioSummary => {
   const holdingsMap = new Map<string, HoldingState>();
 
   let cashBalance = 0;
@@ -293,6 +298,32 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
     }
   });
 
+  // --- Process Bank Operations (Depot/Retrait/Frais/Taxe/Dividende) ---
+  let totalWithdrawals = 0;
+  let totalBankFees = 0;
+  
+  bankOperations.forEach(op => {
+    cashBalance += op.Amount;
+    
+    switch (op.Category) {
+      case 'DEPOSIT':
+        totalDeposits += Math.abs(op.Amount);
+        break;
+      case 'WITHDRAWAL':
+        totalWithdrawals += Math.abs(op.Amount);
+        break;
+      case 'DIVIDEND':
+        totalDividends += Math.abs(op.Amount);
+        break;
+      case 'TAX':
+        netTaxImpact += Math.abs(op.Amount);
+        break;
+      case 'BANK_FEE':
+        totalBankFees += Math.abs(op.Amount);
+        break;
+    }
+  });
+
   // Calculate History using dedicated builder
   const history = buildPerformanceHistory(transactions, currentPrices);
 
@@ -347,13 +378,16 @@ export const calculatePortfolio = (transactions: Transaction[], currentPrices: R
     totalUnrealizedPL: roundTo(totalValue - totalCost, 2),
     totalDividends: roundTo(totalDividends, 2),
     totalDeposits: roundTo(totalDeposits, 2),
+    totalWithdrawals: roundTo(totalWithdrawals, 2),
     totalTradingFees: roundTo(totalTradingFees, 2),
     totalCustodyFees: roundTo(totalCustodyFees, 2),
     totalSubscriptionFees: roundTo(totalSubscriptionFees, 2),
+    totalBankFees: roundTo(totalBankFees, 2),
     netTaxImpact: roundTo(netTaxImpact, 2),
     holdings,
     cashBalance: roundTo(cashBalance, 2),
     history,
-    enrichedTransactions
+    enrichedTransactions,
+    bankOperations
   };
 };

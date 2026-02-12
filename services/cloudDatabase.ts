@@ -2,6 +2,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { db } from '../db';
 import type {
   Transaction,
+  BankOperation,
   FeeRecord,
   CompanyProfile,
   ManagementMember,
@@ -300,6 +301,117 @@ export const deleteFee = async (id: number | string): Promise<void> => {
 
   if (error) {
     console.error('Error deleting fee:', error);
+    throw error;
+  }
+};
+
+// ==================== BANK OPERATIONS ====================
+
+export const getBankOperations = async (): Promise<BankOperation[]> => {
+  const userId = await getCurrentUserId();
+  
+  if (!userId) {
+    return await db.bankOperations?.toArray() || [];
+  }
+
+  const { data, error } = await supabase
+    .from('bank_operations')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching bank operations:', error);
+    return [];
+  }
+
+  return data.map(op => ({
+    id: op.id,
+    Date: op.date,
+    parsedDate: new Date(op.parsed_date),
+    Operation: op.operation,
+    Description: op.description,
+    Amount: op.amount,
+    Category: op.category,
+    Reference: op.reference
+  }));
+};
+
+export const addBankOperation = async (operation: BankOperation): Promise<BankOperation> => {
+  const userId = await getCurrentUserId();
+  
+  if (!userId) {
+    const id = await db.bankOperations?.add(operation);
+    return { ...operation, id };
+  }
+
+  const { data, error } = await supabase
+    .from('bank_operations')
+    .insert({
+      user_id: userId,
+      date: operation.Date,
+      parsed_date: operation.parsedDate.toISOString().split('T')[0],
+      operation: operation.Operation,
+      description: operation.Description,
+      amount: operation.Amount,
+      category: operation.Category,
+      reference: operation.Reference
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding bank operation:', error);
+    throw error;
+  }
+
+  return {
+    id: data.id,
+    Date: data.date,
+    parsedDate: new Date(data.parsed_date),
+    Operation: data.operation,
+    Description: data.description,
+    Amount: data.amount,
+    Category: data.category,
+    Reference: data.reference
+  };
+};
+
+export const deleteBankOperation = async (id: string | number): Promise<void> => {
+  const userId = await getCurrentUserId();
+  
+  if (!userId) {
+    await db.bankOperations?.delete(id as number);
+    return;
+  }
+
+  const { error } = await supabase
+    .from('bank_operations')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error deleting bank operation:', error);
+    throw error;
+  }
+};
+
+export const clearBankOperations = async (): Promise<void> => {
+  const userId = await getCurrentUserId();
+  
+  if (!userId) {
+    await db.bankOperations?.clear();
+    return;
+  }
+
+  const { error } = await supabase
+    .from('bank_operations')
+    .delete()
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error clearing bank operations:', error);
     throw error;
   }
 };

@@ -1,12 +1,15 @@
 
 export enum TransactionType {
   BUY = 'Achat',
-  SELL = 'Vente',
+  SELL = 'Vente'
+}
+
+export enum BankOperationType {
   DEPOSIT = 'Depot',
   WITHDRAWAL = 'Retrait',
   DIVIDEND = 'Dividende',
   TAX = 'Taxe',
-  FEE = 'Frais'
+  BANK_FEE = 'Frais'
 }
 
 export type FeeType = 'CUS' | 'SUB';
@@ -36,7 +39,23 @@ export interface RawTransaction {
 export interface Transaction extends RawTransaction {
   parsedDate: Date;
   id?: number; // Optional for new records (auto-increment in DB)
+  operationType?: 'TRADE'; // Distinguishes from bank operations
 }
+
+// Bank Operations - Cash movements separate from trades
+export interface BankOperation {
+  id?: number;
+  Date: string;
+  parsedDate: Date;
+  Operation: BankOperationType;
+  Description?: string; // e.g., "Tax Authority", "Monthly Fee"
+  Amount: number; // Positive for deposits/dividends, negative for fees/taxes/withdrawals
+  Category: 'DEPOSIT' | 'WITHDRAWAL' | 'DIVIDEND' | 'TAX' | 'BANK_FEE';
+  Reference?: string; // Optional reference number
+}
+
+// Combined view for calculations
+export type PortfolioOperation = Transaction | BankOperation;
 
 export interface Holding {
   ticker: string;
@@ -72,15 +91,22 @@ export interface PortfolioSummary {
   totalUnrealizedPL: number;
   totalDividends: number;
   totalDeposits: number;
+  totalWithdrawals: number; // NEW: Track withdrawals separately
   holdings: Holding[];
   cashBalance: number;
+  
   // Fee Breakdown
   totalTradingFees: number; // Commissions on Buy/Sell
-  totalCustodyFees: number; // Account maintenance (CUS fees)
+  totalCustodyFees: number; // Account maintenance (CUS fees from separate fees table)
   totalSubscriptionFees: number; // Subscription fees (SUB fees)
-  netTaxImpact: number; // Taxes paid (negative) or refunded (positive)
+  totalBankFees: number; // Bank fees from bank operations
+  netTaxImpact: number; // Taxes paid from bank operations
+  
   history: PerformancePoint[]; // Historical performance data
-  enrichedTransactions: Transaction[]; // Transactions with calculated/inferred fees, taxes, and P&L
+  
+  // Separate data sources
+  enrichedTransactions: Transaction[]; // Stock trades only
+  bankOperations: BankOperation[]; // Cash movements only
 }
 
 export interface SectorAlloc {
