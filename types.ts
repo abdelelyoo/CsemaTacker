@@ -1,3 +1,5 @@
+// App version for deployment tracking
+export const APP_VERSION = '2.0.1';
 
 export enum TransactionType {
   BUY = 'Achat',
