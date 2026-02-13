@@ -10,8 +10,7 @@ import { FeesManager } from './FeesManager';
 import { CapitalBridge } from './CapitalBridge';
 import { ReturnsHeatmap } from './ReturnsHeatmap';
 import { AllocationSunburst } from './AllocationSunburst';
-import { CashFlowCard } from './CashFlowCard';
-import { ExpensesBreakdown } from './ExpensesBreakdown';
+import { PortfolioSummaryCard } from './PortfolioSummaryCard';
 import { FundamentalsPanel } from './FundamentalsPanel';
 import { ValuationScreener } from './ValuationScreener';
 import { QualityDashboard } from './QualityDashboard';
@@ -231,9 +230,8 @@ const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('A
             </div>
           </motion.div>
 
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <CashFlowCard />
-        <ExpensesBreakdown onManage={() => setIsFeesManagerOpen(true)} />
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <PortfolioSummaryCard />
         <AllocationSunburst />
       </motion.div>
 
