@@ -248,7 +248,21 @@ export const calculatePortfolio = (
       });
     } else {
       // Non-Trade Transactions (Depot, Retrait, Dividende, Frais, Taxe, etc.)
+      // Skip if these have been migrated to separate tables (bank_operations/fees)
+      // to avoid double counting
       const normalizedOp = op.replace(/\s+/g, ' ').trim();
+      const skipMigrated = 
+        normalizedOp.includes('depot') || 
+        normalizedOp.includes('retrait') ||
+        normalizedOp.includes('dividende') ||
+        normalizedOp.includes('frais') ||
+        normalizedOp.includes('taxe');
+      
+      if (skipMigrated) {
+        // Skip - these are now in bank_operations/fees tables
+        return;
+      }
+
       const tickerLower = (tx.Ticker || '').toLowerCase().trim();
       const companyLower = (tx.Company || '').toLowerCase().trim();
 
@@ -320,15 +334,15 @@ export const calculatePortfolio = (
         break;
       case 'TAX':
         netTaxImpact += Math.abs(op.Amount);
-        cashBalance += Math.abs(op.Amount); // Money IN (tax refund stored as positive)
+        cashBalance -= Math.abs(op.Amount); // Money OUT (tax paid)
         break;
       case 'BANK_FEE':
         totalBankFees += Math.abs(op.Amount);
-        cashBalance += op.Amount; // Amount already negative
+        cashBalance -= Math.abs(op.Amount); // Money OUT (fee paid)
         break;
       case 'SUBSCRIPTION':
         totalSubscriptionFees += Math.abs(op.Amount);
-        cashBalance += op.Amount; // Amount already negative
+        cashBalance -= Math.abs(op.Amount); // Money OUT (subscription fee paid)
         break;
     }
   });
