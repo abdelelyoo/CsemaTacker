@@ -189,7 +189,7 @@ export const getFees = async (): Promise<FeeRecord[]> => {
   }
 
   const { data, error } = await supabase
-    .from('fees')
+    .from('fees_v2')
     .select('*')
     .eq('user_id', userId)
     .order('date', { ascending: false });
@@ -217,7 +217,7 @@ export const addFee = async (fee: FeeRecord): Promise<FeeRecord> => {
   }
 
   const { data, error } = await supabase
-    .from('fees')
+    .from('fees_v2')
     .insert({
       user_id: userId,
       date: fee.date.toISOString().split('T')[0],
@@ -258,7 +258,7 @@ export const addFees = async (fees: FeeRecord[]): Promise<void> => {
     description: f.description
   }));
 
-  const { error } = await supabase.from('fees').insert(records);
+  const { error } = await supabase.from('fees_v2').insert(records);
   
   if (error) {
     console.error('Error adding fees:', error);
@@ -275,7 +275,7 @@ export const clearFees = async (): Promise<void> => {
   }
 
   const { error } = await supabase
-    .from('fees')
+    .from('fees_v2')
     .delete()
     .eq('user_id', userId);
 
@@ -294,7 +294,7 @@ export const deleteFee = async (id: number | string): Promise<void> => {
   }
 
   const { error } = await supabase
-    .from('fees')
+    .from('fees_v2')
     .delete()
     .eq('id', id)
     .eq('user_id', userId);
