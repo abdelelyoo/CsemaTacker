@@ -237,7 +237,15 @@ export const calculatePortfolio = (
       totalRealizedPL += realizedPL;
       totalTradingFees += fees;
       netTaxImpact += tax; // Accrue as positive cost
-      cashBalance += tx.Total;
+      
+      // Handle Buy/Sell cash flow direction (transactions stored as positive)
+      const isBuy = op === 'achat' || op === 'buy';
+      const isSell = op === 'vente' || op === 'sell';
+      if (isBuy) {
+        cashBalance -= Math.abs(tx.Total); // Money OUT
+      } else if (isSell) {
+        cashBalance += Math.abs(tx.Total); // Money IN
+      }
 
       // Add enriched transaction
       enrichedTransactions.push({
@@ -334,7 +342,7 @@ export const calculatePortfolio = (
         break;
       case 'TAX':
         netTaxImpact += Math.abs(op.Amount);
-        cashBalance -= Math.abs(op.Amount); // Money OUT (tax paid)
+        cashBalance += Math.abs(op.Amount); // Money IN (tax refund)
         break;
       case 'BANK_FEE':
         totalBankFees += Math.abs(op.Amount);
