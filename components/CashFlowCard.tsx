@@ -6,14 +6,16 @@ import { usePortfolioContext } from '../context/PortfolioContext';
 export const CashFlowCard: React.FC = () => {
     const { portfolio } = usePortfolioContext();
 
-    const netDeposits = portfolio.totalDeposits;
+    const netDeposits = portfolio.totalDeposits - portfolio.totalWithdrawals;
     const realized = portfolio.totalRealizedPL;
     const unrealized = portfolio.totalUnrealizedPL;
+    const cashBalance = portfolio.cashBalance;
 
-    // Total Value = Deposits + Realized + Unrealized (simplified)
-    const totalValue = netDeposits + realized + unrealized;
+    // Current Value = Market Value of Holdings + Cash Balance
+    const holdingsValue = portfolio.totalValue;
+    const currentValue = holdingsValue + cashBalance;
     const totalReturn = realized + unrealized;
-    const returnPercent = (totalReturn / netDeposits) * 100;
+    const returnPercent = netDeposits !== 0 ? (totalReturn / netDeposits) * 100 : 0;
 
     return (
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 h-full flex flex-col">
@@ -53,7 +55,7 @@ export const CashFlowCard: React.FC = () => {
                             <span>Current Value</span>
                         </div>
                         <div className="font-mono font-bold text-emerald-600 text-base">
-                            {totalValue.toLocaleString('fr-MA', { maximumFractionDigits: 0 })} MAD
+                            {currentValue.toLocaleString('fr-MA', { maximumFractionDigits: 0 })} MAD
                         </div>
                     </div>
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
