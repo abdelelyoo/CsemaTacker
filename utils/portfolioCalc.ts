@@ -267,7 +267,12 @@ export const calculatePortfolio = (
         normalizedOp.includes('taxe');
       
       if (skipMigrated) {
-        // Skip - these are now in bank_operations/fees tables
+        // Still add deposits/withdrawals to cash (in case not migrated to bank_operations)
+        if (normalizedOp.includes('depot')) {
+          cashBalance += Math.abs(tx.Total);
+        } else if (normalizedOp.includes('retrait')) {
+          cashBalance -= Math.abs(tx.Total);
+        }
         return;
       }
 
