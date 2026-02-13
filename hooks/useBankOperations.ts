@@ -181,7 +181,7 @@ export const useBankOperations = () => {
                     break;
                 case 'TAX':
                     acc.totalTaxes += Math.abs(op.Amount);
-                    acc.cashBalance += Math.abs(op.Amount); // Money IN (tax refund)
+                    acc.cashBalance += op.Amount; // Tax can be payment (-) or refund (+)
                     break;
                 case 'BANK_FEE':
                     acc.totalBankFees += Math.abs(op.Amount);
