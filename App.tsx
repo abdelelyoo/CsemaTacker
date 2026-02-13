@@ -7,7 +7,6 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
 import { TransactionsList } from './components/TransactionsList';
 import { BankOperationsList } from './components/BankOperationsList';
-import { FeesList } from './components/FeesList';
 import { MoneyManagement } from './components/MoneyManagement';
 import { Upload, Database, RefreshCw, CheckCircle2, Download, AlertCircle } from 'lucide-react';
 import { db } from './db';
@@ -227,9 +226,6 @@ const AppInner = () => {
       )}
       {activeTab === 'bankops' && (
         <BankOperationsList />
-      )}
-      {activeTab === 'fees' && (
-        <FeesList />
       )}
       {activeTab === 'moneymgmt' && <MoneyManagement />}
       {activeTab === 'dividends' && <DividendCalendar />}

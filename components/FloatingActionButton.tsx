@@ -11,8 +11,7 @@ import {
   Check, 
   ScanLine, 
   BrainCircuit,
-  Building2,
-  Receipt
+  Building2
 } from 'lucide-react';
 
 interface TabOption {
@@ -31,7 +30,6 @@ const tabs: TabOption[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, color: 'bg-blue-500' },
   { id: 'transactions', label: 'Transactions', icon: <FileText size={20} />, color: 'bg-emerald-500' },
   { id: 'bankops', label: 'Bank Ops', icon: <Building2 size={20} />, color: 'bg-orange-500' },
-  { id: 'fees', label: 'Fees', icon: <Receipt size={20} />, color: 'bg-red-500' },
   { id: 'moneymgmt', label: 'Money Mgmt', icon: <Calculator size={20} />, color: 'bg-violet-500' },
   { id: 'dividends', label: 'Dividends', icon: <Banknote size={20} />, color: 'bg-amber-500' },
   { id: 'fundamentals', label: 'Fundamentals', icon: <Award size={20} />, color: 'bg-indigo-500' },
