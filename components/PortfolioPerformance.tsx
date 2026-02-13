@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import { usePortfolioContext } from '../context/PortfolioContext';
 import { formatCurrency } from '../utils/helpers';
-import { TrendingUp, TrendingDown, Activity, Target, Percent, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, Target, Calendar } from 'lucide-react';
 
 const TIME_RANGES = [
     { label: '1M', months: 1 },
@@ -27,17 +27,10 @@ export const PortfolioPerformance: React.FC = () => {
     const [timeRange, setTimeRange] = useState('6M');
     const [showInvested, setShowInvested] = useState(true);
 
-    // Get values directly from portfolio (same as PortfolioSummary)
+    // Get values directly from portfolio - these are correct from portfolioCalc
     const stats = useMemo(() => {
         const totalDeposits = portfolio.totalDeposits;
         const totalWithdrawals = portfolio.totalWithdrawals;
-        const totalDividends = portfolio.totalDividends;
-        
-        const tradingFees = portfolio.totalTradingFees;
-        const custodyFees = portfolio.totalCustodyFees;
-        const subscriptionFees = portfolio.totalSubscriptionFees;
-        const taxImpact = portfolio.netTaxImpact;
-        const totalFees = tradingFees + custodyFees + subscriptionFees + taxImpact;
         
         const cashBalance = portfolio.cashBalance;
         const holdingsValue = portfolio.totalValue;
@@ -47,8 +40,8 @@ export const PortfolioPerformance: React.FC = () => {
         const unrealized = portfolio.totalUnrealizedPL;
         const totalReturn = realized + unrealized;
         
-        const netInflow = totalDeposits - totalWithdrawals + totalDividends - totalFees;
-        const returnPercent = netInflow !== 0 ? (totalReturn / netInflow) * 100 : 0;
+        const invested = totalDeposits - totalWithdrawals;
+        const returnPercent = invested !== 0 ? (totalReturn / invested) * 100 : 0;
         
         return {
             currentValue,
@@ -56,17 +49,15 @@ export const PortfolioPerformance: React.FC = () => {
             cashBalance,
             totalDeposits,
             totalWithdrawals,
-            totalDividends,
-            totalFees,
             realized,
             unrealized,
             totalReturn,
             returnPercent,
-            netInflow
+            invested
         };
     }, [portfolio]);
 
-    // Filter history by time range
+    // Filter history by time range - just use the data as is
     const chartData = useMemo(() => {
         if (!portfolio.history || portfolio.history.length === 0) return [];
 
@@ -77,23 +68,16 @@ export const PortfolioPerformance: React.FC = () => {
         if (rangeConfig.months < 999) {
             cutoffDate.setMonth(today.getMonth() - rangeConfig.months);
         } else {
-            cutoffDate.setFullYear(2000); // Very old date for ALL
+            cutoffDate.setFullYear(2000);
         }
 
         return portfolio.history
             .filter(h => new Date(h.date) >= cutoffDate)
-            .map((point, idx) => {
-                const prev = idx > 0 ? portfolio.history[idx - 1] : null;
-                const dailyChange = prev && prev.value > 0 ? point.value - prev.value : 0;
-                const dailyChangePercent = prev && prev.value > 0 ? (dailyChange / prev.value) * 100 : 0;
-                
-                return {
-                    ...point,
-                    dailyChange,
-                    dailyChangePercent,
-                    date: point.date
-                };
-            });
+            .map(point => ({
+                date: point.date,
+                value: point.value,
+                invested: point.invested
+            }));
     }, [portfolio.history, timeRange]);
 
     const formatDate = (dateStr: string) => {
@@ -165,9 +149,6 @@ export const PortfolioPerformance: React.FC = () => {
                         Current Value
                     </div>
                     <div className="text-xl font-black">{formatCurrency(stats.currentValue)}</div>
-                    <div className="text-xs text-slate-400 mt-1">
-                        {formatCurrency(stats.holdingsValue)} + {formatCurrency(stats.cashBalance)} cash
-                    </div>
                 </div>
                 
                 <div className={`bg-gradient-to-br rounded-xl p-3 ${stats.totalReturn >= 0 ? 'from-emerald-50 to-emerald-100 border border-emerald-200' : 'from-rose-50 to-rose-100 border border-rose-200'}`}>
@@ -185,7 +166,7 @@ export const PortfolioPerformance: React.FC = () => {
 
                 <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
-                        <Percent size={12} />
+                        <TrendingUp size={12} />
                         Realized P/L
                     </div>
                     <div className={`text-xl font-black ${stats.realized >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
@@ -199,13 +180,13 @@ export const PortfolioPerformance: React.FC = () => {
                 <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
                         <Calendar size={12} />
-                        Net Capital
+                        Invested Capital
                     </div>
-                    <div className={`text-xl font-black ${stats.netInflow >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                        {stats.netInflow >= 0 ? '+' : ''}{formatCurrency(stats.netInflow)}
+                    <div className="text-xl font-black text-blue-600">
+                        {formatCurrency(stats.invested)}
                     </div>
                     <div className="text-xs text-slate-400">
-                        In: {formatCurrency(stats.totalDeposits)} / Out: {formatCurrency(stats.totalWithdrawals)}
+                        In: {formatCurrency(stats.totalDeposits)}
                     </div>
                 </div>
             </div>
@@ -262,19 +243,11 @@ export const PortfolioPerformance: React.FC = () => {
                                                         {formatCurrency(data.value)}
                                                     </span>
                                                 </div>
-                                                {showInvested && data.invested && (
+                                                {showInvested && data.invested !== undefined && (
                                                     <div className="flex justify-between gap-6">
                                                         <span className="text-slate-400">Invested:</span>
                                                         <span className="font-mono font-bold text-blue-400">
                                                             {formatCurrency(data.invested)}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {data.dailyChange !== undefined && data.dailyChange !== 0 && (
-                                                    <div className="flex justify-between gap-6 pt-2 border-t border-slate-700">
-                                                        <span className="text-slate-400">Daily:</span>
-                                                        <span className={`font-mono font-bold ${data.dailyChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                                            {data.dailyChange >= 0 ? '+' : ''}{data.dailyChangePercent.toFixed(2)}%
                                                         </span>
                                                     </div>
                                                 )}
