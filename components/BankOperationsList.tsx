@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { usePortfolioContext } from '../context/PortfolioContext';
-import { Search, Trash2, Plus, Building2, Receipt, X } from 'lucide-react';
+import { Search, Trash2, Plus, Building2, Receipt, X, Edit2 } from 'lucide-react';
 import { FeeType } from '../types';
+import { formatCurrency } from '../utils/helpers';
 
 interface UnifiedRecord {
   id: string | number;
@@ -40,6 +41,13 @@ export const BankOperationsList: React.FC = () => {
   const [newOpAmount, setNewOpAmount] = useState('');
   const [newOpDesc, setNewOpDesc] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Edit state
+  const [editingRecord, setEditingRecord] = useState<UnifiedRecord | null>(null);
+  const [editDate, setEditDate] = useState('');
+  const [editType, setEditType] = useState('');
+  const [editAmount, setEditAmount] = useState('');
+  const [editDesc, setEditDesc] = useState('');
 
   const unifiedRecords: UnifiedRecord[] = useMemo(() => {
     const records: UnifiedRecord[] = [];
@@ -120,6 +128,47 @@ export const BankOperationsList: React.FC = () => {
     if (!window.confirm('Clear all bank operations and fees? This cannot be undone.')) return;
     await clearBankOperations();
     await clearFees();
+  };
+
+  const handleEdit = (record: UnifiedRecord) => {
+    setEditingRecord(record);
+    setEditDate(record.date);
+    setEditType(record.category);
+    setEditAmount(String(record.amount));
+    setEditDesc(record.description);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingRecord || !editAmount) return;
+    
+    const amount = parseFloat(editAmount);
+    const date = new Date(editDate);
+    
+    if (isNaN(amount) || isNaN(date.getTime())) {
+      alert('Invalid date or amount');
+      return;
+    }
+
+    try {
+      if (editingRecord.type === 'bank_op') {
+        await deleteBankOperation(editingRecord.id);
+        await addBankOperation({
+          Date: date.toISOString().split('T')[0],
+          parsedDate: date,
+          Operation: editType,
+          Description: editDesc,
+          Amount: amount,
+          Category: editType
+        });
+      } else {
+        await deleteFee(editingRecord.id as number);
+        await addFee(date, editType as FeeType, amount, editDesc);
+      }
+      setEditingRecord(null);
+    } catch (e) {
+      console.error('Error updating record:', e);
+      alert('Failed to update record');
+    }
   };
 
   const handleAddFee = async (e: React.FormEvent) => {
@@ -208,11 +257,11 @@ export const BankOperationsList: React.FC = () => {
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-green-50 p-4 rounded-lg">
           <p className="text-sm text-green-600">Total In (Deposits, Dividends, Tax Refunds)</p>
-          <p className="text-2xl font-bold text-green-700">€{totals.totalIn.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-green-700">{formatCurrency(totals.totalIn)}</p>
         </div>
         <div className="bg-red-50 p-4 rounded-lg">
           <p className="text-sm text-red-600">Total Out (Withdrawals, Fees, Taxes Paid)</p>
-          <p className="text-2xl font-bold text-red-700">€{totals.totalOut.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-red-700">{formatCurrency(totals.totalOut)}</p>
         </div>
       </div>
 
@@ -259,15 +308,23 @@ export const BankOperationsList: React.FC = () => {
                     record.category === 'DEPOSIT' || record.category === 'DIVIDEND' || record.category === 'TAX' 
                       ? 'text-green-600' : 'text-red-600'
                   }`}>
-                    {record.category === 'DEPOSIT' || record.category === 'DIVIDEND' || record.category === 'TAX' ? '+' : '-'}€{Math.abs(record.amount).toFixed(2)}
+                    {record.category === 'DEPOSIT' || record.category === 'DIVIDEND' || record.category === 'TAX' ? '+' : '-'}{formatCurrency(Math.abs(record.amount))}
                   </td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => handleDelete(record)}
-                      className="text-slate-400 hover:text-red-500"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleEdit(record)}
+                        className="text-slate-400 hover:text-blue-500"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(record)}
+                        className="text-slate-400 hover:text-red-500"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -309,7 +366,7 @@ export const BankOperationsList: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Amount (€)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Amount (MAD)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -378,7 +435,7 @@ export const BankOperationsList: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Amount (€)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Amount (MAD)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -407,6 +464,83 @@ export const BankOperationsList: React.FC = () => {
                 {isSubmitting ? 'Adding...' : 'Add Operation'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingRecord && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Edit {editingRecord.type === 'bank_op' ? 'Bank Operation' : 'Fee'}</h3>
+              <button onClick={() => setEditingRecord(null)} className="text-slate-400 hover:text-slate-600">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                <input
+                  type="date"
+                  value={editDate}
+                  onChange={(e) => setEditDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                <select
+                  value={editType}
+                  onChange={(e) => setEditType(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                >
+                  {editingRecord.type === 'fee' ? (
+                    <>
+                      <option value="SUB">Subscription Fee</option>
+                      <option value="CUS">Custody Fee</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="DEPOSIT">Deposit</option>
+                      <option value="WITHDRAWAL">Withdrawal</option>
+                      <option value="DIVIDEND">Dividend</option>
+                      <option value="BANK_FEE">Bank Fee</option>
+                      <option value="TAX">Tax (Refund)</option>
+                    </>
+                  )}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Amount (MAD)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                <input
+                  type="text"
+                  value={editDesc}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                  placeholder="Optional description"
+                />
+              </div>
+              <button
+                onClick={handleSaveEdit}
+                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+              >
+                Save Changes
+              </button>
+            </div>
           </div>
         </div>
       )}
