@@ -181,15 +181,15 @@ export const useBankOperations = () => {
                     break;
                 case 'TAX':
                     acc.totalTaxes += Math.abs(op.Amount);
-                    acc.cashBalance += Math.abs(op.Amount); // Money IN (tax refund)
+                    acc.cashBalance -= Math.abs(op.Amount); // Money OUT (tax paid)
                     break;
                 case 'BANK_FEE':
                     acc.totalBankFees += Math.abs(op.Amount);
-                    acc.cashBalance += op.Amount; // Amount is already negative
+                    acc.cashBalance -= Math.abs(op.Amount); // Money OUT (fee paid)
                     break;
                 case 'SUBSCRIPTION':
                     acc.totalSubscriptions += Math.abs(op.Amount);
-                    acc.cashBalance += op.Amount; // Amount is already negative
+                    acc.cashBalance -= Math.abs(op.Amount); // Money OUT (subscription paid)
                     break;
             }
             return acc;
