@@ -6,6 +6,40 @@ import { updateHoldingState, HoldingState } from './holdingCalc';
 import { buildPerformanceHistory } from './historyBuilder';
 import { calculateBreakEvenPrice } from './feeLogic';
 
+export const splitTransactionsAndBankOps = (transactions: Transaction[]): { 
+  trades: Transaction[]; 
+  bankOps: BankOperation[]; 
+} => {
+  const trades: Transaction[] = [];
+  const bankOps: BankOperation[] = [];
+
+  transactions.forEach(tx => {
+    const op = tx.Operation.toLowerCase();
+    
+    if (op === 'achat' || op === 'buy' || op === 'vente' || op === 'sell') {
+      trades.push(tx);
+    } else if (op === 'depot' || op === 'retrait' || op === 'frais' || op === 'taxe' || op === 'dividende') {
+      let category: BankOperation['Category'] = 'DEPOSIT';
+      if (op === 'retrait') category = 'WITHDRAWAL';
+      else if (op === 'frais') category = 'BANK_FEE';
+      else if (op === 'taxe') category = 'TAX';
+      else if (op === 'dividende') category = 'DIVIDEND';
+
+      bankOps.push({
+        Date: tx.Date,
+        parsedDate: tx.parsedDate,
+        Operation: tx.Operation as any,
+        Description: tx.Company || '',
+        Amount: tx.Total,
+        Category: category,
+        Reference: ''
+      });
+    }
+  });
+
+  return { trades, bankOps };
+};
+
 // --- Helper Functions Moved/Unified ---
 
 const parseMadNumber = (str: string | undefined): number | undefined => {

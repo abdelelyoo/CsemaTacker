@@ -27,17 +27,17 @@ export const getTransactions = async (): Promise<Transaction[]> => {
   
   if (!userId) {
     // Fallback to local Dexie
-    return await db.transactions.toArray();
+    return await db.trades.toArray();
   }
 
   const { data, error } = await supabase
-    .from('transactions')
+    .from('trades')
     .select('*')
     .eq('user_id', userId)
     .order('parsed_date', { ascending: false });
 
   if (error) {
-    console.error('Error fetching transactions:', error);
+    console.error('Error fetching trades:', error);
     return [];
   }
 
@@ -62,12 +62,12 @@ export const addTransaction = async (transaction: Transaction): Promise<Transact
   const userId = await getCurrentUserId();
   
   if (!userId) {
-    const id = await db.transactions.add(transaction);
+    const id = await db.trades.add(transaction);
     return { ...transaction, id };
   }
 
   const { data, error } = await supabase
-    .from('transactions')
+    .from('trades')
     .insert({
       user_id: userId,
       date: transaction.Date,
@@ -108,15 +108,15 @@ export const addTransaction = async (transaction: Transaction): Promise<Transact
   };
 };
 
-export const addTransactions = async (transactions: Transaction[]): Promise<void> => {
+export const addTransactions = async (trades: Transaction[]): Promise<void> => {
   const userId = await getCurrentUserId();
   
   if (!userId) {
-    await db.transactions.bulkAdd(transactions);
+    await db.trades.bulkAdd(trades);
     return;
   }
 
-  const records = transactions.map(t => ({
+  const records = trades.map(t => ({
     user_id: userId,
     date: t.Date,
     company: t.Company,
@@ -132,10 +132,10 @@ export const addTransactions = async (transactions: Transaction[]): Promise<void
     parsed_date: t.parsedDate.toISOString().split('T')[0]
   }));
 
-  const { error } = await supabase.from('transactions').insert(records);
+  const { error } = await supabase.from('trades').insert(records);
   
   if (error) {
-    console.error('Error adding transactions:', error);
+    console.error('Error adding trades:', error);
     throw error;
   }
 };
@@ -144,12 +144,12 @@ export const deleteTransaction = async (id: string | number): Promise<void> => {
   const userId = await getCurrentUserId();
   
   if (!userId) {
-    await db.transactions.delete(id as number);
+    await db.trades.delete(id as number);
     return;
   }
 
   const { error } = await supabase
-    .from('transactions')
+    .from('trades')
     .delete()
     .eq('id', id)
     .eq('user_id', userId);
@@ -164,17 +164,17 @@ export const clearTransactions = async (): Promise<void> => {
   const userId = await getCurrentUserId();
   
   if (!userId) {
-    await db.transactions.clear();
+    await db.trades.clear();
     return;
   }
 
   const { error } = await supabase
-    .from('transactions')
+    .from('trades')
     .delete()
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error clearing transactions:', error);
+    console.error('Error clearing trades:', error);
     throw error;
   }
 };
@@ -315,7 +315,7 @@ export const getBankOperations = async (): Promise<BankOperation[]> => {
   }
 
   const { data, error } = await supabase
-    .from('bank_operations')
+    .from('bank_ops')
     .select('*')
     .eq('user_id', userId)
     .order('date', { ascending: false });
@@ -346,7 +346,7 @@ export const addBankOperation = async (operation: BankOperation): Promise<BankOp
   }
 
   const { data, error } = await supabase
-    .from('bank_operations')
+    .from('bank_ops')
     .insert({
       user_id: userId,
       date: operation.Date,
@@ -386,7 +386,7 @@ export const deleteBankOperation = async (id: string | number): Promise<void> =>
   }
 
   const { error } = await supabase
-    .from('bank_operations')
+    .from('bank_ops')
     .delete()
     .eq('id', id)
     .eq('user_id', userId);
@@ -406,7 +406,7 @@ export const clearBankOperations = async (): Promise<void> => {
   }
 
   const { error } = await supabase
-    .from('bank_operations')
+    .from('bank_ops')
     .delete()
     .eq('user_id', userId);
 
@@ -935,7 +935,7 @@ export const clearAllData = async (): Promise<void> => {
   
   if (!userId) {
     await Promise.all([
-      db.transactions.clear(),
+      db.trades.clear(),
       db.fees.clear(),
       db.companies.clear(),
       db.management.clear(),
@@ -949,7 +949,7 @@ export const clearAllData = async (): Promise<void> => {
   }
 
   const tables = [
-    'transactions',
+    'trades',
     'fees',
     'companies',
     'management',
