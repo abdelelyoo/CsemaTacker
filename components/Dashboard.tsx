@@ -10,6 +10,7 @@ import { FeesManager } from './FeesManager';
 import { ReturnsHeatmap } from './ReturnsHeatmap';
 import { AllocationSunburst } from './AllocationSunburst';
 import { PortfolioSummaryCard } from './PortfolioSummaryCard';
+import { PortfolioPerformance } from './PortfolioPerformance';
 import { FundamentalsPanel } from './FundamentalsPanel';
 import { ValuationScreener } from './ValuationScreener';
 import { QualityDashboard } from './QualityDashboard';
@@ -242,126 +243,8 @@ const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('A
       {/* Detailed Breakdown - REMOVED (Moved to Top) */}
 
       {/* Performance Chart */}
-      {/* Performance Chart */}
-      <motion.div variants={itemVariants} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <div className="flex flex-col">
-            <h2 className="font-semibold text-slate-800 flex items-center gap-2">
-              <TrendingUp size={20} className="text-emerald-500" />
-              Portfolio Performance
-            </h2>
-            <p className="text-xs text-slate-500 mt-1">Net Evolution vs Invested Capital</p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Time Range Selector */}
-            <div className="flex items-center bg-slate-100 rounded-lg p-1 mr-2">
-              {(['1M', '3M', '6M', '1Y', 'ALL'] as const).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => setTimeRange(r)}
-                  className={`px-3 py-1.5 text-[10px] font-bold rounded-md transition-all ${timeRange === r ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-
-            {/* Scale Toggle */}
-            <div className="flex items-center bg-slate-100 rounded-lg p-1">
-              <button
-                onClick={() => setChartScale('linear')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${chartScale === 'linear' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-              >
-                Linear
-              </button>
-              <button
-                onClick={() => setChartScale('log')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${chartScale === 'log' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-              >
-                Log
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="h-[300px] w-full">
-          {filteredChartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={filteredChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={formatDate}
-                  tick={{ fontSize: 10, fill: '#64748b' }}
-                  stroke="#cbd5e1"
-                  minTickGap={30}
-                />
-
-                <YAxis
-                  yAxisId="left"
-                  scale={chartScale}
-                  domain={['auto', 'auto']}
-                  tick={{ fontSize: 10, fill: '#64748b' }}
-                  stroke="#cbd5e1"
-                  tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
-                />
-
-                <RechartsTooltip
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 16px -2px rgb(0 0 0 / 0.1)', padding: '12px' }}
-                  formatter={(value: number, name: string) => {
-                    return [`${value.toLocaleString('fr-MA', { minimumFractionDigits: 0 })} MAD`, name === 'value' ? 'Total Equity' : 'Invested'];
-                  }}
-                  labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                />
-
-                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '15px' }} />
-
-                <Area
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="invested"
-                  name="Invested Capital"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  fill="none"
-                  strokeDasharray="5 5"
-                />
-                <Area
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="value"
-                  name="Capital Situation"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#colorValue)"
-                  dot={false}
-                  activeDot={{ r: 6, strokeWidth: 0 }}
-                />
-
-                <Brush
-                  dataKey="date"
-                  height={30}
-                  stroke="#cbd5e1"
-                  tickFormatter={formatDate}
-                  fill="#f8fafc"
-                />
-
-              </ComposedChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="flex items-center justify-center h-full text-slate-400 text-sm">
-              Insufficient data history to display chart.
-            </div>
-          )}
-        </div>
+      <motion.div variants={itemVariants}>
+        <PortfolioPerformance />
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 gap-6">
