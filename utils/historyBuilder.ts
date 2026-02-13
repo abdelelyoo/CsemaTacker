@@ -1,13 +1,11 @@
 
-import { Transaction, PerformancePoint } from '../types';
+import { Transaction, BankOperation, PerformancePoint } from '../types';
 import { DateService } from '../services/dateService';
 
-/**
- * Builds a chronological list of performance data points.
- */
 export const buildPerformanceHistory = (
     transactions: Transaction[],
-    currentPrices: Record<string, number> = {}
+    currentPrices: Record<string, number> = {},
+    bankOperations: BankOperation[] = []
 ): PerformancePoint[] => {
     const history: PerformancePoint[] = [];
 
@@ -25,24 +23,45 @@ export const buildPerformanceHistory = (
         txsByDate.get(d)!.push(tx);
     });
 
-    const uniqueDates = Array.from(txsByDate.keys()).sort();
+    // Group bank operations by date
+    const opsByDate = new Map<string, BankOperation[]>();
+    const sortedOps = [...(bankOperations || [])].sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
+
+    sortedOps.forEach(op => {
+        const d = op.parsedDate ? DateService.toIso(op.parsedDate) : DateService.toIso(new Date(op.Date));
+        if (!opsByDate.has(d)) opsByDate.set(d, []);
+        opsByDate.get(d)!.push(op);
+    });
+
+    // Get all unique dates from both sources
+    const allDates = new Set([...Array.from(txsByDate.keys()), ...Array.from(opsByDate.keys())]);
+    const uniqueDates = Array.from(allDates).sort();
 
     uniqueDates.forEach(dateStr => {
+        // Process bank operations first
+        const dailyOps = opsByDate.get(dateStr) || [];
+        dailyOps.forEach(op => {
+            if (op.Category === 'DEPOSIT') {
+                simCash += op.Amount;
+                simInvested += op.Amount;
+            } else if (op.Category === 'WITHDRAWAL') {
+                simCash -= op.Amount;
+                simInvested -= op.Amount;
+            } else if (op.Category === 'DIVIDEND') {
+                simCash += op.Amount;
+            } else if (op.Category === 'BANK_FEE' || op.Category === 'TAX') {
+                simCash -= op.Amount;
+            }
+        });
+
+        // Process stock transactions
         const dailyTxs = txsByDate.get(dateStr) || [];
 
         dailyTxs.forEach(tx => {
             const op = tx.Operation.toLowerCase();
             const ticker = tx.Ticker;
 
-            if (op === 'depot') {
-                simCash += tx.Total;
-                simInvested += tx.Total;
-            } else if (op === 'retrait') {
-                simCash += tx.Total;
-                simInvested += tx.Total; // Withdrawal total is negative
-            } else if (op === 'dividende' || op === 'taxe' || op === 'frais') {
-                simCash += tx.Total;
-            } else if (op === 'achat' || op === 'buy') {
+            if (op === 'achat' || op === 'buy') {
                 simCash += tx.Total;
                 if (!simHoldings.has(ticker)) simHoldings.set(ticker, { qty: 0, price: 0 });
                 const h = simHoldings.get(ticker)!;
@@ -78,16 +97,13 @@ export const buildPerformanceHistory = (
         if (Math.abs(data.qty) > 0.0001) currentHoldingsVal += data.qty * price;
     });
 
-    const todayDataPoint = {
-        date: todayStr,
-        value: simCash + currentHoldingsVal,
-        invested: simInvested
-    };
-
-    if (uniqueDates.length > 0 && uniqueDates[uniqueDates.length - 1] === todayStr) {
-        history[history.length - 1] = todayDataPoint;
-    } else if (uniqueDates.length > 0 || simInvested > 0) {
-        history.push(todayDataPoint);
+    // Add today if not already present
+    if (!history.find(h => h.date === todayStr)) {
+        history.push({
+            date: todayStr,
+            value: simCash + currentHoldingsVal,
+            invested: simInvested
+        });
     }
 
     return history;

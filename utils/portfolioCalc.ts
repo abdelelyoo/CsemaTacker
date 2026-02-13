@@ -395,7 +395,7 @@ export const calculatePortfolio = (
   });
 
   // Calculate History using dedicated builder
-  const history = buildPerformanceHistory(transactions, currentPrices);
+  const history = buildPerformanceHistory(transactions, currentPrices, bankOperations);
 
   // Final Results Construction
   const holdings: Holding[] = [];
