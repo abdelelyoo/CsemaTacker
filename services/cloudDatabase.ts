@@ -520,7 +520,7 @@ export const addCompany = async (company: CompanyProfile): Promise<CompanyProfil
       investor_relations_email: company.investor_relations_email,
       investor_relations_phone: company.investor_relations_phone,
       flottant: company.flottant
-    })
+    }, { onConflict: 'ticker' })
     .select()
     .single();
 
