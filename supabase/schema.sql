@@ -44,9 +44,9 @@ CREATE INDEX idx_transactions_parsed_date ON transactions(parsed_date);
 CREATE INDEX idx_transactions_operation ON transactions(operation);
 
 -- ============================================
--- 2. FEES TABLE (CUS/SUB)
+-- 2. FEES TABLE (CUS/SUB/FRAIS/TAXE)
 -- ============================================
--- Stores separate custody and subscription fees
+-- Stores separate custody, subscription fees, and bank fees/taxes
 DROP TABLE IF EXISTS fees CASCADE;
 
 CREATE TABLE fees (
@@ -54,15 +54,42 @@ CREATE TABLE fees (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   
   date DATE NOT NULL,                    -- Fee date
-  type TEXT NOT NULL CHECK (type IN ('CUS', 'SUB')),  -- CUS = Custody, SUB = Subscription
+  type TEXT NOT NULL CHECK (type IN ('CUS', 'SUB', 'FRAIS', 'TAXE')),  -- CUS = Custody, SUB = Subscription, FRAIS = Bank Fees, TAXE = Taxes
   amount NUMERIC NOT NULL,               -- Fee amount (always positive)
   description TEXT,                      -- Optional description
+  ticker TEXT,                          -- Associated ticker (if applicable)
   
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX idx_fees_user_id ON fees(user_id);
 CREATE INDEX idx_fees_date ON fees(date);
+CREATE INDEX idx_fees_type ON fees(type);
+
+-- ============================================
+-- 2b. BANK OPERATIONS TABLE (DEPOSIT/WITHDRAWAL/DIVIDEND/FEE)
+-- ============================================
+-- Stores bank deposits, withdrawals, dividends, and fees
+DROP TABLE IF EXISTS bank_operations CASCADE;
+
+CREATE TABLE bank_operations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  
+  date DATE NOT NULL,                    -- Operation date
+  parsed_date DATE NOT NULL,             -- Parsed date for sorting
+  operation TEXT NOT NULL,               -- Operation type (Deposit, Withdrawal, etc.)
+  category TEXT NOT NULL,                -- Category: DEPOSIT, WITHDRAWAL, DIVIDEND, BANK_FEE, SUBSCRIPTION
+  amount NUMERIC NOT NULL,               -- Amount (negative for outflows)
+  description TEXT,                      -- Optional description
+  reference TEXT,                       -- Bank reference
+  
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_bank_operations_user_id ON bank_operations(user_id);
+CREATE INDEX idx_bank_operations_date ON bank_operations(date);
+CREATE INDEX idx_bank_operations_category ON bank_operations(category);
 
 -- ============================================
 -- 3. COMPANY PROFILES TABLE
@@ -265,6 +292,7 @@ CREATE INDEX idx_capital_events_ticker ON capital_events(ticker);
 -- Enable RLS on all tables
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bank_operations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE management ENABLE ROW LEVEL SECURITY;
 ALTER TABLE financial_figures ENABLE ROW LEVEL SECURITY;
@@ -280,6 +308,10 @@ CREATE POLICY "Users can only access their own transactions"
 
 CREATE POLICY "Users can only access their own fees" 
   ON fees FOR ALL 
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can only access their own bank_operations" 
+  ON bank_operations FOR ALL 
   USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can only access their own companies" 
@@ -363,14 +395,82 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Function to migrate Depot/Retrait from transactions to bank_operations
+CREATE OR REPLACE FUNCTION migrate_depot_to_bank_operations()
+RETURNS void AS $$
+BEGIN
+  INSERT INTO bank_operations (user_id, date, parsed_date, operation, category, amount, description)
+  SELECT 
+    user_id,
+    parsed_date,
+    parsed_date,
+    CASE 
+      WHEN LOWER(operation) ILIKE 'depot' THEN 'Depot'
+      WHEN LOWER(operation) ILIKE 'retrait' OR LOWER(operation) ILIKE 'withdrawal' THEN 'Retrait'
+    END,
+    CASE 
+      WHEN LOWER(operation) ILIKE 'depot' THEN 'DEPOSIT'
+      WHEN LOWER(operation) ILIKE 'retrait' OR LOWER(operation) ILIKE 'withdrawal' THEN 'WITHDRAWAL'
+    END,
+    total,
+    'Migrated from transactions: ' || operation
+  FROM transactions
+  WHERE LOWER(operation) ILIKE 'depot' 
+     OR LOWER(operation) ILIKE 'retrait'
+     OR LOWER(operation) ILIKE 'withdrawal';
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to migrate Dividende from transactions to dividends table
+CREATE OR REPLACE FUNCTION migrate_dividende_to_dividends()
+RETURNS void AS $$
+BEGIN
+  INSERT INTO dividends (user_id, ticker, year, amount, type, payment_date)
+  SELECT 
+    user_id,
+    ticker,
+    EXTRACT(YEAR FROM parsed_date)::INTEGER,
+    ABS(total) / NULLIF(qty, 0),
+    'Ordinaire',
+    parsed_date
+  FROM transactions
+  WHERE LOWER(operation) ILIKE 'dividende' 
+     OR LOWER(operation) ILIKE 'dividend'
+  ON CONFLICT DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to migrate Frais/Taxe from transactions to fees table
+CREATE OR REPLACE FUNCTION migrate_frais_taxe_to_fees()
+RETURNS void AS $$
+BEGIN
+  INSERT INTO fees (user_id, date, type, amount, description, ticker)
+  SELECT 
+    user_id,
+    parsed_date,
+    CASE 
+      WHEN LOWER(operation) ILIKE 'frais' THEN 'FRAIS'
+      WHEN LOWER(operation) ILIKE 'taxe' THEN 'TAXE'
+    END,
+    ABS(total),
+    'Migrated from transactions: ' || operation,
+    ticker
+  FROM transactions
+  WHERE LOWER(operation) ILIKE 'frais' 
+     OR LOWER(operation) ILIKE 'taxe'
+  ON CONFLICT DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
 -- ============================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================
-COMMENT ON TABLE transactions IS 'Stores all portfolio transactions. fees, tax, and realized_pl columns allow NULL values to enable automatic calculation/inference';
+COMMENT ON TABLE transactions IS 'Stores all portfolio transactions. fees, tax, and realized_pl columns allow NULL values to enable automatic calculation/inference. Non-trade operations (Depot, Retrait, Dividende, Frais, Taxe) should be migrated to separate tables.';
 COMMENT ON COLUMN transactions.fees IS 'Transaction fees. NULL values will be automatically calculated based on standard fee rates';
 COMMENT ON COLUMN transactions.tax IS 'Tax amount (TPCVM). NULL values will be automatically calculated for profitable sells';
 COMMENT ON COLUMN transactions.realized_pl IS 'Realized profit/loss. NULL values will be automatically calculated';
-COMMENT ON TABLE fees IS 'Stores custody fees (CUS) and subscription fees (SUB) separate from transactions';
+COMMENT ON TABLE fees IS 'Stores custody fees (CUS), subscription fees (SUB), bank fees (FRAIS), and taxes (TAXE) separate from transactions';
+COMMENT ON TABLE bank_operations IS 'Stores bank deposits and withdrawals separate from stock transactions';
 
 -- ============================================
 -- END OF SCHEMA
