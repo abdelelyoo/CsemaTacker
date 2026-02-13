@@ -7,7 +7,6 @@ import { MarketData } from './MarketData';
 import { usePortfolioContext } from '../context/PortfolioContext';
 import { Sparkline } from './Sparkline';
 import { FeesManager } from './FeesManager';
-import { ReturnsHeatmap } from './ReturnsHeatmap';
 import { AllocationSunburst } from './AllocationSunburst';
 import { PortfolioSummaryCard } from './PortfolioSummaryCard';
 import { PortfolioPerformance } from './PortfolioPerformance';
@@ -234,13 +233,6 @@ const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('A
         <PortfolioSummaryCard />
         <AllocationSunburst />
       </motion.div>
-
-      {/* Advanced Visualizations - Enterprise Level */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ReturnsHeatmap />
-      </motion.div>
-
-      {/* Detailed Breakdown - REMOVED (Moved to Top) */}
 
       {/* Performance Chart */}
       <motion.div variants={itemVariants}>

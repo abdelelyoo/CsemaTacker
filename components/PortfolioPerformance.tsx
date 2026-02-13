@@ -7,20 +7,12 @@ import {
     XAxis, 
     YAxis, 
     CartesianGrid, 
-    Tooltip, 
-    ReferenceLine,
-    Brush,
-    Legend
+    Tooltip,
+    Brush
 } from 'recharts';
 import { usePortfolioContext } from '../context/PortfolioContext';
 import { formatCurrency } from '../utils/helpers';
-import { TrendingUp, TrendingDown, Calendar, Activity, Target, Percent } from 'lucide-react';
-
-interface PerformancePoint {
-    date: string;
-    value: number;
-    invested: number;
-}
+import { TrendingUp, TrendingDown, Activity, Target, Percent, Calendar } from 'lucide-react';
 
 const TIME_RANGES = [
     { label: '1M', months: 1 },
@@ -34,77 +26,74 @@ export const PortfolioPerformance: React.FC = () => {
     const { portfolio } = usePortfolioContext();
     const [timeRange, setTimeRange] = useState('6M');
     const [showInvested, setShowInvested] = useState(true);
-    const [showDailyChange, setShowDailyChange] = useState(false);
 
-    const { chartData, stats, minValue, maxValue } = useMemo(() => {
-        if (!portfolio.history || portfolio.history.length === 0) {
-            return { chartData: [], stats: null, minValue: 0, maxValue: 0 };
-        }
-
-        const history = portfolio.history;
+    // Get values directly from portfolio (same as PortfolioSummary)
+    const stats = useMemo(() => {
+        const totalDeposits = portfolio.totalDeposits;
+        const totalWithdrawals = portfolio.totalWithdrawals;
+        const totalDividends = portfolio.totalDividends;
         
-        // Filter by time range
+        const tradingFees = portfolio.totalTradingFees;
+        const custodyFees = portfolio.totalCustodyFees;
+        const subscriptionFees = portfolio.totalSubscriptionFees;
+        const taxImpact = portfolio.netTaxImpact;
+        const totalFees = tradingFees + custodyFees + subscriptionFees + taxImpact;
+        
+        const cashBalance = portfolio.cashBalance;
+        const holdingsValue = portfolio.totalValue;
+        const currentValue = holdingsValue + cashBalance;
+        
+        const realized = portfolio.totalRealizedPL;
+        const unrealized = portfolio.totalUnrealizedPL;
+        const totalReturn = realized + unrealized;
+        
+        const netInflow = totalDeposits - totalWithdrawals + totalDividends - totalFees;
+        const returnPercent = netInflow !== 0 ? (totalReturn / netInflow) * 100 : 0;
+        
+        return {
+            currentValue,
+            holdingsValue,
+            cashBalance,
+            totalDeposits,
+            totalWithdrawals,
+            totalDividends,
+            totalFees,
+            realized,
+            unrealized,
+            totalReturn,
+            returnPercent,
+            netInflow
+        };
+    }, [portfolio]);
+
+    // Filter history by time range
+    const chartData = useMemo(() => {
+        if (!portfolio.history || portfolio.history.length === 0) return [];
+
         const today = new Date();
         const rangeConfig = TIME_RANGES.find(r => r.label === timeRange) || TIME_RANGES[3];
         const cutoffDate = new Date();
-        cutoffDate.setMonth(today.getMonth() - rangeConfig.months);
         
-        const filtered = history.filter(h => new Date(h.date) >= cutoffDate);
-        
-        // Build chart data with additional metrics
-        const data = filtered.map((point, idx) => {
-            const prev = idx > 0 ? filtered[idx - 1] : null;
-            const dailyChange = prev && prev.value > 0 ? point.value - prev.value : 0;
-            const dailyChangePercent = prev && prev.value > 0 ? (dailyChange / prev.value) * 100 : 0;
-            const invested = point.invested || point.value;
-            const totalReturn = point.value - invested;
-            const returnPercent = invested > 0 ? (totalReturn / invested) * 100 : 0;
-            
-            return {
-                ...point,
-                invested: invested,
-                dailyChange,
-                dailyChangePercent,
-                totalReturn,
-                returnPercent,
-                date: point.date
-            };
-        });
+        if (rangeConfig.months < 999) {
+            cutoffDate.setMonth(today.getMonth() - rangeConfig.months);
+        } else {
+            cutoffDate.setFullYear(2000); // Very old date for ALL
+        }
 
-        // Calculate stats
-        const currentValue = data[data.length - 1]?.value || 0;
-        const firstValue = data[0]?.value || 0;
-        const firstInvested = data[0]?.invested || 0;
-        const totalReturn = currentValue - firstInvested;
-        const returnPercent = firstInvested > 0 ? (totalReturn / firstInvested) * 100 : 0;
-        
-        const changes = data.filter(d => d.dailyChange !== 0).map(d => d.dailyChangePercent);
-        const avgDailyChange = changes.length > 0 ? changes.reduce((a, b) => a + b, 0) / changes.length : 0;
-        const bestDay = Math.max(...data.map(d => d.dailyChangePercent), 0);
-        const worstDay = Math.min(...data.map(d => d.dailyChangePercent), 0);
-        
-        const gains = data.filter(d => d.dailyChange > 0).length;
-        const losses = data.filter(d => d.dailyChange < 0).length;
-        const totalDays = gains + losses;
-        const winRate = totalDays > 0 ? (gains / totalDays) * 100 : 0;
-        
-        const minVal = Math.min(...data.map(d => Math.min(d.value, d.invested)));
-        const maxVal = Math.max(...data.map(d => Math.max(d.value, d.invested)));
-        
-        const statsData = {
-            currentValue,
-            totalReturn,
-            returnPercent,
-            avgDailyChange,
-            bestDay,
-            worstDay,
-            winRate,
-            gains,
-            losses,
-            firstInvested
-        };
-
-        return { chartData: data, stats: statsData, minValue: minVal * 0.95, maxValue: maxVal * 1.05 };
+        return portfolio.history
+            .filter(h => new Date(h.date) >= cutoffDate)
+            .map((point, idx) => {
+                const prev = idx > 0 ? portfolio.history[idx - 1] : null;
+                const dailyChange = prev && prev.value > 0 ? point.value - prev.value : 0;
+                const dailyChangePercent = prev && prev.value > 0 ? (dailyChange / prev.value) * 100 : 0;
+                
+                return {
+                    ...point,
+                    dailyChange,
+                    dailyChangePercent,
+                    date: point.date
+                };
+            });
     }, [portfolio.history, timeRange]);
 
     const formatDate = (dateStr: string) => {
@@ -168,59 +157,58 @@ export const PortfolioPerformance: React.FC = () => {
                 </div>
             </div>
 
-            {/* Stats Row */}
-            {stats && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-                    <div className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl p-3 text-white">
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-300 font-bold uppercase tracking-wider mb-1">
-                            <Target size={12} />
-                            Current Value
-                        </div>
-                        <div className="text-xl font-black">{formatCurrency(stats.currentValue)}</div>
+            {/* Stats Row - Using same data as PortfolioSummary */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl p-3 text-white">
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-300 font-bold uppercase tracking-wider mb-1">
+                        <Target size={12} />
+                        Current Value
                     </div>
-                    
-                    <div className={`bg-gradient-to-br rounded-xl p-3 ${stats.totalReturn >= 0 ? 'from-emerald-50 to-emerald-100 border border-emerald-200' : 'from-rose-50 to-rose-100 border border-rose-200'}`}>
-                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider mb-1">
-                            {stats.totalReturn >= 0 ? <TrendingUp size={12} className="text-emerald-600" /> : <TrendingDown size={12} className="text-rose-600" />}
-                            <span className={stats.totalReturn >= 0 ? 'text-emerald-700' : 'text-rose-700'}>Total Return</span>
-                        </div>
-                        <div className={`text-xl font-black ${stats.totalReturn >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                            {stats.totalReturn >= 0 ? '+' : ''}{formatCurrency(stats.totalReturn)}
-                        </div>
-                        <div className={`text-xs font-bold ${stats.totalReturn >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                            {stats.returnPercent >= 0 ? '+' : ''}{stats.returnPercent.toFixed(2)}%
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
-                            <Percent size={12} />
-                            Win Rate
-                        </div>
-                        <div className={`text-xl font-black ${stats.winRate >= 50 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                            {stats.winRate.toFixed(0)}%
-                        </div>
-                        <div className="text-xs text-slate-500">
-                            <span className="text-emerald-600">{stats.gains}↑</span>
-                            <span className="mx-1">/</span>
-                            <span className="text-rose-600">{stats.losses}↓</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
-                            <Activity size={12} />
-                            Avg Daily
-                        </div>
-                        <div className={`text-xl font-black ${stats.avgDailyChange >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                            {stats.avgDailyChange >= 0 ? '+' : ''}{stats.avgDailyChange.toFixed(2)}%
-                        </div>
-                        <div className="text-xs text-slate-400">
-                            Best: +{stats.bestDay.toFixed(1)}% / Worst: {stats.worstDay.toFixed(1)}%
-                        </div>
+                    <div className="text-xl font-black">{formatCurrency(stats.currentValue)}</div>
+                    <div className="text-xs text-slate-400 mt-1">
+                        {formatCurrency(stats.holdingsValue)} + {formatCurrency(stats.cashBalance)} cash
                     </div>
                 </div>
-            )}
+                
+                <div className={`bg-gradient-to-br rounded-xl p-3 ${stats.totalReturn >= 0 ? 'from-emerald-50 to-emerald-100 border border-emerald-200' : 'from-rose-50 to-rose-100 border border-rose-200'}`}>
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider mb-1">
+                        {stats.totalReturn >= 0 ? <TrendingUp size={12} className="text-emerald-600" /> : <TrendingDown size={12} className="text-rose-600" />}
+                        <span className={stats.totalReturn >= 0 ? 'text-emerald-700' : 'text-rose-700'}>Total Return</span>
+                    </div>
+                    <div className={`text-xl font-black ${stats.totalReturn >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        {stats.totalReturn >= 0 ? '+' : ''}{formatCurrency(stats.totalReturn)}
+                    </div>
+                    <div className={`text-xs font-bold ${stats.totalReturn >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        {stats.returnPercent >= 0 ? '+' : ''}{stats.returnPercent.toFixed(2)}%
+                    </div>
+                </div>
+
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        <Percent size={12} />
+                        Realized P/L
+                    </div>
+                    <div className={`text-xl font-black ${stats.realized >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        {stats.realized >= 0 ? '+' : ''}{formatCurrency(stats.realized)}
+                    </div>
+                    <div className={`text-xs ${stats.unrealized >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        Unrealized: {stats.unrealized >= 0 ? '+' : ''}{formatCurrency(stats.unrealized)}
+                    </div>
+                </div>
+
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        <Calendar size={12} />
+                        Net Capital
+                    </div>
+                    <div className={`text-xl font-black ${stats.netInflow >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        {stats.netInflow >= 0 ? '+' : ''}{formatCurrency(stats.netInflow)}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                        In: {formatCurrency(stats.totalDeposits)} / Out: {formatCurrency(stats.totalWithdrawals)}
+                    </div>
+                </div>
+            </div>
 
             {/* Chart */}
             <div className="h-[280px] w-full">
@@ -250,7 +238,6 @@ export const PortfolioPerformance: React.FC = () => {
                         />
                         
                         <YAxis
-                            domain={[minValue, maxValue]}
                             tick={{ fontSize: 10, fill: '#64748b' }}
                             stroke="#cbd5e1"
                             tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
@@ -275,7 +262,7 @@ export const PortfolioPerformance: React.FC = () => {
                                                         {formatCurrency(data.value)}
                                                     </span>
                                                 </div>
-                                                {showInvested && (
+                                                {showInvested && data.invested && (
                                                     <div className="flex justify-between gap-6">
                                                         <span className="text-slate-400">Invested:</span>
                                                         <span className="font-mono font-bold text-blue-400">
@@ -283,18 +270,14 @@ export const PortfolioPerformance: React.FC = () => {
                                                         </span>
                                                     </div>
                                                 )}
-                                                <div className="flex justify-between gap-6 pt-2 border-t border-slate-700">
-                                                    <span className="text-slate-400">Return:</span>
-                                                    <span className={`font-mono font-bold ${data.totalReturn >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                                        {data.totalReturn >= 0 ? '+' : ''}{formatCurrency(data.totalReturn)} ({data.returnPercent.toFixed(1)}%)
-                                                    </span>
-                                                </div>
-                                                <div className="flex justify-between gap-6">
-                                                    <span className="text-slate-400">Daily:</span>
-                                                    <span className={`font-mono font-bold ${data.dailyChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                                        {data.dailyChange >= 0 ? '+' : ''}{data.dailyChangePercent.toFixed(2)}%
-                                                    </span>
-                                                </div>
+                                                {data.dailyChange !== undefined && data.dailyChange !== 0 && (
+                                                    <div className="flex justify-between gap-6 pt-2 border-t border-slate-700">
+                                                        <span className="text-slate-400">Daily:</span>
+                                                        <span className={`font-mono font-bold ${data.dailyChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                                            {data.dailyChange >= 0 ? '+' : ''}{data.dailyChangePercent.toFixed(2)}%
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     );
