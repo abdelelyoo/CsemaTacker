@@ -211,7 +211,9 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onSave
       return;
     }
 
-    onSave(formData);
+    if (onSave) {
+      onSave(formData);
+    }
     onClose();
   };
 

@@ -109,7 +109,7 @@ export const TransactionsList: React.FC = () => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden pb-20 md:pb-0 relative">
       {/* Add Modal */}
-      {isAddModalOpen && onAddTransaction && (
+      {isAddModalOpen && (
         <AddTransactionModal
           onSave={onAddTransaction}
           onClose={() => setIsAddModalOpen(false)}
@@ -171,17 +171,13 @@ export const TransactionsList: React.FC = () => {
               )}
             </button>
 
-            {onAddTransaction && (
-              <>
-                <button
-                  onClick={() => setIsAddModalOpen(true)}
-                  className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors"
-                >
-                  <Plus size={16} />
-                  <span>Add New</span>
-                </button>
-              </>
-            )}
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors"
+            >
+              <Plus size={16} />
+              <span>Add New</span>
+            </button>
           </div>
         </div>
 
