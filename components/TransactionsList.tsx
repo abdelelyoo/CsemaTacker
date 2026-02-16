@@ -172,8 +172,12 @@ export const TransactionsList: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors"
+              type="button"
+              onClick={(e) => {
+                console.log('Add New clicked');
+                setIsAddModalOpen(true);
+              }}
+              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors z-[60] relative"
             >
               <Plus size={16} />
               <span>Add New</span>
