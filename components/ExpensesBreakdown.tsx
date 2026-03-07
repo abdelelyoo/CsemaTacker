@@ -14,7 +14,6 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({ onManage }
         { name: 'Commissions', value: Math.abs(portfolio.totalTradingFees), color: '#fb7185' }, // Rose-400
         { name: 'Custody Fees', value: Math.abs(portfolio.totalCustodyFees), color: '#f43f5e' }, // Rose-500
         { name: 'Subscription', value: Math.abs(portfolio.totalSubscriptionFees), color: '#f472b6' }, // Pink-400
-        { name: 'Taxes', value: Math.abs(portfolio.netTaxImpact), color: '#e11d48' }, // Rose-600
     ].filter(d => d.value > 0);
 
     const totalExpenses = data.reduce((acc, curr) => acc + curr.value, 0);
@@ -23,7 +22,7 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({ onManage }
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
             <div className="mb-2 flex justify-between items-start">
                 <div>
-                    <h3 className="text-sm font-bold text-slate-800 tracking-tight">Fees & Taxes</h3>
+                    <h3 className="text-sm font-bold text-slate-800 tracking-tight">Fees</h3>
                     <p className="text-[10px] text-slate-500">Cost Breakdown</p>
                 </div>
                 <button

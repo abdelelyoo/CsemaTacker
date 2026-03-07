@@ -39,9 +39,10 @@ export class MarketService {
 
   static getStatus() {
     return {
-      status: 'connected',
-      lastUpdate: new Date(),
-      source: 'Atlas Market Feed (Static + Fallback)'
+      status: 'static',
+      lastUpdate: new Date('2026-02-26'), // Date of last snapshot
+      source: 'Atlas Market Feed (Static Snapshot)',
+      warning: 'Market prices are static and for estimation only. Real-time data is not currently active.'
     };
   }
 }

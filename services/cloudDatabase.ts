@@ -15,19 +15,23 @@ import type {
 
 // Helper to get current user ID
 const getCurrentUserId = async (): Promise<string | null> => {
-  if (!isSupabaseConfigured()) return null;
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.id || null;
+  if (!isSupabaseConfigured() || !supabase) return null;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user?.id || null;
+  } catch (e) {
+    return null;
+  }
 };
 
 // ==================== TRANSACTIONS ====================
 
 export const getTransactions = async (): Promise<Transaction[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     // Fallback to local Dexie
-    return await db.trades.toArray();
+    return await db.transactions.toArray();
   }
 
   const { data, error } = await supabase
@@ -60,10 +64,10 @@ export const getTransactions = async (): Promise<Transaction[]> => {
 
 export const addTransaction = async (transaction: Transaction): Promise<Transaction> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
-    const id = await db.trades.add(transaction);
-    return { ...transaction, id };
+    const id = await db.transactions.add(transaction);
+    return { ...transaction, id: id as number };
   }
 
   const { data, error } = await supabase
@@ -110,9 +114,9 @@ export const addTransaction = async (transaction: Transaction): Promise<Transact
 
 export const addTransactions = async (trades: Transaction[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
-    await db.trades.bulkAdd(trades);
+    await db.transactions.bulkAdd(trades);
     return;
   }
 
@@ -133,7 +137,7 @@ export const addTransactions = async (trades: Transaction[]): Promise<void> => {
   }));
 
   const { error } = await supabase.from('trades').insert(records);
-  
+
   if (error) {
     console.error('Error adding trades:', error);
     throw error;
@@ -142,9 +146,37 @@ export const addTransactions = async (trades: Transaction[]): Promise<void> => {
 
 export const deleteTransaction = async (id: string | number): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
-    await db.trades.delete(id as number);
+    // For local Dexie DB
+    if (typeof id === 'number') {
+      await db.transactions.delete(id);
+    } else if (typeof id === 'string') {
+      if (id.includes('-')) {
+        // String ID format: "TICKER-Date" - need to find and delete
+        const lastDashIndex = id.lastIndexOf('-');
+        const ticker = id.substring(0, lastDashIndex);
+        const datePart = id.substring(lastDashIndex + 1);
+
+        console.log('Deleting transaction:', { ticker, datePart, fullId: id });
+
+        const txs = await db.transactions
+          .where('Ticker')
+          .equals(ticker)
+          .and(tx => tx.Date === datePart)
+          .toArray();
+
+        if (txs.length > 0 && txs[0].id) {
+          await db.transactions.delete(txs[0].id);
+        }
+      } else {
+        // Try parsing as number
+        const numId = parseInt(id, 10);
+        if (!isNaN(numId)) {
+          await db.transactions.delete(numId);
+        }
+      }
+    }
     return;
   }
 
@@ -160,11 +192,99 @@ export const deleteTransaction = async (id: string | number): Promise<void> => {
   }
 };
 
+export const deleteTransactions = async (ids: (string | number)[]): Promise<void> => {
+  const userId = await getCurrentUserId();
+
+  if (!userId) {
+    // Local batch delete
+    const numericIds: number[] = [];
+    for (const id of ids) {
+      if (typeof id === 'number') numericIds.push(id);
+      else {
+        const numId = parseInt(id, 10);
+        if (!isNaN(numId)) numericIds.push(numId);
+      }
+    }
+    if (numericIds.length > 0) {
+      await db.transactions.bulkDelete(numericIds);
+    }
+    return;
+  }
+
+  const { error } = await supabase
+    .from('trades')
+    .delete()
+    .in('id', ids)
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error deleting transactions:', error);
+    throw error;
+  }
+};
+
+export const updateTransaction = async (id: string | number, transaction: Partial<Transaction>): Promise<Transaction> => {
+  const userId = await getCurrentUserId();
+
+  if (!userId) {
+    await db.transactions.update(id as number, transaction);
+    const updated = await db.transactions.get(id as number);
+    if (!updated) throw new Error('Transaction not found after update');
+    return updated;
+  }
+
+  const updateData: Record<string, any> = {};
+  if (transaction.Date !== undefined) updateData.date = transaction.Date;
+  if (transaction.Company !== undefined) updateData.company = transaction.Company;
+  if (transaction.ISIN !== undefined) updateData.isin = transaction.ISIN;
+  if (transaction.Operation !== undefined) updateData.operation = transaction.Operation;
+  if (transaction.Ticker !== undefined) updateData.ticker = transaction.Ticker;
+  if (transaction.Qty !== undefined) updateData.qty = transaction.Qty;
+  if (transaction.Price !== undefined) updateData.price = transaction.Price;
+  if (transaction.Total !== undefined) updateData.total = transaction.Total;
+  if (transaction.Fees !== undefined) updateData.fees = transaction.Fees;
+  if (transaction.Tax !== undefined) updateData.tax = transaction.Tax;
+  if (transaction.RealizedPL !== undefined) updateData.realized_pl = transaction.RealizedPL;
+  if (transaction.parsedDate !== undefined) updateData.parsed_date = transaction.parsedDate.toISOString().split('T')[0];
+
+  const { data, error } = await supabase
+    .from('trades')
+    .update(updateData)
+    .eq('id', id)
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating transaction:', error);
+    throw error;
+  }
+
+  return {
+    id: data.id,
+    Date: data.date,
+    Company: data.company,
+    ISIN: data.isin,
+    Operation: data.operation,
+    Ticker: data.ticker,
+    Qty: data.qty,
+    Price: data.price,
+    Total: data.total,
+    Fees: data.fees,
+    Tax: data.tax,
+    RealizedPL: data.realized_pl,
+    parsedDate: new Date(data.parsed_date)
+  };
+};
+
 export const clearTransactions = async (): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+  console.log('clearTransactions - userId:', userId);
+
   if (!userId) {
-    await db.trades.clear();
+    console.log('Clearing local Dexie transactions...');
+    await db.transactions.clear();
+    console.log('Local transactions cleared');
     return;
   }
 
@@ -183,7 +303,7 @@ export const clearTransactions = async (): Promise<void> => {
 
 export const getFees = async (): Promise<FeeRecord[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.fees.toArray();
   }
@@ -210,10 +330,10 @@ export const getFees = async (): Promise<FeeRecord[]> => {
 
 export const addFee = async (fee: FeeRecord): Promise<FeeRecord> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     const id = await db.fees.add(fee);
-    return { ...fee, id };
+    return { ...fee, id: id as number };
   }
 
   const { data, error } = await supabase
@@ -244,7 +364,7 @@ export const addFee = async (fee: FeeRecord): Promise<FeeRecord> => {
 
 export const addFees = async (fees: FeeRecord[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.fees.bulkAdd(fees);
     return;
@@ -259,7 +379,7 @@ export const addFees = async (fees: FeeRecord[]): Promise<void> => {
   }));
 
   const { error } = await supabase.from('fees_v2').insert(records);
-  
+
   if (error) {
     console.error('Error adding fees:', error);
     throw error;
@@ -268,9 +388,12 @@ export const addFees = async (fees: FeeRecord[]): Promise<void> => {
 
 export const clearFees = async (): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+  console.log('clearFees - userId:', userId);
+
   if (!userId) {
+    console.log('Clearing local Dexie fees...');
     await db.fees.clear();
+    console.log('Local fees cleared');
     return;
   }
 
@@ -287,7 +410,7 @@ export const clearFees = async (): Promise<void> => {
 
 export const deleteFee = async (id: number | string): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.fees.delete(id as number);
     return;
@@ -309,7 +432,7 @@ export const deleteFee = async (id: number | string): Promise<void> => {
 
 export const getBankOperations = async (): Promise<BankOperation[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.bankOperations?.toArray() || [];
   }
@@ -339,10 +462,10 @@ export const getBankOperations = async (): Promise<BankOperation[]> => {
 
 export const addBankOperation = async (operation: BankOperation): Promise<BankOperation> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     const id = await db.bankOperations?.add(operation);
-    return { ...operation, id };
+    return { ...operation, id: id as number };
   }
 
   const { data, error } = await supabase
@@ -379,7 +502,7 @@ export const addBankOperation = async (operation: BankOperation): Promise<BankOp
 
 export const deleteBankOperation = async (id: string | number): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.bankOperations?.delete(id as number);
     return;
@@ -399,9 +522,12 @@ export const deleteBankOperation = async (id: string | number): Promise<void> =>
 
 export const clearBankOperations = async (): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+  console.log('clearBankOperations - userId:', userId);
+
   if (!userId) {
+    console.log('Clearing local Dexie bankOperations...');
     await db.bankOperations?.clear();
+    console.log('Local bankOperations cleared');
     return;
   }
 
@@ -420,7 +546,7 @@ export const clearBankOperations = async (): Promise<void> => {
 
 export const getCompanies = async (): Promise<CompanyProfile[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.companies.toArray();
   }
@@ -457,7 +583,7 @@ export const getCompanies = async (): Promise<CompanyProfile[]> => {
 
 export const getCompanyByTicker = async (ticker: string): Promise<CompanyProfile | undefined> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.companies.where('ticker').equals(ticker).first();
   }
@@ -495,10 +621,10 @@ export const getCompanyByTicker = async (ticker: string): Promise<CompanyProfile
 
 export const addCompany = async (company: CompanyProfile): Promise<CompanyProfile> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     const id = await db.companies.add(company);
-    return { ...company, id };
+    return { ...company, id: id as number };
   }
 
   const { data, error } = await supabase
@@ -553,7 +679,7 @@ export const addCompany = async (company: CompanyProfile): Promise<CompanyProfil
 
 export const getManagementByTicker = async (ticker: string): Promise<ManagementMember[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.management.where('ticker').equals(ticker).toArray();
   }
@@ -579,7 +705,7 @@ export const getManagementByTicker = async (ticker: string): Promise<ManagementM
 
 export const addManagement = async (members: ManagementMember[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.management.bulkAdd(members);
     return;
@@ -593,7 +719,7 @@ export const addManagement = async (members: ManagementMember[]): Promise<void> 
   }));
 
   const { error } = await supabase.from('management').insert(records);
-  
+
   if (error) {
     console.error('Error adding management:', error);
     throw error;
@@ -604,7 +730,7 @@ export const addManagement = async (members: ManagementMember[]): Promise<void> 
 
 export const getFinancialFiguresByTicker = async (ticker: string): Promise<FinancialFigure[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.financialFigures.where('ticker').equals(ticker).toArray();
   }
@@ -636,7 +762,7 @@ export const getFinancialFiguresByTicker = async (ticker: string): Promise<Finan
 
 export const addFinancialFigures = async (figures: FinancialFigure[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.financialFigures.bulkAdd(figures);
     return;
@@ -656,7 +782,7 @@ export const addFinancialFigures = async (figures: FinancialFigure[]): Promise<v
   }));
 
   const { error } = await supabase.from('financial_figures').upsert(records);
-  
+
   if (error) {
     console.error('Error adding financial figures:', error);
     throw error;
@@ -667,7 +793,7 @@ export const addFinancialFigures = async (figures: FinancialFigure[]): Promise<v
 
 export const getFinancialRatiosByTicker = async (ticker: string): Promise<FinancialRatio[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.financialRatios.where('ticker').equals(ticker).toArray();
   }
@@ -698,7 +824,7 @@ export const getFinancialRatiosByTicker = async (ticker: string): Promise<Financ
 
 export const addFinancialRatios = async (ratios: FinancialRatio[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.financialRatios.bulkAdd(ratios);
     return;
@@ -717,7 +843,7 @@ export const addFinancialRatios = async (ratios: FinancialRatio[]): Promise<void
   }));
 
   const { error } = await supabase.from('financial_ratios').upsert(records);
-  
+
   if (error) {
     console.error('Error adding financial ratios:', error);
     throw error;
@@ -728,7 +854,7 @@ export const addFinancialRatios = async (ratios: FinancialRatio[]): Promise<void
 
 export const getDividendsByTicker = async (ticker: string): Promise<DividendRecord[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.dividends.where('ticker').equals(ticker).toArray();
   }
@@ -758,7 +884,7 @@ export const getDividendsByTicker = async (ticker: string): Promise<DividendReco
 
 export const getAllDividends = async (): Promise<DividendRecord[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.dividends.toArray();
   }
@@ -787,7 +913,7 @@ export const getAllDividends = async (): Promise<DividendRecord[]> => {
 
 export const addDividends = async (dividends: DividendRecord[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.dividends.bulkAdd(dividends);
     return;
@@ -805,7 +931,7 @@ export const addDividends = async (dividends: DividendRecord[]): Promise<void> =
   }));
 
   const { error } = await supabase.from('dividends').upsert(records);
-  
+
   if (error) {
     console.error('Error adding dividends:', error);
     throw error;
@@ -816,7 +942,7 @@ export const addDividends = async (dividends: DividendRecord[]): Promise<void> =
 
 export const getShareholdersByTicker = async (ticker: string): Promise<Shareholder[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.shareholders.where('ticker').equals(ticker).toArray();
   }
@@ -843,7 +969,7 @@ export const getShareholdersByTicker = async (ticker: string): Promise<Sharehold
 
 export const addShareholders = async (shareholders: Shareholder[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.shareholders.bulkAdd(shareholders);
     return;
@@ -858,7 +984,7 @@ export const addShareholders = async (shareholders: Shareholder[]): Promise<void
   }));
 
   const { error } = await supabase.from('shareholders').insert(records);
-  
+
   if (error) {
     console.error('Error adding shareholders:', error);
     throw error;
@@ -869,7 +995,7 @@ export const addShareholders = async (shareholders: Shareholder[]): Promise<void
 
 export const getCapitalEventsByTicker = async (ticker: string): Promise<CapitalEvent[]> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     return await db.capitalEvents.where('ticker').equals(ticker).toArray();
   }
@@ -901,7 +1027,7 @@ export const getCapitalEventsByTicker = async (ticker: string): Promise<CapitalE
 
 export const addCapitalEvents = async (events: CapitalEvent[]): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await db.capitalEvents.bulkAdd(events);
     return;
@@ -921,7 +1047,7 @@ export const addCapitalEvents = async (events: CapitalEvent[]): Promise<void> =>
   }));
 
   const { error } = await supabase.from('capital_events').insert(records);
-  
+
   if (error) {
     console.error('Error adding capital events:', error);
     throw error;
@@ -932,10 +1058,10 @@ export const addCapitalEvents = async (events: CapitalEvent[]): Promise<void> =>
 
 export const clearAllData = async (): Promise<void> => {
   const userId = await getCurrentUserId();
-  
+
   if (!userId) {
     await Promise.all([
-      db.trades.clear(),
+      db.transactions.clear(),
       db.fees.clear(),
       db.companies.clear(),
       db.management.clear(),
@@ -965,7 +1091,7 @@ export const clearAllData = async (): Promise<void> => {
       .from(table)
       .delete()
       .eq('user_id', userId);
-    
+
     if (error) {
       console.error(`Error clearing ${table}:`, error);
     }

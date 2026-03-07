@@ -21,7 +21,7 @@ export function formatNumber(value: number, decimals: number = 2): string {
  */
 export function roundTo(value: number, decimals: number = 2): number {
   const factor = Math.pow(10, decimals);
-  return Math.round((value + Number.EPSILON) * factor) / factor;
+  return Math.round(value * factor) / factor;
 }
 
 export function formatPercentage(value: number, decimals: number = 2): string {
@@ -61,17 +61,7 @@ export function calculateFeeDrag(totalFees: number, portfolioValue: number): num
   return (totalFees / portfolioValue) * 100;
 }
 
-export function calculateHHI(holdings: { allocation: number }[]): number {
-  return holdings.reduce((sum, holding) => {
-    return sum + (holding.allocation * holding.allocation);
-  }, 0);
-}
 
-export function getHHIStatus(hhiScore: number): string {
-  if (hhiScore < 1500) return 'Diversified';
-  if (hhiScore < 2500) return 'Moderate Concentration';
-  return 'Highly Concentrated';
-}
 
 export function truncateText(text: string, maxLength: number = 20): string {
   if (text.length <= maxLength) return text;

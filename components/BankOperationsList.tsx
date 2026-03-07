@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { usePortfolioContext } from '../context/PortfolioContext';
-import { Search, Trash2, Plus, Building2, Receipt, X, Edit2 } from 'lucide-react';
+import { Search, Trash2, Plus, Building2, Receipt, X, Edit2, Upload, Download } from 'lucide-react';
 import { FeeType } from '../types';
 import { formatCurrency } from '../utils/helpers';
 
@@ -25,23 +25,25 @@ export const BankOperationsList: React.FC = () => {
     addFee,
     addBankOperation
   } = usePortfolioContext();
-  
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddFeeForm, setShowAddFeeForm] = useState(false);
   const [showAddBankOpForm, setShowAddBankOpForm] = useState(false);
-  
+
   // Form states
   const [newFeeDate, setNewFeeDate] = useState(new Date().toISOString().split('T')[0]);
   const [newFeeType, setNewFeeType] = useState<FeeType>('SUB');
   const [newFeeAmount, setNewFeeAmount] = useState('');
   const [newFeeDesc, setNewFeeDesc] = useState('');
-  
+
   const [newOpDate, setNewOpDate] = useState(new Date().toISOString().split('T')[0]);
   const [newOpType, setNewOpType] = useState('DEPOSIT');
   const [newOpAmount, setNewOpAmount] = useState('');
   const [newOpDesc, setNewOpDesc] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Edit state
   const [editingRecord, setEditingRecord] = useState<UnifiedRecord | null>(null);
   const [editDate, setEditDate] = useState('');
@@ -51,7 +53,7 @@ export const BankOperationsList: React.FC = () => {
 
   const unifiedRecords: UnifiedRecord[] = useMemo(() => {
     const records: UnifiedRecord[] = [];
-    
+
     bankOperations.forEach(op => {
       records.push({
         id: op.id!,
@@ -63,7 +65,7 @@ export const BankOperationsList: React.FC = () => {
         amount: op.Amount
       });
     });
-    
+
     fees.forEach(fee => {
       records.push({
         id: fee.id!,
@@ -75,7 +77,7 @@ export const BankOperationsList: React.FC = () => {
         amount: fee.amount
       });
     });
-    
+
     records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return records;
   }, [bankOperations, fees]);
@@ -83,7 +85,7 @@ export const BankOperationsList: React.FC = () => {
   const filteredRecords = useMemo(() => {
     if (!searchTerm) return unifiedRecords;
     const search = searchTerm.toLowerCase();
-    return unifiedRecords.filter(r => 
+    return unifiedRecords.filter(r =>
       r.operation.toLowerCase().includes(search) ||
       r.description.toLowerCase().includes(search) ||
       r.category.toLowerCase().includes(search)
@@ -116,7 +118,7 @@ export const BankOperationsList: React.FC = () => {
 
   const handleDelete = async (record: UnifiedRecord) => {
     if (!window.confirm(`Delete this ${record.type === 'bank_op' ? 'bank operation' : 'fee'}?`)) return;
-    
+
     if (record.type === 'bank_op') {
       await deleteBankOperation(record.id);
     } else {
@@ -140,10 +142,10 @@ export const BankOperationsList: React.FC = () => {
 
   const handleSaveEdit = async () => {
     if (!editingRecord || !editAmount) return;
-    
+
     const amount = parseFloat(editAmount);
     const date = new Date(editDate);
-    
+
     if (isNaN(amount) || isNaN(date.getTime())) {
       alert('Invalid date or amount');
       return;
@@ -224,6 +226,150 @@ export const BankOperationsList: React.FC = () => {
     }
   };
 
+  const handleExportCSV = () => {
+    if (unifiedRecords.length === 0) {
+      alert('No records to export');
+      return;
+    }
+
+    const headers = ['Date', 'Type', 'Category', 'Description', 'Amount'];
+    const csvContent = [
+      headers.join(','),
+      ...unifiedRecords.map(r => {
+        const amount = r.category === 'DEPOSIT' || r.category === 'DIVIDEND' || r.category === 'TAX'
+          ? Math.abs(r.amount).toFixed(2).replace('.', ',')
+          : (-Math.abs(r.amount)).toFixed(2).replace('.', ',');
+        return [
+          `"${r.date}"`,
+          `"${r.operation}"`,
+          `"${r.category}"`,
+          `"${r.description.replace(/"/g, '""')}"`,
+          amount
+        ].join(',');
+      })
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `bank_operations_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const parseAmount = (amountStr: string): number => {
+    let cleaned = amountStr.replace(/[^\d,\.-]/g, '');
+    cleaned = cleaned.replace(',', '.');
+    return parseFloat(cleaned);
+  };
+
+  const parseDate = (dateStr: string): Date | null => {
+    const parts = dateStr.trim().split(/[\/\-]/);
+    if (parts.length === 3) {
+      let day = parseInt(parts[0]);
+      let month = parseInt(parts[1]);
+      let year = parseInt(parts[2]);
+
+      if (year < 100) year += 2000;
+
+      return new Date(year, month - 1, day);
+    }
+    return new Date(dateStr);
+  };
+
+  const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split('\n').filter(line => line.trim());
+
+      if (lines.length < 2) {
+        alert('CSV file is empty or has no data rows');
+        return;
+      }
+
+      const isOldFormat = lines[0].includes('Operation');
+      let imported = 0;
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        // Custom CSV parser to handle quoted fields containing commas
+        const cols: string[] = [];
+        let currentField = '';
+        let inQuotes = false;
+
+        for (let charIdx = 0; charIdx < line.length; charIdx++) {
+          const char = line[charIdx];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            cols.push(currentField.trim().replace(/^"|"$/g, ''));
+            currentField = '';
+          } else {
+            currentField += char;
+          }
+        }
+        cols.push(currentField.trim().replace(/^"|"$/g, ''));
+
+        if (cols.length < 5) continue;
+
+        const [dateStr, operation, category, description, amountStr] = cols;
+
+        // Use more robust parsing logic from portfolioCalc (conceptually)
+        let amount = 0;
+        try {
+          let clean = amountStr.replace(/\s?MAD/gi, '').trim();
+          const lastComma = clean.lastIndexOf(',');
+          const lastPeriod = clean.lastIndexOf('.');
+          if (lastComma > lastPeriod) {
+            clean = clean.replace(/\./g, '').replace(',', '.');
+          } else if (lastPeriod > lastComma) {
+            clean = clean.replace(/,/g, '');
+          } else if (lastComma !== -1) {
+            const parts = clean.split(',');
+            if (parts[1].length === 3 && parts[0].length >= 1) clean = clean.replace(',', '');
+            else clean = clean.replace(',', '.');
+          }
+          clean = clean.replace(/[^0-9.-]/g, '');
+          amount = parseFloat(clean) || 0;
+        } catch (e) {
+          console.error('Failed to parse amount:', amountStr);
+        }
+
+        if (isNaN(amount) || !dateStr) continue;
+
+        const opDate = parseDate(dateStr);
+        if (!opDate || isNaN(opDate.getTime())) continue;
+
+        const formattedDate = `${opDate.getFullYear()}-${String(opDate.getMonth() + 1).padStart(2, '0')}-${String(opDate.getDate()).padStart(2, '0')}`;
+
+        if (category === 'SUBSCRIPTION' || category === 'CUSTODY') {
+          await addFee(opDate, category === 'SUBSCRIPTION' ? 'SUB' : 'CUS', Math.abs(amount), description);
+        } else {
+          await addBankOperation({
+            Date: formattedDate,
+            parsedDate: opDate,
+            Operation: category,
+            Description: description,
+            Amount: category === 'DEPOSIT' || category === 'DIVIDEND' || category === 'TAX' ? Math.abs(amount) : -Math.abs(amount),
+            Category: category
+          });
+        }
+        imported++;
+      }
+
+      alert(`Imported ${imported} records successfully`);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -233,6 +379,22 @@ export const BankOperationsList: React.FC = () => {
           <span className="text-sm text-slate-500">({unifiedRecords.length} records)</span>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={handleExportCSV}
+            className="text-sm bg-emerald-500 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-600 flex items-center gap-1"
+          >
+            <Download size={14} /> Export
+          </button>
+          <label className="text-sm bg-slate-500 text-white px-3 py-1.5 rounded-lg hover:bg-slate-600 flex items-center gap-1 cursor-pointer">
+            <Upload size={14} /> Import
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleImportCSV}
+              className="hidden"
+              ref={fileInputRef}
+            />
+          </label>
           <button
             onClick={() => setShowAddFeeForm(true)}
             className="text-sm bg-purple-500 text-white px-3 py-1.5 rounded-lg hover:bg-purple-600 flex items-center gap-1"
@@ -304,10 +466,9 @@ export const BankOperationsList: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-slate-600">{record.description || '-'}</td>
-                  <td className={`px-4 py-3 text-sm font-medium text-right ${
-                    record.category === 'DEPOSIT' || record.category === 'DIVIDEND' || record.category === 'TAX' 
-                      ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <td className={`px-4 py-3 text-sm font-medium text-right ${record.category === 'DEPOSIT' || record.category === 'DIVIDEND' || record.category === 'TAX'
+                    ? 'text-green-600' : 'text-red-600'
+                    }`}>
                     {record.category === 'DEPOSIT' || record.category === 'DIVIDEND' || record.category === 'TAX' ? '+' : '-'}{formatCurrency(Math.abs(record.amount))}
                   </td>
                   <td className="px-4 py-3">

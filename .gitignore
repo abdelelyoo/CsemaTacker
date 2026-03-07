@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temp/Debug files
+temp_vitest*.txt
+tsc_errors.txt
+vitest_errors.txt
+test_errors.txt
+test_full.txt
+test_failure.txt

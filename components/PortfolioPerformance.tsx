@@ -1,12 +1,13 @@
 
 import React, { useState, useMemo } from 'react';
-import { 
-    ResponsiveContainer, 
-    AreaChart, 
-    Area, 
-    XAxis, 
-    YAxis, 
-    CartesianGrid, 
+import {
+    ResponsiveContainer,
+    ComposedChart,
+    Area,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
     Tooltip,
     Brush
 } from 'recharts';
@@ -31,24 +32,30 @@ export const PortfolioPerformance: React.FC = () => {
     const stats = useMemo(() => {
         const totalDeposits = portfolio.totalDeposits;
         const totalWithdrawals = portfolio.totalWithdrawals;
-        
+        const totalDividends = portfolio.totalDividends;
+
         const cashBalance = portfolio.cashBalance;
         const holdingsValue = portfolio.totalValue;
         const currentValue = holdingsValue + cashBalance;
-        
+
         const realized = portfolio.totalRealizedPL;
         const unrealized = portfolio.totalUnrealizedPL;
         const totalReturn = realized + unrealized;
+
+        // Net Capital: deposits + dividends - withdrawals (matches In - Out)
+        const invested = totalDeposits + totalDividends - totalWithdrawals;
         
-        const invested = totalDeposits - totalWithdrawals;
-        const returnPercent = invested !== 0 ? (totalReturn / invested) * 100 : 0;
-        
+        // For ROI calculation: use net deposits (deposits - withdrawals)
+        const netDeposits = totalDeposits - totalWithdrawals;
+        const returnPercent = netDeposits !== 0 ? (totalReturn / netDeposits) * 100 : 0;
+
         return {
             currentValue,
             holdingsValue,
             cashBalance,
             totalDeposits,
             totalWithdrawals,
+            totalDividends,
             realized,
             unrealized,
             totalReturn,
@@ -64,7 +71,7 @@ export const PortfolioPerformance: React.FC = () => {
         const today = new Date();
         const rangeConfig = TIME_RANGES.find(r => r.label === timeRange) || TIME_RANGES[3];
         const cutoffDate = new Date();
-        
+
         if (rangeConfig.months < 999) {
             cutoffDate.setMonth(today.getMonth() - rangeConfig.months);
         } else {
@@ -75,8 +82,8 @@ export const PortfolioPerformance: React.FC = () => {
             .filter(h => new Date(h.date) >= cutoffDate)
             .map(point => ({
                 date: point.date,
-                value: point.value,
-                invested: point.invested
+                holdings: point.holdings || 0,
+                invested: point.invested || 0
             }));
     }, [portfolio.history, timeRange]);
 
@@ -86,10 +93,10 @@ export const PortfolioPerformance: React.FC = () => {
     };
 
     const formatFullDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('fr-MA', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+        return new Date(dateStr).toLocaleDateString('fr-MA', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
     };
 
@@ -114,7 +121,7 @@ export const PortfolioPerformance: React.FC = () => {
                         <TrendingUp size={20} className="text-emerald-500" />
                         Portfolio Performance
                     </h2>
-                    <p className="text-xs text-slate-500">Net Evolution vs Invested Capital</p>
+                    <p className="text-xs text-slate-500">Holdings vs Invested Capital</p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -141,16 +148,34 @@ export const PortfolioPerformance: React.FC = () => {
                 </div>
             </div>
 
-            {/* Stats Row - Using same data as PortfolioSummary */}
+            {/* Stats Row - Current Value vs Invested */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
                 <div className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl p-3 text-white">
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-300 font-bold uppercase tracking-wider mb-1">
                         <Target size={12} />
-                        Current Value
+                        Total Value
                     </div>
                     <div className="text-xl font-black">{formatCurrency(stats.currentValue)}</div>
+                    <div className="text-xs text-slate-400 mt-1">
+                        <span>Hld: {formatCurrency(stats.holdingsValue)}</span>
+                        <span className="mx-1">|</span>
+                        <span>Cash: {formatCurrency(stats.cashBalance)}</span>
+                    </div>
                 </div>
-                
+
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        <Calendar size={12} />
+                        Total Invested
+                    </div>
+                    <div className="text-xl font-black text-blue-600">
+                        {formatCurrency(stats.invested)}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                        In: {formatCurrency(stats.totalDeposits + stats.totalDividends)} | Out: {formatCurrency(stats.totalWithdrawals)}
+                    </div>
+                </div>
+
                 <div className={`bg-gradient-to-br rounded-xl p-3 ${stats.totalReturn >= 0 ? 'from-emerald-50 to-emerald-100 border border-emerald-200' : 'from-rose-50 to-rose-100 border border-rose-200'}`}>
                     <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider mb-1">
                         {stats.totalReturn >= 0 ? <TrendingUp size={12} className="text-emerald-600" /> : <TrendingDown size={12} className="text-rose-600" />}
@@ -176,38 +201,21 @@ export const PortfolioPerformance: React.FC = () => {
                         Unrealized: {stats.unrealized >= 0 ? '+' : ''}{formatCurrency(stats.unrealized)}
                     </div>
                 </div>
-
-                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">
-                        <Calendar size={12} />
-                        Invested Capital
-                    </div>
-                    <div className="text-xl font-black text-blue-600">
-                        {formatCurrency(stats.invested)}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                        In: {formatCurrency(stats.totalDeposits)}
-                    </div>
-                </div>
             </div>
 
             {/* Chart */}
-            <div className="h-[280px] w-full">
+            <div className="h-[280px] w-full mt-6">
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                         <defs>
                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
                                 <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                             </linearGradient>
-                            <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                            </linearGradient>
                         </defs>
-                        
+
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        
+
                         <XAxis
                             dataKey="date"
                             tickFormatter={formatDate}
@@ -217,7 +225,7 @@ export const PortfolioPerformance: React.FC = () => {
                             axisLine={false}
                             tickLine={false}
                         />
-                        
+
                         <YAxis
                             tick={{ fontSize: 10, fill: '#64748b' }}
                             stroke="#cbd5e1"
@@ -226,11 +234,16 @@ export const PortfolioPerformance: React.FC = () => {
                             tickLine={false}
                             width={45}
                         />
-                        
+
                         <Tooltip
                             content={({ active, payload, label }) => {
                                 if (active && payload && payload.length) {
                                     const data = payload[0].payload;
+                                    const holdings = data.holdings || 0;
+                                    const invested = data.invested || 0;
+                                    const diff = holdings - invested;
+                                    const diffPercent = invested > 0 ? (diff / invested) * 100 : 0;
+                                    
                                     return (
                                         <div className="bg-slate-900/95 backdrop-blur text-white p-4 rounded-xl shadow-2xl border border-slate-700 text-xs z-50">
                                             <div className="font-bold text-sm mb-2 border-b border-slate-700 pb-2">
@@ -238,16 +251,24 @@ export const PortfolioPerformance: React.FC = () => {
                                             </div>
                                             <div className="space-y-2">
                                                 <div className="flex justify-between gap-6">
-                                                    <span className="text-slate-400">Total Value:</span>
+                                                    <span className="text-slate-400">Holdings:</span>
                                                     <span className="font-mono font-bold text-emerald-400">
-                                                        {formatCurrency(data.value)}
+                                                        {formatCurrency(holdings)}
                                                     </span>
                                                 </div>
-                                                {showInvested && data.invested !== undefined && (
+                                                {showInvested && (
                                                     <div className="flex justify-between gap-6">
                                                         <span className="text-slate-400">Invested:</span>
                                                         <span className="font-mono font-bold text-blue-400">
-                                                            {formatCurrency(data.invested)}
+                                                            {formatCurrency(invested)}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {showInvested && (
+                                                    <div className="flex justify-between gap-6 pt-1 border-t border-slate-700">
+                                                        <span className="text-slate-400">P/L:</span>
+                                                        <span className={`font-mono font-bold ${diff >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                                            {diff >= 0 ? '+' : ''}{formatCurrency(diff)} ({diffPercent >= 0 ? '+' : ''}{diffPercent.toFixed(1)}%)
                                                         </span>
                                                     </div>
                                                 )}
@@ -259,26 +280,11 @@ export const PortfolioPerformance: React.FC = () => {
                             }}
                         />
 
-                        {/* Invested Capital Line */}
-                        {showInvested && (
-                            <Area
-                                type="monotone"
-                                dataKey="invested"
-                                name="Invested"
-                                stroke="#3b82f6"
-                                strokeWidth={2}
-                                strokeDasharray="6 4"
-                                fill="url(#colorInvested)"
-                                dot={false}
-                                activeDot={false}
-                            />
-                        )}
-
-                        {/* Portfolio Value Area */}
+                        {/* Portfolio Holdings Area */}
                         <Area
                             type="monotone"
-                            dataKey="value"
-                            name="Portfolio"
+                            dataKey="holdings"
+                            name="Holdings"
                             stroke="#10b981"
                             strokeWidth={3}
                             fillOpacity={1}
@@ -286,6 +292,20 @@ export const PortfolioPerformance: React.FC = () => {
                             dot={false}
                             activeDot={{ r: 6, strokeWidth: 0, fill: '#10b981' }}
                         />
+
+                        {/* Invested Capital Line */}
+                        {showInvested && (
+                            <Line
+                                type="stepAfter"
+                                dataKey="invested"
+                                name="Invested"
+                                stroke="#3b82f6"
+                                strokeWidth={2}
+                                strokeDasharray="6 4"
+                                dot={false}
+                                activeDot={false}
+                            />
+                        )}
 
                         <Brush
                             dataKey="date"
@@ -295,7 +315,7 @@ export const PortfolioPerformance: React.FC = () => {
                             fill="#f8fafc"
                             travellerWidth={8}
                         />
-                    </AreaChart>
+                    </ComposedChart>
                 </ResponsiveContainer>
             </div>
 
@@ -303,12 +323,12 @@ export const PortfolioPerformance: React.FC = () => {
             <div className="flex items-center justify-center gap-6 mt-3 pt-3 border-t border-slate-100">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                    <span className="text-xs font-medium text-slate-600">Portfolio Value</span>
+                    <span className="text-xs font-medium text-slate-600">Holdings</span>
                 </div>
                 {showInvested && (
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                        <span className="text-xs font-medium text-slate-600">Invested Capital</span>
+                        <span className="text-xs font-medium text-slate-600">Invested</span>
                     </div>
                 )}
             </div>

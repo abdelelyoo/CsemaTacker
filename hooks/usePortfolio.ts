@@ -1,32 +1,16 @@
 
 import { useState, useMemo, useEffect } from 'react';
-import { Transaction, BankOperation, PortfolioSummary, FeeRecord } from '../types';
+import { Transaction, BankOperation, PortfolioSummary, FeeRecord, CostMethod } from '../types';
 import { calculatePortfolio } from '../utils/portfolioCalc';
 import { getMarketPrices } from '../services/marketService';
 
 const STORAGE_KEY_MANUAL_PRICES = 'atlas_portfolio_manual_prices';
 
-interface BankTotals {
-  totalDeposits: number;
-  totalWithdrawals: number;
-  totalDividends: number;
-  totalTaxes: number;
-  totalBankFees: number;
-  cashBalance: number;
-}
-
 export const usePortfolio = (
-  transactions: Transaction[], 
-  fees: FeeRecord[] = [],
-  bankOperations: BankOperation[] = [],
-  calculateBankTotals: () => BankTotals = () => ({ 
-    totalDeposits: 0, 
-    totalWithdrawals: 0, 
-    totalDividends: 0, 
-    totalTaxes: 0, 
-    totalBankFees: 0, 
-    cashBalance: 0 
-  })
+    transactions: Transaction[],
+    fees: FeeRecord[] = [],
+    bankOperations: BankOperation[] = [],
+    costMethod: CostMethod = 'WAC'
 ) => {
     // State for manual price overrides
     const [manualPrices, setManualPrices] = useState<Record<string, number>>(() => {
@@ -55,16 +39,16 @@ export const usePortfolio = (
     // Derived Portfolio Summary
     const portfolio: PortfolioSummary = useMemo(() => {
         if (!transactions.length) {
-        return {
+            return {
                 totalValue: 0, totalCost: 0, totalRealizedPL: 0, totalUnrealizedPL: 0,
-                totalDividends: 0, totalDeposits: 0, totalWithdrawals: 0, holdings: [], cashBalance: 0,
+                totalDividends: 0, totalDeposits: 0, totalWithdrawals: 0, totalTaxRefunds: 0, holdings: [], cashBalance: 0,
                 totalTradingFees: 0, totalCustodyFees: 0, totalSubscriptionFees: 0, totalBankFees: 0, netTaxImpact: 0, history: [],
                 enrichedTransactions: [],
                 bankOperations: []
             };
         }
-        return calculatePortfolio(transactions, currentPrices, fees, bankOperations);
-    }, [transactions, currentPrices, fees, bankOperations]);
+        return calculatePortfolio(transactions, currentPrices, fees, bankOperations, costMethod);
+    }, [transactions, currentPrices, fees, bankOperations, costMethod]);
 
     const updateManualPrice = (ticker: string, price: number) => {
         setManualPrices(prev => ({ ...prev, [ticker]: price }));

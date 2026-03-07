@@ -12,6 +12,7 @@ export enum BankOperationType {
   DIVIDEND = 'Dividende',
   TAX = 'Taxe',
   BANK_FEE = 'Frais',
+  CUSTODY = 'Garde',
   SUBSCRIPTION = 'Abonnement'
 }
 
@@ -53,7 +54,7 @@ export interface BankOperation {
   Operation: BankOperationType;
   Description?: string; // e.g., "Tax Authority", "Monthly Fee"
   Amount: number; // Positive for deposits/dividends, negative for fees/taxes/withdrawals
-  Category: 'DEPOSIT' | 'WITHDRAWAL' | 'DIVIDEND' | 'TAX' | 'BANK_FEE' | 'SUBSCRIPTION';
+  Category: 'DEPOSIT' | 'WITHDRAWAL' | 'DIVIDEND' | 'TAX' | 'TAX_REFUND' | 'BANK_FEE' | 'CUSTODY' | 'SUBSCRIPTION';
   Reference?: string; // Optional reference number
 }
 
@@ -83,8 +84,10 @@ export interface Holding {
 
 export interface PerformancePoint {
   date: string; // ISO Date YYYY-MM-DD
-  value: number; // Total Equity
-  invested: number; // Net Invested Capital
+  value: number; // Total Portfolio Value (holdings + cash)
+  invested: number; // Total Invested (deposits + dividends + tax refunds)
+  cash?: number; // Cash balance at that point
+  holdings?: number; // Holdings value at that point
 }
 
 export interface PortfolioSummary {
@@ -94,19 +97,20 @@ export interface PortfolioSummary {
   totalUnrealizedPL: number;
   totalDividends: number;
   totalDeposits: number;
-  totalWithdrawals: number; // NEW: Track withdrawals separately
+  totalWithdrawals: number;
+  totalTaxRefunds: number;
   holdings: Holding[];
   cashBalance: number;
-  
+
   // Fee Breakdown
   totalTradingFees: number; // Commissions on Buy/Sell
   totalCustodyFees: number; // Account maintenance (CUS fees from separate fees table)
   totalSubscriptionFees: number; // Subscription fees (SUB fees)
   totalBankFees: number; // Bank fees from bank operations
   netTaxImpact: number; // Taxes paid from bank operations
-  
+
   history: PerformancePoint[]; // Historical performance data
-  
+
   // Separate data sources
   enrichedTransactions: Transaction[]; // Stock trades only
   bankOperations: BankOperation[]; // Cash movements only
@@ -197,11 +201,38 @@ export interface CapitalEvent {
   id?: number;
   ticker: string;
   date: Date;
-  event_type: 'capital_increase' | 'threshold_crossing';
+  event_type: 'capital_increase' | 'threshold_crossing' | 'stock_split' | 'reverse_split' | 'merger' | 'spin_off';
   description: string;
   shares_variation?: number;
   nature?: string;
   threshold_percent?: number;
   declarant?: string;
   direction?: 'Hausse' | 'Baisse';
+
+  // Stock split specific fields
+  split_ratio_from?: number; // e.g., 2 for 2:1 split
+  split_ratio_to?: number;   // e.g., 1 for 2:1 split
+
+  // Corporate action applied status
+  applied_to_transactions?: boolean;
+}
+
+export type CostMethod = 'FIFO' | 'LIFO' | 'WAC';
+
+export interface TaxLot {
+  id: string;
+  ticker: string;
+  purchaseDate: Date;
+  quantity: number;
+  costBasis: number; // Total cost including fees
+  pricePerShare: number;
+  remainingQty: number;
+}
+
+export interface UserSettings {
+  id?: number;
+  costMethod: CostMethod;
+  currency: 'MAD' | 'EUR' | 'USD';
+  darkMode: boolean;
+  dateFormat: string;
 }

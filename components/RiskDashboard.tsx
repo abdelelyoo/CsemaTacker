@@ -1,21 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import { RiskAnalysisService, ConcentrationMetrics, SectorExposure, OwnershipOverlap } from '../services/riskAnalysisService';
 import { usePortfolioContext } from '../context/PortfolioContext';
-import { AlertTriangle, PieChart as PieChartIcon, Users, TrendingDown } from 'lucide-react';
+import { useMetrics } from '../context/MetricsContext';
+import { MarketDataService, MarketStock } from '../services/marketDataService';
+import { AlertTriangle, PieChart as PieChartIcon, Users, TrendingDown, TrendingUp, Activity, Database } from 'lucide-react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { CHART_COLORS, RISK_COLORS, getRiskColor } from '../constants/colors';
+import { ProfileImportService } from '../services/profileImportService';
 
 export const RiskDashboard: React.FC = () => {
     const { portfolio } = usePortfolioContext();
+    const { selectedTicker } = useMetrics();
     const [concentration, setConcentration] = useState<ConcentrationMetrics | null>(null);
     const [sectorExposure, setSectorExposure] = useState<SectorExposure[]>([]);
     const [ownershipOverlap, setOwnershipOverlap] = useState<OwnershipOverlap[]>([]);
     const [warnings, setWarnings] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    
+    // Stock-specific risk from tvscreener
+    const [stockRisks, setStockRisks] = useState<Map<string, MarketStock>>(new Map());
+    const [loadingStocks, setLoadingStocks] = useState(false);
+
+    // Ownership data status
+    const [ownershipStatus, setOwnershipStatus] = useState<{ loaded: number } | null>(null);
+    const [isImporting, setIsImporting] = useState(false);
+
+    useEffect(() => {
+        loadOwnershipStatus();
+    }, []);
+
+    const loadOwnershipStatus = async () => {
+        const status = await ProfileImportService.getImportStatus();
+        setOwnershipStatus({ loaded: status.companiesLoaded });
+    };
+
+    const handleImportShareholders = async () => {
+        setIsImporting(true);
+        try {
+            const files = await ProfileImportService.loadProfileFilesFromServer();
+            if (files.length === 0) {
+                alert('No profile files found');
+            } else {
+                await ProfileImportService.importAllProfiles(files);
+                await loadOwnershipStatus();
+                loadRiskAnalysis(); // Reload ownership overlap data
+            }
+        } catch (err) {
+            console.error('Import failed:', err);
+        } finally {
+            setIsImporting(false);
+        }
+    };
 
     useEffect(() => {
         loadRiskAnalysis();
     }, [portfolio]);
+
+    useEffect(() => {
+        if (portfolio.holdings.length > 0) {
+            loadStockRisks();
+        }
+    }, [portfolio.holdings]);
 
     const loadRiskAnalysis = async () => {
         setLoading(true);
@@ -45,49 +91,47 @@ export const RiskDashboard: React.FC = () => {
             setLoading(false);
         }
     };
+    
+    // Load stock-specific risk from tvscreener
+    const loadStockRisks = async () => {
+        if (portfolio.holdings.length === 0) return;
+        
+        setLoadingStocks(true);
+        try {
+            const tickers = portfolio.holdings.map(h => h.ticker);
+            const stocks = await MarketDataService.getAllStocks({ limit: tickers.length });
+            const newStockRisks = new Map<string, MarketStock>();
+            stocks.forEach(stock => {
+                newStockRisks.set(stock.ticker, stock);
+            });
+            setStockRisks(newStockRisks);
+        } catch (err) {
+            console.error('Failed to load stock risks:', err);
+        } finally {
+            setLoadingStocks(false);
+        }
+    };
 
     const getRiskLevelColor = (level?: string): string => {
-        switch (level) {
-            case 'low':
-                return 'text-emerald-600';
-            case 'moderate':
-                return 'text-amber-600';
-            case 'high':
-                return 'text-orange-600';
-            case 'extreme':
-                return 'text-rose-600';
-            default:
-                return 'text-slate-600';
-        }
+        const color = getRiskColor(level);
+        // Convert hex to tailwind class approximation
+        if (color === RISK_COLORS.LOW) return 'text-emerald-600';
+        if (color === RISK_COLORS.MODERATE) return 'text-amber-600';
+        if (color === RISK_COLORS.HIGH) return 'text-orange-600';
+        if (color === RISK_COLORS.EXTREME) return 'text-rose-600';
+        return 'text-slate-600';
     };
 
     const getRiskLevelBgColor = (level?: string): string => {
-        switch (level) {
-            case 'low':
-                return 'bg-emerald-50 border-emerald-200';
-            case 'moderate':
-                return 'bg-amber-50 border-amber-200';
-            case 'high':
-                return 'bg-orange-50 border-orange-200';
-            case 'extreme':
-                return 'bg-rose-50 border-rose-200';
-            default:
-                return 'bg-slate-50 border-slate-200';
-        }
+        const color = getRiskColor(level);
+        if (color === RISK_COLORS.LOW) return 'bg-emerald-50 border-emerald-200';
+        if (color === RISK_COLORS.MODERATE) return 'bg-amber-50 border-amber-200';
+        if (color === RISK_COLORS.HIGH) return 'bg-orange-50 border-orange-200';
+        if (color === RISK_COLORS.EXTREME) return 'bg-rose-50 border-rose-200';
+        return 'bg-slate-50 border-slate-200';
     };
 
-    const SECTOR_COLORS = [
-        '#3b82f6',
-        '#10b981',
-        '#f59e0b',
-        '#ef4444',
-        '#8b5cf6',
-        '#ec4899',
-        '#06b6d4',
-        '#14b8a6',
-        '#6366f1',
-        '#f97316'
-    ];
+    const SECTOR_COLORS = CHART_COLORS.SECTORS;
 
     if (loading) {
         return (
@@ -128,6 +172,54 @@ export const RiskDashboard: React.FC = () => {
                     {error}
                 </div>
             )}
+
+            {/* Ownership Data Import */}
+            <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                    <Database size={18} className="text-blue-600" />
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-slate-800 text-sm">
+                            Ownership Data
+                        </span>
+                        <span className="text-xs text-slate-500">
+                            {ownershipStatus?.loaded ? `${ownershipStatus.loaded} companies loaded` : 'No shareholder data loaded'}
+                        </span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleImportShareholders}
+                        disabled={isImporting}
+                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors text-sm"
+                    >
+                        {isImporting ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>Importing...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Database size={16} />
+                                <span>{ownershipStatus?.loaded ? 'Re-import' : 'Import'} Shareholders</span>
+                            </>
+                        )}
+                    </button>
+                    {ownershipStatus?.loaded ? (
+                        <button
+                            onClick={async () => {
+                                if (window.confirm('Clear all ownership data?')) {
+                                    await ProfileImportService.clearProfileData();
+                                    await loadOwnershipStatus();
+                                }
+                            }}
+                            disabled={isImporting}
+                            className="text-rose-600 hover:bg-rose-50 px-3 py-2 rounded-lg text-sm font-medium border border-transparent hover:border-rose-100 flex items-center gap-2"
+                        >
+                            Clear Data
+                        </button>
+                    ) : null}
+                </div>
+            </div>
 
             {/* Risk Warnings */}
             {warnings.length > 0 && (
@@ -248,6 +340,99 @@ export const RiskDashboard: React.FC = () => {
                 </div>
             )}
 
+            {/* Stock-Specific Risk (from tvscreener) */}
+            {stockRisks.size > 0 && portfolio.holdings.length > 0 && (
+                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Activity size={20} className="text-indigo-600" />
+                        <h3 className="text-lg font-bold text-slate-800">Stock-Specific Technical Risk</h3>
+                        {loadingStocks && <span className="text-xs text-slate-400">(Loading...)</span>}
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-widest border-b border-slate-200">
+                                <tr>
+                                    <th className="px-4 py-3 text-left">Ticker</th>
+                                    <th className="px-4 py-3 text-right">Weight</th>
+                                    <th className="px-4 py-3 text-right">RSI (14)</th>
+                                    <th className="px-4 py-3 text-right">P/E</th>
+                                    <th className="px-4 py-3 text-right">Quality</th>
+                                    <th className="px-4 py-3 text-center">Technical</th>
+                                    <th className="px-4 py-3 text-right">1M Perf</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {portfolio.holdings.map(holding => {
+                                    const stock = stockRisks.get(holding.ticker);
+                                    if (!stock) return null;
+                                    
+                                    const rsi = stock.rsi_14;
+                                    const getRSIColor = (rsi?: number) => {
+                                        if (!rsi) return 'text-slate-400';
+                                        if (rsi > 70) return 'text-rose-600'; // Overbought
+                                        if (rsi < 30) return 'text-emerald-600'; // Oversold
+                                        return 'text-slate-600';
+                                    };
+                                    
+                                    const getTechTrend = (stock: MarketStock) => {
+                                        const price = stock.price;
+                                        const sma50 = stock.sma_50;
+                                        const sma200 = stock.sma_200;
+                                        
+                                        if (!price || !sma50 || !sma200) return 'neutral';
+                                        if (price > sma50 && sma50 > sma200) return 'bullish';
+                                        if (price < sma50 && sma50 < sma200) return 'bearish';
+                                        return 'neutral';
+                                    };
+                                    
+                                    const trend = getTechTrend(stock);
+                                    
+                                    return (
+                                        <tr key={holding.ticker} className="hover:bg-slate-50">
+                                            <td className="px-4 py-3">
+                                                <span className="font-bold text-slate-800">{holding.ticker}</span>
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-slate-600">
+                                                {holding.allocation.toFixed(1)}%
+                                            </td>
+                                            <td className={`px-4 py-3 text-right font-medium ${getRSIColor(rsi)}`}>
+                                                {rsi ? rsi.toFixed(1) : 'N/A'}
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-slate-600">
+                                                {stock.pe_ratio ? stock.pe_ratio.toFixed(1) : 'N/A'}
+                                            </td>
+                                            <td className="px-4 py-3 text-right">
+                                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                                                    stock.quality_grade === 'A' ? 'bg-emerald-100 text-emerald-700' :
+                                                    stock.quality_grade === 'B' ? 'bg-blue-100 text-blue-700' :
+                                                    stock.quality_grade === 'C' ? 'bg-amber-100 text-amber-700' :
+                                                    stock.quality_grade === 'D' ? 'bg-orange-100 text-orange-700' :
+                                                    'bg-rose-100 text-rose-700'
+                                                }`}>
+                                                    {stock.quality_grade || 'N/A'}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                {trend === 'bullish' && <TrendingUp size={16} className="text-emerald-600 inline" />}
+                                                {trend === 'bearish' && <TrendingDown size={16} className="text-rose-600 inline" />}
+                                                {trend === 'neutral' && <span className="text-slate-400">-</span>}
+                                            </td>
+                                            <td className={`px-4 py-3 text-right font-medium ${
+                                                (stock.perf_1m || 0) > 0 ? 'text-emerald-600' : 
+                                                (stock.perf_1m || 0) < 0 ? 'text-rose-600' : 'text-slate-600'
+                                            }`}>
+                                                {stock.perf_1m ? `${stock.perf_1m > 0 ? '+' : ''}${stock.perf_1m.toFixed(1)}%` : 'N/A'}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
             {/* Sector Exposure */}
             {sectorExposure.length > 0 && (
                 <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
@@ -297,7 +482,7 @@ export const RiskDashboard: React.FC = () => {
                                         </span>
                                     </div>
                                     <p className="text-xs text-slate-600">
-                                        {sector.holdingCount} companies • {sector.companies.join(', ')}
+                                        {sector.holdingCount} companies ï¿½ {sector.companies.join(', ')}
                                     </p>
                                 </div>
                             ))}

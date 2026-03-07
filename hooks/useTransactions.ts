@@ -1,15 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Transaction } from '../types';
+import { parseNumber } from '../utils/validation';
 import { DateService } from '../services/dateService';
 import {
-  getTransactions,
-  addTransaction as addCloudTransaction,
-  addTransactions,
-  deleteTransaction as deleteCloudTransaction,
-  clearTransactions as clearCloudTransactions,
-  addBankOperation as addCloudBankOperation,
-  clearBankOperations as clearCloudBankOperations,
-  addFees as addCloudFees
+    getTransactions,
+    addTransaction as addCloudTransaction,
+    addTransactions,
+    deleteTransaction as deleteCloudTransaction,
+    deleteTransactions as deleteCloudTransactions,
+    updateTransaction as updateCloudTransaction,
+    clearTransactions as clearCloudTransactions,
+    getBankOperations,
+    addBankOperation as addCloudBankOperation,
+    clearBankOperations as clearCloudBankOperations,
+    getFees,
+    clearFees as clearCloudFees,
+    addFees as addCloudFees
 } from '../services/cloudDatabase';
 import { supabase } from '../lib/supabase';
 
@@ -36,12 +42,14 @@ export const useTransactions = () => {
     useEffect(() => {
         loadTransactions();
 
-        // Subscribe to auth changes to reload data
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-            loadTransactions();
-        });
+        // Subscribe to auth changes to reload data (only if supabase is configured)
+        if (supabase) {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+                loadTransactions();
+            });
 
-        return () => subscription.unsubscribe();
+            return () => subscription.unsubscribe();
+        }
     }, [loadTransactions]);
 
     /**
@@ -53,7 +61,7 @@ export const useTransactions = () => {
         const dateStr = DateService.toShortDisplay(parsedDate);
 
         // 2. Handle Quantity (Vente should be negative)
-        let qty = parseFloat(data.qty) || 0;
+        let qty = parseNumber(data.qty);
         const op = data.operation || data.Operation;
         if (op === 'Vente' || op === 'sell') {
             qty = -Math.abs(qty);
@@ -68,10 +76,10 @@ export const useTransactions = () => {
             Ticker: data.ticker || data.Ticker || '',
             Company: data.company || data.Company || '',
             Qty: qty,
-            Price: parseFloat(data.price || data.Price) || 0,
-            Total: parseFloat(data.total || data.Total) || 0,
-            Fees: data.fees !== undefined ? parseFloat(data.fees) : data.Fees,
-            Tax: data.tax !== undefined ? parseFloat(data.tax) : data.Tax,
+            Price: parseNumber(data.price || data.Price),
+            Total: parseNumber(data.total || data.Total),
+            Fees: data.fees !== undefined ? parseNumber(data.fees) : data.Fees,
+            Tax: data.tax !== undefined ? parseNumber(data.tax) : data.Tax,
             ISIN: data.isin || data.ISIN || ''
         };
     };
@@ -103,10 +111,8 @@ export const useTransactions = () => {
 
     const updateTransaction = async (id: number | string, data: any) => {
         try {
-            // For cloud DB, we'll delete and re-add since we don't have a direct update
-            await deleteCloudTransaction(id);
             const tx = normalizeTransaction(data);
-            await addCloudTransaction(tx as Transaction);
+            await updateCloudTransaction(id, tx as Partial<Transaction>);
             await loadTransactions();
             return true;
         } catch (e) {
@@ -129,9 +135,7 @@ export const useTransactions = () => {
 
     const deleteTransactions = async (ids: number[]) => {
         try {
-            for (const id of ids) {
-                await deleteCloudTransaction(id);
-            }
+            await deleteCloudTransactions(ids);
             await loadTransactions();
             return true;
         } catch (e) {
@@ -141,9 +145,25 @@ export const useTransactions = () => {
     };
 
     const importTransactions = async (parsed: Transaction[]) => {
+        // Step 1: Backup existing data
+        let backupTransactions: Transaction[] = [];
+        let backupBankOps: any[] = [];
+        let backupFees: any[] = [];
         try {
-            // Clear existing transactions first
+            backupTransactions = await getTransactions();
+            backupBankOps = await getBankOperations();
+            backupFees = await getFees();
+        } catch (e) {
+            console.error('Failed to backup data before import:', e);
+            setError("Import aborted: Could not backup existing data.");
+            return false;
+        }
+
+        try {
+            // Clear existing transactions and related data
             await clearCloudTransactions();
+            await clearCloudBankOperations();
+            await clearCloudFees();
 
             // Separate transactions into stock trades vs bank operations/fees
             const stockTransactions: Transaction[] = [];
@@ -156,7 +176,7 @@ export const useTransactions = () => {
                 const company = (tx.Company || '').toLowerCase();
 
                 // Skip if already processed as stock trade
-                if (normalizedOp === 'achat' || normalizedOp === 'buy' || 
+                if (normalizedOp === 'achat' || normalizedOp === 'buy' ||
                     normalizedOp === 'vente' || normalizedOp === 'sell') {
                     stockTransactions.push({
                         ...tx,
@@ -173,7 +193,8 @@ export const useTransactions = () => {
                         Operation: normalizedOp.includes('depot') ? 'DEPOSIT' : 'WITHDRAWAL',
                         Description: tx.Company,
                         Amount: Math.abs(tx.Total),
-                        Category: normalizedOp.includes('depot') ? 'DEPOSIT' : 'WITHDRAWAL'
+                        Category: normalizedOp.includes('depot') ? 'DEPOSIT' : 'WITHDRAWAL',
+                        Reference: ''
                     });
                     continue;
                 }
@@ -186,31 +207,36 @@ export const useTransactions = () => {
                         Operation: 'DIVIDEND',
                         Description: tx.Company || tx.Ticker,
                         Amount: Math.abs(tx.Total),
-                        Category: 'DIVIDEND'
+                        Category: 'DIVIDEND',
+                        Reference: ''
                     });
                     continue;
                 }
 
-                // Frais/CUS → fees table (FRAIS)
+                // Frais/CUS → bank_operations (BANK_FEE)
                 if (normalizedOp.includes('frais') || ticker === 'cus' || ticker.includes('bank')) {
-                    fees.push({
-                        date: tx.Date,
-                        type: 'FRAIS',
-                        amount: Math.abs(tx.Total),
-                        description: tx.Company || 'Bank Fee',
-                        ticker: tx.Ticker
+                    bankOps.push({
+                        Date: tx.Date,
+                        parsedDate: tx.parsedDate || DateService.parse(tx.Date),
+                        Operation: 'BANK_FEE',
+                        Description: tx.Company || 'Bank Fee',
+                        Amount: -Math.abs(tx.Total),
+                        Category: 'BANK_FEE',
+                        Reference: ''
                     });
                     continue;
                 }
 
-                // Taxe/TPCVM → fees table (TAXE)
+                // Taxe/TPCVM → bank_operations (TAX)
                 if (normalizedOp.includes('taxe') || normalizedOp.includes('tpcvm') || normalizedOp.includes('tax')) {
-                    fees.push({
-                        date: tx.Date,
-                        type: 'TAXE',
-                        amount: Math.abs(tx.Total),
-                        description: tx.Company || 'Tax',
-                        ticker: tx.Ticker
+                    bankOps.push({
+                        Date: tx.Date,
+                        parsedDate: tx.parsedDate || DateService.parse(tx.Date),
+                        Operation: 'TAX',
+                        Description: tx.Company || 'Tax',
+                        Amount: -Math.abs(tx.Total),
+                        Category: 'TAX',
+                        Reference: ''
                     });
                     continue;
                 }
@@ -229,7 +255,6 @@ export const useTransactions = () => {
 
             // Import bank operations
             if (bankOps.length > 0) {
-                await clearCloudBankOperations();
                 for (const op of bankOps) {
                     await addCloudBankOperation(op);
                 }
@@ -243,7 +268,25 @@ export const useTransactions = () => {
             await loadTransactions();
             return true;
         } catch (e) {
-            console.error(e);
+            console.error('Import failed. Attempting database preservation...', e);
+            try {
+                // Wipe any partial imported data
+                await clearCloudTransactions();
+                await clearCloudBankOperations();
+                await clearCloudFees();
+
+                // Restore backup
+                if (backupTransactions.length > 0) await addTransactions(backupTransactions);
+                if (backupBankOps.length > 0) {
+                    for (const op of backupBankOps) {
+                        await addCloudBankOperation(op);
+                    }
+                }
+                if (backupFees.length > 0) await addCloudFees(backupFees);
+            } catch (restoreError) {
+                console.error('CRITICAL: Failed to restore backup', restoreError);
+            }
+
             setError("Import failed. Database preserved.");
             return false;
         }

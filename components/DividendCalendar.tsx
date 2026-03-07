@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { DividendService, DividendSummary } from '../services/dividendService';
 import { usePortfolioContext } from '../context/PortfolioContext';
+import { useMetrics } from '../context/MetricsContext';
 import { Calendar, DollarSign, TrendingUp, AlertCircle, CheckCircle2, Calendar as CalendarIcon } from 'lucide-react';
 
 export const DividendCalendar: React.FC = () => {
     const { portfolio } = usePortfolioContext();
+    const { navigateToAnalysis } = useMetrics();
     const [summary, setSummary] = useState<DividendSummary | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -111,7 +113,8 @@ export const DividendCalendar: React.FC = () => {
                         {nextPayments.map((payment, idx) => (
                             <div
                                 key={`${payment.ticker}-${payment.year}-${idx}`}
-                                className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+                                className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                                onClick={() => navigateToAnalysis(payment.ticker)}
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -160,7 +163,7 @@ export const DividendCalendar: React.FC = () => {
                                 <th className="px-6 py-3 text-right">Last Div</th>
                                 <th className="px-6 py-3 text-right">Projected</th>
                                 <th className="px-6 py-3 text-right">Annual Income</th>
-                                <th className="px-6 py-3 text-right">Tax</th>
+                                <th className="px-6 py-3 text-right">Withholding (2%)</th>
                                 <th className="px-6 py-3 text-right">Net Income</th>
                                 <th className="px-6 py-3 text-center">Sustainability</th>
                             </tr>
@@ -169,7 +172,7 @@ export const DividendCalendar: React.FC = () => {
                             {summary.projections.map(proj => {
                                 const colorScheme = getSustainabilityColor(proj.sustainability);
                                 return (
-                                    <tr key={proj.ticker} className="hover:bg-slate-50 transition-colors">
+                                    <tr key={proj.ticker} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => navigateToAnalysis(proj.ticker)}>
                                         <td className="px-6 py-4">
                                             <div>
                                                 <p className="font-bold text-slate-800">{proj.ticker}</p>

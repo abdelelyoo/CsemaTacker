@@ -1,0 +1,30 @@
+name: Sync Market Data
+
+on:
+  schedule:
+    # Daily at 9:00 AM Morocco time (UTC+1)
+    # Cron: minute hour day month weekday
+    - cron: '0 9 * * 1-5'  # Monday-Friday at 9 AM
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+          
+      - name: Run sync script
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python scripts/sync_market_data.py

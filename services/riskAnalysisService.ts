@@ -1,4 +1,5 @@
 import { db } from '../db';
+import { MarketDataService } from './marketDataService';
 
 export interface ConcentrationMetrics {
     // Herfindahl-Hirschman Index (0-10000)
@@ -80,10 +81,10 @@ export class RiskAnalysisService {
         const topHoldingPercent = sortedShares[0] || 0;
         const top3Percent =
             sortedShares.slice(0, 3).reduce((sum, share) => sum + share, 0) / Math.min(3, sortedShares.length) *
-                Math.min(3, sortedShares.length) || 0;
+            Math.min(3, sortedShares.length) || 0;
         const top5Percent =
             sortedShares.slice(0, 5).reduce((sum, share) => sum + share, 0) / Math.min(5, sortedShares.length) *
-                Math.min(5, sortedShares.length) || 0;
+            Math.min(5, sortedShares.length) || 0;
 
         // Determine risk level
         let riskLevel: 'low' | 'moderate' | 'high' | 'extreme';
@@ -108,6 +109,7 @@ export class RiskAnalysisService {
 
     /**
      * Get sector exposure breakdown
+     * Uses tvscreener data (market_data_local.json)
      */
     static async getSectorExposure(
         holdings: Array<{ ticker: string; quantity: number; currentPrice: number }>
@@ -117,22 +119,23 @@ export class RiskAnalysisService {
         // Calculate total portfolio value
         const totalValue = holdings.reduce((sum, h) => sum + h.quantity * h.currentPrice, 0);
 
-        // Group by sector
+        // Get all stocks from tvscreener
+        const tickers = holdings.map(h => h.ticker);
+        const allStocks = await MarketDataService.getAllStocks({ limit: 200 });
+        const stockMap = new Map(allStocks.map(s => [s.ticker, s]));
+
+        // Group by sector from tvscreener
         for (const holding of holdings) {
-            const company = await db.companies
-                .where('ticker')
-                .equals(holding.ticker)
-                .first();
+            const stock = stockMap.get(holding.ticker);
+            const sector = stock?.sector || 'Unknown';
 
-            if (company) {
-                const holdingValue = holding.quantity * holding.currentPrice;
-                const current = sectorMap.get(company.sector) || { value: 0, tickers: new Set() };
+            const holdingValue = holding.quantity * holding.currentPrice;
+            const current = sectorMap.get(sector) || { value: 0, tickers: new Set() };
 
-                sectorMap.set(company.sector, {
-                    value: current.value + holdingValue,
-                    tickers: new Set([...current.tickers, holding.ticker])
-                });
-            }
+            sectorMap.set(sector, {
+                value: current.value + holdingValue,
+                tickers: new Set([...current.tickers, holding.ticker])
+            });
         }
 
         // Convert to array and calculate percentages
@@ -259,7 +262,7 @@ export class RiskAnalysisService {
     ): Promise<{
         concentration: ConcentrationMetrics;
         sectorExposure: SectorExposure[];
-        ownershipOverlap: OvershipOverlap[];
+        ownershipOverlap: OwnershipOverlap[];
         warnings: string[];
         riskScore: number; // 0-100, higher = riskier
     }> {
@@ -351,5 +354,4 @@ export class RiskAnalysisService {
     }
 }
 
-// Type fix for typo
-type OvershipOverlap = OwnershipOverlap;
+

@@ -9,7 +9,9 @@ import {
   FinancialRatio,
   DividendRecord,
   Shareholder,
-  CapitalEvent
+  CapitalEvent,
+  TaxLot,
+  UserSettings
 } from './types';
 
 export class AtlasPortfolioDB extends Dexie {
@@ -23,20 +25,19 @@ export class AtlasPortfolioDB extends Dexie {
   dividends!: Table<DividendRecord>;
   shareholders!: Table<Shareholder>;
   capitalEvents!: Table<CapitalEvent>;
+  taxLots!: Table<TaxLot>;
+  userSettings!: Table<UserSettings>;
 
   constructor() {
     super('AtlasPortfolioDB');
 
-    // Version 2 (existing)
-    (this as any).version(2).stores({
+    const baseStores = {
       transactions: '++id, parsedDate, Ticker, Operation, Company',
       fees: '++id, date, type'
-    });
+    };
 
-    // Version 3 (new profile data tables)
-    (this as any).version(3).stores({
-      transactions: '++id, parsedDate, Ticker, Operation, Company',
-      fees: '++id, date, type',
+    const profileStores = {
+      ...baseStores,
       companies: '++id, ticker, name, sector',
       management: '++id, ticker, name',
       financialFigures: '++id, ticker, year',
@@ -44,21 +45,23 @@ export class AtlasPortfolioDB extends Dexie {
       dividends: '++id, ticker, year, payment_date',
       shareholders: '++id, ticker, name',
       capitalEvents: '++id, ticker, date, event_type'
-    });
+    };
 
-    // Version 4 (add bank operations table)
-    (this as any).version(4).stores({
-      transactions: '++id, parsedDate, Ticker, Operation, Company',
-      bankOperations: '++id, parsedDate, Operation, Category',
-      fees: '++id, date, type',
-      companies: '++id, ticker, name, sector',
-      management: '++id, ticker, name',
-      financialFigures: '++id, ticker, year',
-      financialRatios: '++id, ticker, year',
-      dividends: '++id, ticker, year, payment_date',
-      shareholders: '++id, ticker, name',
-      capitalEvents: '++id, ticker, date, event_type'
-    });
+    const v4Stores = {
+      ...profileStores,
+      bankOperations: '++id, parsedDate, Operation, Category'
+    };
+
+    const v5Stores = {
+      ...v4Stores,
+      taxLots: '++id, ticker, purchaseDate',
+      userSettings: '++id'
+    };
+
+    this.version(2).stores(baseStores);
+    this.version(3).stores(profileStores);
+    this.version(4).stores(v4Stores);
+    this.version(5).stores(v5Stores);
   }
 }
 

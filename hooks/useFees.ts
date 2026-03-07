@@ -32,12 +32,14 @@ export const useFees = () => {
     useEffect(() => {
         loadFees();
 
-        // Subscribe to auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-            loadFees();
-        });
+        // Subscribe to auth changes (only if supabase is configured)
+        if (supabase) {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+                loadFees();
+            });
 
-        return () => subscription.unsubscribe();
+            return () => subscription.unsubscribe();
+        }
     }, [loadFees]);
 
     const addFee = async (date: Date, type: FeeType, amount: number, description?: string) => {

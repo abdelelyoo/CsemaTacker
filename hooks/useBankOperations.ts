@@ -1,20 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BankOperation, BankOperationType } from '../types';
+import { BankOperation } from '../types';
 import { DateService } from '../services/dateService';
 import {
-  getBankOperations,
-  addBankOperation as addCloudBankOperation,
-  deleteBankOperation as deleteCloudBankOperation,
-  clearBankOperations as clearCloudBankOperations
+    getBankOperations,
+    addBankOperation as addCloudBankOperation,
+    deleteBankOperation as deleteCloudBankOperation,
+    clearBankOperations as clearCloudBankOperations
 } from '../services/cloudDatabase';
 import { supabase } from '../lib/supabase';
 
+import { parseNumber } from '../utils/validation';
 export const useBankOperations = () => {
     const [operations, setOperations] = useState<BankOperation[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Load operations on mount and when auth state changes
     const loadOperations = useCallback(async () => {
         try {
             setIsLoading(true);
@@ -31,61 +31,43 @@ export const useBankOperations = () => {
 
     useEffect(() => {
         loadOperations();
-
-        // Subscribe to auth changes to reload data
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-            loadOperations();
-        });
-
-        return () => subscription.unsubscribe();
+        if (supabase) {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+                loadOperations();
+            });
+            return () => subscription.unsubscribe();
+        }
     }, [loadOperations]);
 
-    /**
-     * Normalizes a bank operation object before DB operations.
-     */
     const normalizeOperation = (data: any): Partial<BankOperation> => {
-        // Handle Date
         const parsedDate = data.date ? DateService.parse(data.date) : (data.parsedDate || new Date());
-        const dateStr = DateService.toShortDisplay(parsedDate);
+        let amount = parseNumber(data.amount || data.Amount);
+        const cat = (data.category || data.Category || 'DEPOSIT').toUpperCase();
 
-        // Determine category and normalize amount sign
-        let category: BankOperation['Category'] = 'DEPOSIT';
-        let amount = parseFloat(data.amount || data.Amount) || 0;
-        
-        const op = (data.operation || data.Operation || '').toLowerCase();
-        
-        if (op.includes('depot') || op.includes('deposit')) {
-            category = 'DEPOSIT';
-            amount = Math.abs(amount); // Deposits are positive
-        } else if (op.includes('retrait') || op.includes('withdrawal')) {
-            category = 'WITHDRAWAL';
-            amount = -Math.abs(amount); // Withdrawals are negative
-        } else if (op.includes('dividende') || op.includes('dividend')) {
-            category = 'DIVIDEND';
-            amount = Math.abs(amount); // Dividends are positive
-        } else if (op.includes('taxe') || op.includes('tax')) {
-            category = 'TAX';
-            // Tax is always positive (you owe tax quarterly)
-            // But it's money going OUT, so make it negative for cash flow
-            amount = Math.abs(amount); // Store as positive in DB
-        } else if (op.includes('frais') || op.includes('fee')) {
-            category = 'BANK_FEE';
-            // Frais Bancaires/CUS are already entered as negative
-            // Keep the sign as-is (should be negative)
-            amount = amount < 0 ? amount : -Math.abs(amount);
-        } else if (op.includes('abonnement') || op.includes('subscription') || op.includes('sub')) {
-            category = 'SUBSCRIPTION';
-            // Subscription fees are money out
+        if (cat === 'DEPOSIT' || cat === 'DIVIDEND') {
+            amount = Math.abs(amount);
+        } else if (cat === 'WITHDRAWAL') {
             amount = -Math.abs(amount);
+        } else if (cat === 'BANK_FEE' || cat === 'CUSTODY' || cat === 'SUBSCRIPTION' || cat === 'TAX') {
+            if (cat === 'TAX') {
+                const desc = (data.description || data.Description || '').toLowerCase();
+                if (desc.includes('remboursement') || desc.includes('refund')) {
+                    amount = Math.abs(amount);
+                } else {
+                    amount = -Math.abs(amount);
+                }
+            } else {
+                amount = -Math.abs(amount);
+            }
         }
 
         return {
-            Date: dateStr,
+            Date: data.date || data.Date || new Date().toISOString().split('T')[0],
             parsedDate: parsedDate,
-            Operation: category as BankOperationType,
-            Description: data.description || data.Description || data.company || data.Company || '',
+            Operation: data.operation || data.Operation || 'DEPOSIT',
+            Description: data.description || data.Description || '',
             Amount: amount,
-            Category: category,
+            Category: cat as any,
             Reference: data.reference || data.Reference || ''
         };
     };
@@ -126,44 +108,6 @@ export const useBankOperations = () => {
         }
     };
 
-    const importBankOperations = async (parsed: BankOperation[]) => {
-        try {
-            // Clear existing operations first
-            await clearCloudBankOperations();
-
-            // Clean and normalize - preserve signs for TAX (stored as positive but is expense)
-            const clean = parsed.map(({ id, ...rest }) => {
-                let amount = rest.Amount;
-                // For imports, ensure proper signs:
-                // DEPOSIT/DIVIDEND: positive (money in)
-                // WITHDRAWAL/TAX/BANK_FEE/SUBSCRIPTION: negative (money out)
-                if (rest.Category === 'DEPOSIT' || rest.Category === 'DIVIDEND') {
-                    amount = Math.abs(amount);
-                } else {
-                    // All expenses/withdrawals should be negative
-                    amount = amount < 0 ? amount : -Math.abs(amount);
-                }
-                return {
-                    ...rest,
-                    parsedDate: rest.parsedDate || DateService.parse(rest.Date),
-                    Amount: amount
-                };
-            });
-
-            for (const op of clean) {
-                await addCloudBankOperation(op as BankOperation);
-            }
-            
-            await loadOperations();
-            return true;
-        } catch (e) {
-            console.error(e);
-            setError("Import failed.");
-            return false;
-        }
-    };
-
-    // Calculate totals for portfolio
     const calculateBankTotals = () => {
         return operations.reduce((acc, op) => {
             switch (op.Category) {
@@ -181,15 +125,16 @@ export const useBankOperations = () => {
                     break;
                 case 'TAX':
                     acc.totalTaxes += Math.abs(op.Amount);
-                    acc.cashBalance += op.Amount; // Tax can be payment (-) or refund (+)
+                    acc.cashBalance += op.Amount;
                     break;
                 case 'BANK_FEE':
+                case 'CUSTODY':
                     acc.totalBankFees += Math.abs(op.Amount);
-                    acc.cashBalance -= Math.abs(op.Amount); // Money OUT (fee paid)
+                    acc.cashBalance -= Math.abs(op.Amount);
                     break;
                 case 'SUBSCRIPTION':
                     acc.totalSubscriptions += Math.abs(op.Amount);
-                    acc.cashBalance -= Math.abs(op.Amount); // Money OUT (subscription paid)
+                    acc.cashBalance -= Math.abs(op.Amount);
                     break;
             }
             return acc;
@@ -210,7 +155,6 @@ export const useBankOperations = () => {
         addBankOperation,
         deleteBankOperation,
         clearBankOperations,
-        importBankOperations,
         calculateBankTotals,
         error,
         clearError: () => setError(null),

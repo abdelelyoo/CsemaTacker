@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType, PortfolioSummary } from '../types';
 import { Search, Filter, Plus, Edit2, Trash2, AlertCircle, X, Calendar, RefreshCw } from 'lucide-react';
 import { AddTransactionModal } from './AddTransactionModal';
-
 import { usePortfolioContext } from '../context/PortfolioContext';
+import { useMetrics } from '../context/MetricsContext';
 
 export const TransactionsList: React.FC = () => {
   const {
@@ -14,6 +14,7 @@ export const TransactionsList: React.FC = () => {
     updateTransaction: onEditTransaction,
     currentPrices
   } = usePortfolioContext();
+  const { navigateToAnalysis } = useMetrics();
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     startDate: '',
@@ -96,9 +97,16 @@ export const TransactionsList: React.FC = () => {
     return 'text-slate-500'; // 0 / Neutral
   };
 
-  const handleDelete = (id: number | string) => {
+  const handleDelete = async (id: number | string) => {
     if (window.confirm('Are you sure you want to delete this transaction? This action cannot be undone.')) {
-      onDeleteTransaction?.(id);
+      console.log('Deleting transaction with id:', id);
+      try {
+        const result = await onDeleteTransaction?.(id);
+        console.log('Delete result:', result);
+      } catch (e) {
+        console.error('Delete error:', e);
+        alert('Failed to delete transaction');
+      }
     }
   };
 
@@ -107,7 +115,7 @@ export const TransactionsList: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden pb-20 md:pb-0 relative">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden relative">
       {/* Add Modal */}
       {isAddModalOpen && (
         <AddTransactionModal
@@ -121,14 +129,13 @@ export const TransactionsList: React.FC = () => {
       {/* Add Modal */}
 
       {/* Edit Modal */}
-      {editingTransaction && onEditTransaction && (
+      {editingTransaction && (
         <AddTransactionModal
           initialData={editingTransaction}
           onSave={(data) => {
-            if (editingTransaction.id !== undefined) {
+            if (editingTransaction.id !== undefined && onEditTransaction) {
               onEditTransaction(editingTransaction.id, data);
             } else if (onAddTransaction) {
-              // Handle virtual/auto transactions (like SUB Auto) by creating a real one
               onAddTransaction(data);
             }
             setEditingTransaction(null);
@@ -251,7 +258,7 @@ export const TransactionsList: React.FC = () => {
         )}
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto pointer-events-auto">
         <table className="w-full text-sm text-left whitespace-nowrap">
           <thead className="bg-slate-50 text-slate-500 font-medium">
             <tr>
@@ -261,7 +268,7 @@ export const TransactionsList: React.FC = () => {
               <th className="px-4 py-3 text-right">Qty</th>
               <th className="px-4 py-3 text-right">Price</th>
               <th className="px-4 py-3 text-right">Fees</th>
-              <th className="px-4 py-3 text-right">Tax</th>
+              <th className="px-4 py-3 text-right">TPCVM</th>
               <th className="px-4 py-3 text-right">Net Amount</th>
               <th className="px-4 py-3 text-right">Realized P&L</th>
               <th className="px-4 py-3 text-center">Actions</th>
@@ -276,7 +283,7 @@ export const TransactionsList: React.FC = () => {
                     {t.Operation}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-medium text-slate-900">
+                <td className="px-4 py-3 font-medium text-slate-900 cursor-pointer hover:text-emerald-600" onClick={() => t.Ticker && navigateToAnalysis(t.Ticker)}>
                   {t.Ticker || t.Company || '-'}
                 </td>
                 <td className="px-4 py-3 text-right text-slate-600">
@@ -299,26 +306,34 @@ export const TransactionsList: React.FC = () => {
                     ? `${t.RealizedPL > 0 ? '+' : ''}${t.RealizedPL.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
                     : '-'}
                 </td>
-                <td className="px-4 py-3 text-center">
+                <td className="px-4 py-3 text-center" style={{ position: 'relative', zIndex: 100 }}>
                   <div className="flex items-center justify-center space-x-1">
-                    {onEditTransaction && (
-                      <button
-                        onClick={() => setEditingTransaction(t)}
-                        className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 size={14} />
-                      </button>
-                    )}
-                    {onDeleteTransaction && (
-                      <button
-                        onClick={() => handleDelete(t.id || t.Ticker + t.Date)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        alert('Edit clicked for: ' + t.Ticker);
+                        setEditingTransaction(t);
+                      }}
+                      style={{ position: 'relative', zIndex: 200, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '6px', backgroundColor: 'transparent', border: 'none', color: '#2563eb' }}
+                      title="Edit"
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (window.confirm('Delete this transaction?')) {
+                          const txId = t.id || `${t.Ticker}-${t.Date}`;
+                          handleDelete(txId);
+                        }
+                      }}
+                      style={{ position: 'relative', zIndex: 200, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '6px', backgroundColor: 'transparent', border: 'none', color: '#e11d48' }}
+                      title="Delete"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -326,6 +341,7 @@ export const TransactionsList: React.FC = () => {
           </tbody>
         </table>
       </div>
+      
       {filtered.length === 0 && (
         <div className="p-8 text-center text-slate-400">
           No transactions found matching your search.

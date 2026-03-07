@@ -5,6 +5,7 @@ import { useTransactions } from '../hooks/useTransactions';
 import { useBankOperations } from '../hooks/useBankOperations';
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useFees } from '../hooks/useFees';
+import { useSettings } from './SettingsContext';
 
 interface PortfolioContextType {
     // Stock Transactions (Achat/Vente)
@@ -18,6 +19,7 @@ interface PortfolioContextType {
     importTransactions: (parsed: Transaction[]) => Promise<boolean>;
     findDuplicates: () => Transaction[][];
     duplicateGroups: Transaction[][];
+    isLoading: boolean;
 
     // Bank Operations (Depot/Retrait/Frais/Taxe/Dividende)
     bankOperations: BankOperation[];
@@ -49,6 +51,7 @@ const PortfolioContext = createContext<PortfolioContextType | undefined>(undefin
 export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const {
         transactions,
+        isLoading,
         addTransaction,
         deleteTransaction,
         deleteTransactions,
@@ -64,8 +67,7 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
         operations: bankOperations,
         addBankOperation,
         deleteBankOperation,
-        clearBankOperations,
-        calculateBankTotals
+        clearBankOperations
     } = useBankOperations();
 
     const {
@@ -75,6 +77,9 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
         clearFees
     } = useFees();
 
+    const { settings } = useSettings();
+
+    // M2: Removed redundant stableFees and stableBankOps memos as transactions/fees/bankOperations are already stable from hooks.
     const {
         portfolio,
         currentPrices,
@@ -82,14 +87,15 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateManualPrices,
         resetManualPrices,
         isFeedConnected
-    } = usePortfolio(transactions, fees, bankOperations, calculateBankTotals);
+    } = usePortfolio(transactions, fees, bankOperations, settings.costMethod);
 
     // Memoized duplicate groups for performance
     const duplicateGroups = useMemo(() => findDuplicates(), [transactions, findDuplicates]);
 
-    const value = {
+    const value = useMemo(() => ({
         transactions,
         enrichedTransactions: portfolio.enrichedTransactions || transactions,
+        isLoading,
         addTransaction,
         deleteTransaction,
         deleteTransactions,
@@ -114,7 +120,14 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
         addFee,
         deleteFee,
         clearFees
-    };
+    }), [
+        transactions, portfolio, isLoading, addTransaction, deleteTransaction,
+        deleteTransactions, updateTransaction, clearTransactions, importTransactions,
+        findDuplicates, duplicateGroups, bankOperations, addBankOperation,
+        deleteBankOperation, clearBankOperations, currentPrices, isFeedConnected,
+        updateManualPrice, updateManualPrices, resetManualPrices, dbError,
+        clearDbError, fees, addFee, deleteFee, clearFees
+    ]);
 
     return (
         <PortfolioContext.Provider value={value}>

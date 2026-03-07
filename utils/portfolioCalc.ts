@@ -1,21 +1,22 @@
-import { Transaction, BankOperation, Holding, PortfolioSummary, FeeRecord } from '../types';
+import { Transaction, BankOperation, Holding, PortfolioSummary, FeeRecord, CostMethod } from '../types';
 import { TICKER_TO_SECTOR } from '../constants';
 import { DateService } from '../services/dateService';
 import { roundTo } from './helpers';
-import { updateHoldingState, HoldingState } from './holdingCalc';
+import { updateHoldingState, updateHoldingStateWithMethod, HoldingState, createEmptyHoldingState } from './holdingCalc';
 import { buildPerformanceHistory } from './historyBuilder';
 import { calculateBreakEvenPrice } from './feeLogic';
+import { parseNumber } from './validation';
 
-export const splitTransactionsAndBankOps = (transactions: Transaction[]): { 
-  trades: Transaction[]; 
-  bankOps: BankOperation[]; 
+export const splitTransactionsAndBankOps = (transactions: Transaction[]): {
+  trades: Transaction[];
+  bankOps: BankOperation[];
 } => {
   const trades: Transaction[] = [];
   const bankOps: BankOperation[] = [];
 
   transactions.forEach(tx => {
     const op = tx.Operation.toLowerCase();
-    
+
     if (op === 'achat' || op === 'buy' || op === 'vente' || op === 'sell') {
       trades.push(tx);
     } else if (op === 'depot' || op === 'retrait' || op === 'frais' || op === 'taxe' || op === 'dividende') {
@@ -42,39 +43,7 @@ export const splitTransactionsAndBankOps = (transactions: Transaction[]): {
 
 // --- Helper Functions Moved/Unified ---
 
-const parseMadNumber = (str: string | undefined): number | undefined => {
-  if (str === undefined || str === null || str === '') return undefined;
-  let clean = str.trim().replace(/\s?MAD/gi, '').trim();
-  if (clean === '' || clean === '-') return 0;
-
-  // Decision logic for decimal separator:
-  const lastComma = clean.lastIndexOf(',');
-  const lastPeriod = clean.lastIndexOf('.');
-
-  if (lastComma > lastPeriod) {
-    // European style: 1.234,56 -> 1234.56
-    clean = clean.replace(/\./g, '').replace(',', '.');
-  } else if (lastPeriod > lastComma) {
-    // US style: 1,234.56 -> 1234.56
-    clean = clean.replace(/,/g, '');
-  } else if (lastComma !== -1) {
-    // Single comma: Could be decimal or thousands.
-    // If it's followed by exactly 3 digits (e.g. 1,000), and there's more than 1 digit before it,
-    // it's likely a thousands separator.
-    const parts = clean.split(',');
-    if (parts[1].length === 3 && parts[0].length >= 1) {
-      clean = clean.replace(',', '');
-    } else {
-      clean = clean.replace(',', '.');
-    }
-  }
-
-  // Remove any remaining non-numeric chars except minus and period
-  clean = clean.replace(/[^0-9.-]/g, '');
-
-  const result = parseFloat(clean);
-  return isNaN(result) ? undefined : result;
-};
+// Used imported parseNumber instead of duplicate parseMadNumber
 
 const getSectorForTicker = (ticker: string): string => TICKER_TO_SECTOR[ticker] || 'Unknown';
 
@@ -129,6 +98,9 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
         values = fixed;
       }
 
+      // Strip quotes from values if present
+      values = values.map(v => v.replace(/^["']|["']$/g, '').trim());
+
       if (values.length !== headers.length) {
         warnings.push(`Line ${i + 1}: Column count mismatch`);
         continue;
@@ -148,9 +120,13 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
           const type = (raw.Type || '').toUpperCase();
           let operation = type === 'BUY' ? 'Achat' : type === 'SELL' ? 'Vente' : type;
 
-          let total = parseMadNumber(raw['Net Amount']) || 0;
+          let total = parseNumber(raw['Net Amount']) || 0;
           if (operation === 'Achat' && total > 0) total = -total;
           if ((operation === 'Frais' || operation === 'Taxe') && total > 0) total = -total;
+
+          const realizedPL = parseNumber(raw['Realized P&L']) || 0;
+          const taxFromCSV = parseNumber(raw['TPCVM']) ?? parseNumber(raw['Tax']) ?? 0;
+          const calculatedTax = (operation === 'Vente' || operation === 'Sell') && realizedPL > 0 ? realizedPL * 0.15 : taxFromCSV;
 
           transactions.push({
             Date: raw.Date,
@@ -158,26 +134,33 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
             ISIN: '',
             Operation: operation,
             Ticker: raw.Ticker || '',
-            Qty: parseMadNumber(raw.Qty) || 0,
-            Price: parseMadNumber(raw.Price) || 0,
+            Qty: parseNumber(raw.Qty) || 0,
+            Price: parseNumber(raw.Price) || 0,
             Total: total,
-            Fees: parseMadNumber(raw.Fees),
-            Tax: parseMadNumber(raw.Tax),
-            RealizedPL: parseMadNumber(raw['Realized P&L']),
+            Fees: parseNumber(raw.Fees),
+            Tax: calculatedTax,
+            RealizedPL: realizedPL,
             parsedDate
           });
         } else if (isOldFormat) {
+          let total = parseNumber(raw.Total) || 0;
+          const operation = raw.Operation || '';
+          const op = operation.toLowerCase();
+          // Convert positive fees/taxes to negative (money OUT)
+          if ((op.includes('frais') || op.includes('taxe') || op.includes('cus')) && total > 0) {
+            total = -total;
+          }
           transactions.push({
             Date: raw.Date,
             Company: raw.Company || '',
             ISIN: raw.ISIN || '',
             Operation: raw.Operation,
             Ticker: raw.Ticker || '',
-            Qty: parseMadNumber(raw.Qty) || 0,
-            Price: parseMadNumber(raw.Price) || 0,
-            Total: parseMadNumber(raw.Total) || 0,
-            Fees: parseMadNumber(raw.Fees),
-            Tax: parseMadNumber(raw.Tax),
+            Qty: parseNumber(raw.Qty) || 0,
+            Price: parseNumber(raw.Price) || 0,
+            Total: total,
+            Fees: parseNumber(raw.Fees),
+            Tax: parseNumber(raw.Tax),
             parsedDate
           });
         } else if (isNewFormat) {
@@ -188,9 +171,9 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
             ISIN: '',
             Operation: op,
             Ticker: raw.Ticker || '',
-            Qty: parseMadNumber(raw.Qty) || 0,
-            Price: parseMadNumber(raw.Unit_Price) || 0,
-            Total: parseMadNumber(raw.Amount) || 0,
+            Qty: parseNumber(raw.Qty) || 0,
+            Price: parseNumber(raw.Price) || 0,
+            Total: parseNumber(raw.Amount) || 0,
             parsedDate
           });
         }
@@ -212,10 +195,11 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
 // --- Main Portfolio Calculation ---
 
 export const calculatePortfolio = (
-  transactions: Transaction[], 
-  currentPrices: Record<string, number> = {}, 
+  transactions: Transaction[],
+  currentPrices: Record<string, number> = {},
   fees: FeeRecord[] = [],
-  bankOperations: BankOperation[] = []
+  bankOperations: BankOperation[] = [],
+  costMethod: CostMethod = 'WAC'
 ): PortfolioSummary => {
   const holdingsMap = new Map<string, HoldingState>();
 
@@ -223,9 +207,12 @@ export const calculatePortfolio = (
   let totalRealizedPL = 0;
   let totalDividends = 0;
   let totalDeposits = 0;
+  let totalWithdrawals = 0;
+  let totalTaxRefunds = 0;
   let totalTradingFees = 0;
   let totalCustodyFees = 0;
   let totalSubscriptionFees = 0;
+  let totalBankFees = 0;
   let netTaxImpact = 0;
   const enrichedTransactions: Transaction[] = [];
 
@@ -252,26 +239,15 @@ export const calculatePortfolio = (
 
     if (op === 'achat' || op === 'buy' || op === 'vente' || op === 'sell') {
       if (!holdingsMap.has(ticker)) {
-        holdingsMap.set(ticker, {
-          qty: 0,
-          costBasis: 0,
-          avgPrice: 0,
-          lastPrice: 0,
-          company: tx.Company,
-          txCount: 0,
-          totalBuyCost: 0,
-          totalBuyQty: 0,
-          totalSellProceeds: 0,
-          totalSellQty: 0
-        });
+        holdingsMap.set(ticker, createEmptyHoldingState(ticker, tx.Company));
       }
 
-      const { realizedPL, fees, tax } = updateHoldingState(holdingsMap.get(ticker)!, tx);
+      const { realizedPL, fees, tax } = updateHoldingStateWithMethod(holdingsMap.get(ticker)!, tx, { costMethod });
 
       totalRealizedPL += realizedPL;
       totalTradingFees += fees;
       netTaxImpact += tax; // Accrue as positive cost
-      
+
       // Handle Buy/Sell cash flow direction (transactions stored as positive)
       const isBuy = op === 'achat' || op === 'buy';
       const isSell = op === 'vente' || op === 'sell';
@@ -293,55 +269,76 @@ export const calculatePortfolio = (
       // Skip if these have been migrated to separate tables (bank_operations/fees)
       // to avoid double counting
       const normalizedOp = op.replace(/\s+/g, ' ').trim();
-      const skipMigrated = 
-        normalizedOp.includes('depot') || 
+      const isCashOp =
+        normalizedOp.includes('depot') ||
         normalizedOp.includes('retrait') ||
         normalizedOp.includes('dividende') ||
         normalizedOp.includes('frais') ||
         normalizedOp.includes('taxe');
-      
-      if (skipMigrated) {
-        // Still add deposits/withdrawals to cash (in case not migrated to bank_operations)
-        if (normalizedOp.includes('depot')) {
-          cashBalance += Math.abs(tx.Total);
-        } else if (normalizedOp.includes('retrait')) {
-          cashBalance -= Math.abs(tx.Total);
+
+      // Only skip if bankOperations covers this category, to avoid double counting
+      const hasBankOps = bankOperations && bankOperations.length > 0;
+
+      if (isCashOp && hasBankOps) {
+        // Check if this specific type has entries in bankOperations
+        // If bank_operations has entries for deposits/withdrawals/dividends/fees/taxes,
+        // we assume those tables are the source of truth and skip duplicates from transactions
+        const hasBankDeposits = bankOperations.some(bo => bo.Category === 'DEPOSIT');
+        const hasBankWithdrawals = bankOperations.some(bo => bo.Category === 'WITHDRAWAL');
+        const hasBankDividends = bankOperations.some(bo => bo.Category === 'DIVIDEND');
+        const hasBankFees = bankOperations.some(bo =>
+          bo.Category === 'BANK_FEE' ||
+          bo.Category === 'TAX' ||
+          bo.Category === 'CUSTODY' ||
+          bo.Category === 'SUBSCRIPTION'
+        );
+
+        const shouldSkip =
+          (normalizedOp.includes('depot') && hasBankDeposits) ||
+          (normalizedOp.includes('retrait') && hasBankWithdrawals) ||
+          (normalizedOp.includes('dividende') && hasBankDividends) ||
+          ((normalizedOp.includes('frais') || normalizedOp.includes('taxe') || normalizedOp.includes('cus') || normalizedOp.includes('sub')) && hasBankFees);
+
+        if (shouldSkip) {
+          return; // Skip — bank_operations table handles these
         }
-        return;
       }
 
-      const tickerLower = (tx.Ticker || '').toLowerCase().trim();
-      const companyLower = (tx.Company || '').toLowerCase().trim();
-
-      // 1. Classification
-      // Deprecated auto detection for SUB/CUS from transactions if we are moving to separate table,
-      // but keeping it for backward compatibility if user mixes methods or for old data.
-      // However, user asked for separated table.
-
-      const isSubscription = tickerLower.includes('sub') || normalizedOp.includes('sub');
-      const isBankFee = !isSubscription && (
-        normalizedOp.includes('frais') &&
-        (tickerLower === 'bank' || tickerLower === 'cus' || tickerLower.includes('bank') || companyLower.includes('bank'))
-      );
-      const isTax = !isSubscription && (normalizedOp.includes('taxe') || normalizedOp.includes('tpcvm'));
-
-      // 2. State Updates
-      cashBalance += tx.Total;
-
-      if (isBankFee) {
-        totalCustodyFees += Math.abs(tx.Total);
-      } else if (isTax) {
-        netTaxImpact += Math.abs(tx.Total);
+      // Process from transactions (either no bankOps or category not migrated)
+      if (normalizedOp.includes('depot')) {
+        cashBalance += Math.abs(tx.Total);
+        totalDeposits += Math.abs(tx.Total);
+      } else if (normalizedOp.includes('retrait')) {
+        cashBalance -= Math.abs(tx.Total);
+        totalWithdrawals += Math.abs(tx.Total);
       } else if (normalizedOp.includes('dividende')) {
-        totalDividends += tx.Total;
-      } else if (normalizedOp.includes('depot') || normalizedOp.includes('retrait')) {
-        totalDeposits += tx.Total;
+        cashBalance += Math.abs(tx.Total);
+        totalDividends += Math.abs(tx.Total);
+      } else {
+        // Fees/taxes/other: use existing classification logic
+        const tickerLower = (tx.Ticker || '').toLowerCase().trim();
+        const companyLower = (tx.Company || '').toLowerCase().trim();
+
+        const isSubscription = tickerLower.includes('sub') || normalizedOp.includes('sub');
+        const isBankFee = !isSubscription && (
+          normalizedOp.includes('frais') &&
+          (tickerLower === 'bank' || tickerLower === 'cus' || tickerLower.includes('bank') || companyLower.includes('bank'))
+        );
+        const isTax = !isSubscription && (normalizedOp.includes('taxe') || normalizedOp.includes('tpcvm'));
+
+        cashBalance += tx.Total;
+
+        if (isBankFee) {
+          totalCustodyFees += Math.abs(tx.Total);
+        } else if (isTax) {
+          netTaxImpact += Math.abs(tx.Total);
+        }
       }
 
       enrichedTransactions.push({
         ...tx,
-        Fees: isBankFee ? Math.abs(tx.Total) : (tx.Fees || 0),
-        Tax: isTax ? Math.abs(tx.Total) : (tx.Tax || 0),
+        Fees: tx.Fees || 0,
+        Tax: tx.Tax || 0,
         RealizedPL: 0
       });
     }
@@ -360,13 +357,11 @@ export const calculatePortfolio = (
   });
 
   // --- Process Bank Operations (Depot/Retrait/Frais/Taxe/Dividende) ---
-  let totalWithdrawals = 0;
-  let totalBankFees = 0;
-  // totalSubscriptionFees already declared above for separate fees table
-  
+
   bankOperations.forEach(op => {
+    const category = op.Category as string;
     // Handle cash flow direction based on category
-    switch (op.Category) {
+    switch (category) {
       case 'DEPOSIT':
         totalDeposits += Math.abs(op.Amount);
         cashBalance += Math.abs(op.Amount); // Money IN
@@ -380,10 +375,16 @@ export const calculatePortfolio = (
         cashBalance += Math.abs(op.Amount); // Money IN
         break;
       case 'TAX':
-        netTaxImpact += Math.abs(op.Amount);
-        cashBalance += Math.abs(op.Amount); // Money IN (tax refund)
+        netTaxImpact -= op.Amount;
+        // TAX can be negative (payment/refund from tax authority) or positive (refund received)
+        // Negative amount = money OUT (tax paid), Positive = money IN (refund received)
+        if (op.Amount > 0) {
+          totalTaxRefunds += op.Amount;
+        }
+        cashBalance += op.Amount;
         break;
-      case 'BANK_FEE':
+      case 'CUSTODY':
+      case 'BANK_FEE': // Added CUSTODY/SUBSCRIPTION here for correctness if they appear in bankOperations
         totalBankFees += Math.abs(op.Amount);
         cashBalance -= Math.abs(op.Amount); // Money OUT (fee paid)
         break;
@@ -394,8 +395,22 @@ export const calculatePortfolio = (
     }
   });
 
+  // Debug logging for cash flow components
+  console.log('Portfolio Calculation Debug:', {
+    totalDeposits,
+    totalWithdrawals,
+    totalSells: transactions.filter(t => t.Operation.toLowerCase() === 'vente' || t.Operation.toLowerCase() === 'sell').reduce((acc, t) => acc + Math.abs(t.Total), 0),
+    totalBuys: transactions.filter(t => t.Operation.toLowerCase() === 'achat' || t.Operation.toLowerCase() === 'buy').reduce((acc, t) => acc + Math.abs(t.Total), 0),
+    totalDividends,
+    netTaxImpact,
+    totalBankFees,
+    totalCustodyFees,
+    totalSubscriptionFees,
+    finalCashBalance: cashBalance
+  });
+
   // Calculate History using dedicated builder
-  const history = buildPerformanceHistory(transactions, currentPrices, bankOperations);
+  const history = buildPerformanceHistory(transactions, currentPrices, bankOperations, fees, costMethod);
 
   // Final Results Construction
   const holdings: Holding[] = [];
@@ -449,6 +464,7 @@ export const calculatePortfolio = (
     totalDividends: roundTo(totalDividends, 2),
     totalDeposits: roundTo(totalDeposits, 2),
     totalWithdrawals: roundTo(totalWithdrawals, 2),
+    totalTaxRefunds: roundTo(totalTaxRefunds, 2),
     totalTradingFees: roundTo(totalTradingFees, 2),
     totalCustodyFees: roundTo(totalCustodyFees, 2),
     totalSubscriptionFees: roundTo(totalSubscriptionFees, 2),

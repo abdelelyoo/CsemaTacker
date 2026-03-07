@@ -473,5 +473,75 @@ COMMENT ON TABLE fees IS 'Stores custody fees (CUS), subscription fees (SUB), ba
 COMMENT ON TABLE bank_operations IS 'Stores bank deposits and withdrawals separate from stock transactions';
 
 -- ============================================
+-- 10. MARKET DATA TABLE (CSEMA/Morocco stocks)
+-- ============================================
+-- Public market data fetched from TradingView via tvscreener
+-- Read-only for clients, updated by scheduled job
+
+DROP TABLE IF EXISTS market_data CASCADE;
+
+CREATE TABLE market_data (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  ticker TEXT UNIQUE NOT NULL,
+  name TEXT,
+  sector TEXT,
+  
+  -- Price Data
+  price NUMERIC,
+  change_percent NUMERIC,
+  volume NUMERIC,
+  market_cap NUMERIC,
+  
+  -- Valuation Metrics
+  pe_ratio NUMERIC,
+  pb_ratio NUMERIC,
+  dividend_yield NUMERIC,
+  peg_ratio NUMERIC,
+  ev_ebitda NUMERIC,
+  
+  -- Profitability
+  roe NUMERIC,
+  roa NUMERIC,
+  gross_margin NUMERIC,
+  net_margin NUMERIC,
+  
+  -- Performance
+  perf_1m NUMERIC,
+  perf_3m NUMERIC,
+  perf_6m NUMERIC,
+  perf_1y NUMERIC,
+  
+  -- Technical Indicators
+  rsi_14 NUMERIC,
+  sma_50 NUMERIC,
+  sma_200 NUMERIC,
+  tech_rating TEXT,
+  
+  -- Quality Score (calculated in Python)
+  quality_score NUMERIC,
+  quality_grade TEXT,
+  
+  -- Metadata
+  last_updated TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX idx_market_data_ticker ON market_data(ticker);
+CREATE INDEX idx_market_data_sector ON market_data(sector);
+CREATE INDEX idx_market_data_quality ON market_data(quality_score);
+CREATE INDEX idx_market_data_pe ON market_data(pe_ratio);
+
+-- RLS: Public read, no client write
+ALTER TABLE market_data ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can read market data (it's public info)
+CREATE POLICY "Market data is public read" 
+  ON market_data FOR SELECT USING (true);
+
+-- Only service role can insert/update (via GitHub Actions)
+CREATE POLICY "Service role can manage market_data" 
+  ON market_data FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+-- ============================================
 -- END OF SCHEMA
 -- ============================================

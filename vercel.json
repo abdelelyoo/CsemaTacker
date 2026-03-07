@@ -3,5 +3,9 @@
   "name": "atlas-portfolio",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/prices", "destination": "/api/prices" },
+    { "source": "/api/signals", "destination": "/api/signals" }
+  ]
 }

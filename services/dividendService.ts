@@ -1,6 +1,7 @@
 import { db } from '../db';
 import { DividendRecord } from '../types';
 import { DIVIDEND_TAX_RATE } from '../constants';
+import { MarketDataService } from './marketDataService';
 
 export interface UpcomingDividend {
     ticker: string;
@@ -47,6 +48,7 @@ export interface DividendSummary {
 export class DividendService {
     /**
      * Get upcoming dividend payments for holdings
+     * Uses tvscreener for company names, profile database for dividend history
      */
     static async getUpcomingDividends(
         holdings: Array<{ ticker: string; quantity: number }>
@@ -54,13 +56,17 @@ export class DividendService {
         const upcoming: UpcomingDividend[] = [];
         const now = new Date();
 
+        // Load company names from tvscreener
+        const allStocks = await MarketDataService.getAllStocks({ limit: 200 });
+        const stockMap = new Map(allStocks.map(s => [s.ticker, s]));
+
         for (const holding of holdings) {
             if (holding.quantity <= 0) continue;
 
-            const company = await db.companies.where('ticker').equals(holding.ticker).first();
-            if (!company) continue;
+            const stock = stockMap.get(holding.ticker);
+            const companyName = stock?.name || holding.ticker;
 
-            // Get recent dividends (last 2 years)
+            // Get recent dividends from profile database (last 2 years)
             const recentDividends = await db.dividends
                 .where('ticker')
                 .equals(holding.ticker)
@@ -83,7 +89,7 @@ export class DividendService {
 
                     upcoming.push({
                         ticker: holding.ticker,
-                        companyName: company.name,
+                        companyName,
                         year: dividend.year,
                         amountPerShare: dividend.amount,
                         totalAmount,
@@ -104,19 +110,24 @@ export class DividendService {
 
     /**
      * Project future dividends based on historical data
+     * Uses tvscreener for company names, profile database for dividend history
      */
     static async getDividendProjections(
         holdings: Array<{ ticker: string; quantity: number; currentPrice: number }>
     ): Promise<DividendProjection[]> {
         const projections: DividendProjection[] = [];
 
+        // Load company names from tvscreener
+        const allStocks = await MarketDataService.getAllStocks({ limit: 200 });
+        const stockMap = new Map(allStocks.map(s => [s.ticker, s]));
+
         for (const holding of holdings) {
             if (holding.quantity <= 0) continue;
 
-            const company = await db.companies.where('ticker').equals(holding.ticker).first();
-            if (!company) continue;
+            const stock = stockMap.get(holding.ticker);
+            const companyName = stock?.name || holding.ticker;
 
-            // Get dividend history
+            // Get dividend history from profile database
             const dividends = await db.dividends
                 .where('ticker')
                 .equals(holding.ticker)
@@ -147,7 +158,7 @@ export class DividendService {
                 ? (latestDividend.amount / holding.currentPrice) * 100
                 : 0;
 
-            // Get payout ratio from financial ratios
+            // Get payout ratio from financial ratios in profile database
             const latestRatio = await db.financialRatios
                 .where('ticker')
                 .equals(holding.ticker)
@@ -165,7 +176,7 @@ export class DividendService {
 
             projections.push({
                 ticker: holding.ticker,
-                companyName: company.name,
+                companyName,
                 currentYield,
                 lastDividendAmount: latestDividend.amount,
                 projectedNextDividend,

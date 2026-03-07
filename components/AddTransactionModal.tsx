@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, Calendar, Hash, DollarSign, Calculator, Zap, AlertTriangle } from 'lucide-react';
 import { Holding, Transaction } from '../types';
 import { validateTransaction } from '../utils/validation';
+import { TPCVM_RATE } from '../constants';
 
 interface AddTransactionModalProps {
   onSave: (data: any) => void;
@@ -63,7 +64,6 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onSave
   const SBVC_RATE_HT = 0.001; // 0.10% (Stock Exchange Fee)
 
   const VAT_RATE = 0.10; // 10%
-  const TPCVM_RATE = 0.15; // 15% Tax on Capital Gains
 
   // Update company and avgPrice when ticker changes
   useEffect(() => {

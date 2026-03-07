@@ -1,17 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.warn('Supabase credentials not found. Using local storage mode.');
+const isValidUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+const isConfigured = supabaseUrl && supabaseKey && isValidUrl(supabaseUrl);
+
+if (!isConfigured) {
+  console.warn('Supabase credentials not found or invalid. Using local storage mode.');
 }
 
-export const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || ''
-);
+export const supabase: SupabaseClient | null = isConfigured 
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 export const isSupabaseConfigured = () => {
-  return !!(supabaseUrl && supabaseKey);
+  return isConfigured;
 };

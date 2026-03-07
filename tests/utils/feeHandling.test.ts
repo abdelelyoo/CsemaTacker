@@ -20,7 +20,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, { TEST: 120.00 });
-      
+
       // Should infer fees from the difference between total and gross amount
       expect(result.totalTradingFees).toBeGreaterThan(0);
       expect(result.enrichedTransactions[0].Fees).toBeGreaterThan(0);
@@ -44,7 +44,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, { TEST: 120.00 });
-      
+
       expect(result.enrichedTransactions[0].Fees).toBe(15.00);
       expect(result.totalTradingFees).toBe(15.00);
     });
@@ -66,7 +66,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, { TEST: 120.00 });
-      
+
       // Should handle null fees appropriately based on fee inference logic
       expect(result.enrichedTransactions[0].Fees).toBeDefined();
       expect(result.totalTradingFees).toBeGreaterThanOrEqual(0);
@@ -101,7 +101,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, { TEST: 120.00 });
-      
+
       expect(result.enrichedTransactions[1].Fees).toBeGreaterThan(0);
       expect(result.enrichedTransactions[1].Tax).toBeGreaterThan(0);
       expect(result.totalTradingFees).toBeGreaterThan(0);
@@ -137,7 +137,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, { TEST: 120.00 });
-      
+
       expect(result.enrichedTransactions[1].Fees).toBe(10.00); // Should use provided
       expect(Number(result.enrichedTransactions[1].Tax)).toBeGreaterThanOrEqual(0); // Should infer
     });
@@ -145,46 +145,36 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
 
   describe('Non-Trade Transaction Enrichment', () => {
     it('should enrich bank fee transactions correctly', () => {
-      const transactions: Transaction[] = [
+      const bankOps: any[] = [
         {
           Date: '2023-01-01',
-          Company: 'Bank',
-          ISIN: '',
           Operation: 'Frais',
-          Ticker: 'bank',
-          Qty: 0,
-          Price: 0,
-          Total: -50.00,
+          Description: 'Bank',
+          Amount: -50.00,
+          Category: 'BANK_FEE',
           parsedDate: new Date('2023-01-01')
         }
       ];
 
-      const result = calculatePortfolio(transactions, {});
-      
-      expect(result.enrichedTransactions[0].Fees).toBe(50.00);
-      expect(result.enrichedTransactions[0].Tax).toBe(0);
-      expect(result.totalCustodyFees).toBe(50.00);
+      const result = calculatePortfolio([], {}, [], bankOps);
+
+      expect(result.totalBankFees).toBe(50.00);
     });
 
     it('should enrich tax transactions correctly', () => {
-      const transactions: Transaction[] = [
+      const bankOps: any[] = [
         {
           Date: '2023-01-01',
-          Company: 'Tax Authority',
-          ISIN: '',
           Operation: 'Taxe',
-          Ticker: '',
-          Qty: 0,
-          Price: 0,
-          Total: -25.00,
+          Description: 'Tax Authority',
+          Amount: -25.00,
+          Category: 'TAX',
           parsedDate: new Date('2023-01-01')
         }
       ];
 
-      const result = calculatePortfolio(transactions, {});
-      
-      expect(result.enrichedTransactions[0].Fees).toBe(0);
-      expect(result.enrichedTransactions[0].Tax).toBe(25.00);
+      const result = calculatePortfolio([], {}, [], bankOps);
+
       expect(result.netTaxImpact).toBe(25.00);
     });
 
@@ -204,31 +194,26 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, {});
-      
+
       // Subscription fees should be handled separately in fees table
       expect(result.enrichedTransactions[0].Fees).toBe(0);
       expect(result.enrichedTransactions[0].Tax).toBe(0);
     });
 
     it('should handle dividend transactions correctly', () => {
-      const transactions: Transaction[] = [
+      const bankOps: any[] = [
         {
           Date: '2023-01-01',
-          Company: 'Test Company',
-          ISIN: '',
           Operation: 'Dividende',
-          Ticker: 'TEST',
-          Qty: 0,
-          Price: 0,
-          Total: 50.00,
+          Description: 'Test Company',
+          Amount: 50.00,
+          Category: 'DIVIDEND',
           parsedDate: new Date('2023-01-01')
         }
       ];
 
-      const result = calculatePortfolio(transactions, {});
-      
-      expect(result.enrichedTransactions[0].Fees).toBe(0);
-      expect(result.enrichedTransactions[0].Tax).toBe(0);
+      const result = calculatePortfolio([], {}, [], bankOps);
+
       expect(result.totalDividends).toBe(50.00);
     });
   });
@@ -250,7 +235,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, {});
-      
+
       expect(result.holdings.length).toBe(0);
       expect(result.totalTradingFees).toBe(11); // Should still apply minimum fees
     });
@@ -272,7 +257,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
       ];
 
       const result = calculatePortfolio(transactions, { TEST: 120.00 });
-      
+
       expect(result.enrichedTransactions[0].Fees).toBe(100.00);
       // Warning would be logged to console
     });
@@ -293,17 +278,6 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
           parsedDate: new Date('2023-01-01')
         },
         {
-          Date: '2023-01-02',
-          Company: 'Bank',
-          ISIN: '',
-          Operation: 'Frais',
-          Ticker: 'bank',
-          Qty: 0,
-          Price: 0,
-          Total: -25.00,
-          parsedDate: new Date('2023-01-02')
-        },
-        {
           Date: '2023-01-03',
           Company: 'Test Company',
           ISIN: 'MA123456',
@@ -313,23 +287,31 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
           Price: 120.00,
           Total: 575.00,
           parsedDate: new Date('2023-01-03')
+        }
+      ];
+
+      const bankOps: any[] = [
+        {
+          Date: '2023-01-02',
+          Operation: 'Frais',
+          Description: 'Bank',
+          Amount: -25.00,
+          Category: 'BANK_FEE',
+          parsedDate: new Date('2023-01-02')
         },
         {
           Date: '2023-01-04',
-          Company: 'Tax Authority',
-          ISIN: '',
           Operation: 'Taxe',
-          Ticker: '',
-          Qty: 0,
-          Price: 0,
-          Total: -15.00,
+          Description: 'Tax',
+          Amount: -15.00,
+          Category: 'TAX',
           parsedDate: new Date('2023-01-04')
         }
       ];
 
-      const result = calculatePortfolio(transactions, { TEST: 120.00 });
-      
-      expect(result.totalCustodyFees).toBe(25.00);
+      const result = calculatePortfolio(transactions, { TEST: 120.00 }, [], bankOps);
+
+      expect(result.totalBankFees).toBe(25.00);
       expect(result.netTaxImpact).toBeGreaterThan(15.00); // Should include transaction tax + declared tax
       expect(result.totalTradingFees).toBeGreaterThan(0);
       expect(result.holdings.length).toBe(1);

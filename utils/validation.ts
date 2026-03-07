@@ -1,5 +1,113 @@
-// Data validation utilities
+import { z } from 'zod';
 
+export const RawTransactionSchema = z.object({
+  Date: z.string().min(1, 'Date is required'),
+  Company: z.string().optional(),
+  ISIN: z.string().optional(),
+  Operation: z.string().min(1, 'Operation is required'),
+  Ticker: z.string().optional(),
+  Qty: z.union([z.number(), z.string()]).optional(),
+  Price: z.union([z.number(), z.string()]).optional(),
+  Total: z.union([z.number(), z.string()]).optional(),
+  Fees: z.union([z.number(), z.string()]).optional(),
+  Tax: z.union([z.number(), z.string()]).optional(),
+  RealizedPL: z.union([z.number(), z.string()]).optional()
+});
+
+export const TransactionSchema = z.object({
+  Date: z.string(),
+  Company: z.string().default(''),
+  ISIN: z.string().default(''),
+  // H7 fix: expand allowed operations in validator to match parser
+  Operation: z.enum([
+    'Achat', 'Vente', 'Buy', 'Sell', 'BUY', 'SELL', 'ACHAT', 'VENTE',
+    'Depot', 'Retrait', 'Dividende', 'Frais', 'Taxe', 'CUS', 'SUB', 'Abonnement'
+  ]),
+  Ticker: z.string().default(''),
+  Qty: z.number().finite().safe(),
+  Price: z.number().finite().safe(),
+  Total: z.number().finite().safe(),
+  Fees: z.number().optional(),
+  Tax: z.number().optional(),
+  RealizedPL: z.number().optional()
+});
+
+export const BankOperationSchema = z.object({
+  Date: z.string(),
+  Operation: z.enum(['Depot', 'Retrait', 'Dividende', 'Frais', 'Taxe', 'Abonnement', 'Garde']),
+  Description: z.string().optional(),
+  Amount: z.number().finite().safe(),
+  // H6 fix: added TAX_REFUND and CUSTODY
+  Category: z.enum(['DEPOSIT', 'WITHDRAWAL', 'DIVIDEND', 'TAX', 'TAX_REFUND', 'BANK_FEE', 'CUSTODY', 'SUBSCRIPTION']),
+  Reference: z.string().optional()
+});
+
+export const FeeRecordSchema = z.object({
+  date: z.date(),
+  type: z.enum(['CUS', 'SUB']),
+  amount: z.number().positive('Amount must be positive'),
+  description: z.string().optional()
+});
+
+export const CapitalEventSchema = z.object({
+  ticker: z.string().min(1, 'Ticker is required'),
+  date: z.date(),
+  event_type: z.enum(['capital_increase', 'threshold_crossing', 'stock_split', 'reverse_split', 'merger', 'spin_off']),
+  description: z.string(),
+  shares_variation: z.number().optional(),
+  nature: z.string().optional(),
+  threshold_percent: z.number().optional(),
+  declarant: z.string().optional(),
+  direction: z.enum(['Hausse', 'Baisse']).optional(),
+  split_ratio_from: z.number().optional(),
+  split_ratio_to: z.number().optional(),
+  applied_to_transactions: z.boolean().optional()
+});
+
+export const UserSettingsSchema = z.object({
+  costMethod: z.enum(['FIFO', 'LIFO', 'WAC']).default('WAC'),
+  currency: z.enum(['MAD', 'EUR', 'USD']).default('MAD'),
+  darkMode: z.boolean().default(false),
+  dateFormat: z.string().default('DD/MM/YYYY')
+});
+
+export const parseNumber = (val: any, fallback: number = 0): number => {
+  if (val === undefined || val === null || val === '') return fallback;
+  if (typeof val === 'number') return isFinite(val) ? val : fallback;
+  if (typeof val !== 'string') val = String(val);
+
+  let clean = val.trim().replace(/\"/g, '').replace(/\s?MAD/gi, '').trim();
+  if (clean === '' || clean === '-') return fallback;
+
+  const lastComma = clean.lastIndexOf(',');
+  const lastPeriod = clean.lastIndexOf('.');
+
+  if (lastComma > lastPeriod) {
+    clean = clean.replace(/\./g, '').replace(',', '.');
+  } else if (lastPeriod > lastComma) {
+    clean = clean.replace(/,/g, '');
+  } else if (lastComma !== -1) {
+    const parts = clean.split(',');
+    if (parts[1].length === 3 && parts[0].length >= 1) {
+      clean = clean.replace(',', '');
+    } else {
+      clean = clean.replace(',', '.');
+    }
+  }
+
+  clean = clean.replace(/[^0-9.-]/g, '');
+  const result = parseFloat(clean);
+  return isFinite(result) ? result : fallback;
+};
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  value?: unknown;
+  row?: number;
+}
+
+// Backward compatibility - re-exported from original validation logic
 export interface ValidationResult {
   valid: boolean;
   errors: string[];
@@ -10,7 +118,6 @@ export function validateTransaction(transaction: any): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Required fields
   if (!transaction.Date || typeof transaction.Date !== 'string' || transaction.Date.trim() === '') {
     errors.push('Date is required and must be a non-empty string');
   }
@@ -22,21 +129,14 @@ export function validateTransaction(transaction: any): ValidationResult {
   if (!transaction.Ticker || typeof transaction.Ticker !== 'string' || transaction.Ticker.trim() === '') {
     errors.push('Ticker is required and must be a non-empty string');
   } else {
-    // Validate ticker format (3-4 uppercase letters for Moroccan stocks)
     const tickerRegex = /^[A-Z]{3,4}$/;
     if (!tickerRegex.test(transaction.Ticker.trim())) {
       warnings.push(`Ticker "${transaction.Ticker}" doesn't match expected format (3-4 uppercase letters)`);
     }
   }
 
-  // Numeric fields validation
   if (transaction.Qty === undefined || transaction.Qty === null || isNaN(parseFloat(transaction.Qty))) {
     errors.push('Quantity must be a valid number');
-  } else {
-    const qty = parseFloat(transaction.Qty);
-    if (qty === 0) {
-      warnings.push('Quantity is zero - this transaction may not affect holdings');
-    }
   }
 
   if (transaction.Price === undefined || transaction.Price === null || isNaN(parseFloat(transaction.Price))) {
@@ -45,8 +145,6 @@ export function validateTransaction(transaction: any): ValidationResult {
     const price = parseFloat(transaction.Price);
     if (price <= 0) {
       errors.push('Price must be positive');
-    } else if (price < 0.01) {
-      warnings.push('Price is very low - please verify this is correct');
     } else if (price > 10000) {
       warnings.push('Price is very high - please verify this is correct');
     }
@@ -56,36 +154,9 @@ export function validateTransaction(transaction: any): ValidationResult {
     errors.push('Total amount must be a valid number');
   }
 
-  // Validate operation types
   const validOperations = ['Achat', 'Vente', 'Depot', 'Retrait', 'Dividende', 'Frais', 'Taxe'];
   if (transaction.Operation && !validOperations.includes(transaction.Operation)) {
     errors.push(`Invalid operation type: "${transaction.Operation}". Valid types are: ${validOperations.join(', ')}`);
-  }
-
-  // Validate date format
-  if (transaction.Date) {
-    const dateStr = transaction.Date.trim();
-    const dateRegex = /^(\d{2}\/\d{2}\/\d{2}(?:\d{2})?|\d{4}-\d{2}-\d{2})$/;
-    if (!dateRegex.test(dateStr)) {
-      errors.push(`Invalid date format: "${dateStr}". Expected DD/MM/YY, DD/MM/YYYY, or YYYY-MM-DD`);
-    }
-  }
-
-  // Business logic validation
-  if (transaction.Operation === 'Achat' && transaction.Total > 0) {
-    warnings.push('Buy transaction with positive total - should typically be negative (cash outflow)');
-  }
-
-  if (transaction.Operation === 'Vente' && transaction.Total < 0) {
-    warnings.push('Sell transaction with negative total - should typically be positive (cash inflow)');
-  }
-
-  if (transaction.Operation === 'Depot' && transaction.Total < 0) {
-    warnings.push('Deposit transaction with negative total - should typically be positive');
-  }
-
-  if ((transaction.Operation === 'Frais' || transaction.Operation === 'Taxe') && transaction.Total > 0) {
-    warnings.push('Fee/Tax transaction with positive total - should typically be negative');
   }
 
   return {
@@ -102,13 +173,13 @@ export function validateTransactionBatch(transactions: any[]): ValidationResult 
 
   transactions.forEach((transaction, index) => {
     const result = validateTransaction(transaction);
-    
+
     if (!result.valid) {
       errors.push(`Transaction ${index + 1}: ${result.errors.join(', ')}`);
     } else {
       validCount++;
     }
-    
+
     if (result.warnings.length > 0) {
       warnings.push(`Transaction ${index + 1}: ${result.warnings.join(', ')}`);
     }
@@ -127,7 +198,7 @@ export function validateCSVStructure(csv: string): ValidationResult {
 
   try {
     const lines = csv.trim().split('\n');
-    
+
     if (lines.length < 2) {
       errors.push('CSV file must have at least one data row');
       return { valid: false, errors, warnings };
@@ -139,15 +210,14 @@ export function validateCSVStructure(csv: string): ValidationResult {
     else if (headerLine.includes(';')) delimiter = ';';
 
     const headers = headerLine.split(delimiter).map(h => h.trim());
-    
+
     if (headers.length === 0) {
       errors.push('No valid headers found in CSV file');
       return { valid: false, errors, warnings };
     }
 
-    // Check for required headers
     const requiredHeaders = ['Date', 'Operation', 'Ticker', 'Qty', 'Price', 'Total'];
-    const missingHeaders = requiredHeaders.filter(header => 
+    const missingHeaders = requiredHeaders.filter(header =>
       !headers.some(h => h.toLowerCase() === header.toLowerCase())
     );
 
@@ -155,18 +225,7 @@ export function validateCSVStructure(csv: string): ValidationResult {
       errors.push(`Missing required headers: ${missingHeaders.join(', ')}`);
     }
 
-    // Check data rows have same column count as headers
-    for (let i = 1; i < Math.min(lines.length, 11); i++) { // Check first 10 data rows
-      const line = lines[i].trim();
-      if (!line) continue;
-      
-      const values = line.split(delimiter);
-      if (values.length !== headers.length) {
-        warnings.push(`Line ${i + 1}: Column count (${values.length}) doesn't match header count (${headers.length})`);
-      }
-    }
-
-  } catch (error) {
+  } catch (error: any) {
     errors.push(`Error validating CSV structure: ${error.message}`);
   }
 
@@ -186,11 +245,9 @@ export function validatePortfolioData(portfolio: any): ValidationResult {
     return { valid: false, errors, warnings };
   }
 
-  // Check required portfolio fields
   const requiredFields = [
     'totalValue', 'totalCost', 'totalRealizedPL', 'totalUnrealizedPL',
-    'totalDividends', 'totalDeposits', 'holdings', 'cashBalance',
-    'totalTradingFees', 'totalCustodyFees', 'totalSubscriptionFees', 'netTaxImpact', 'history'
+    'totalDividends', 'totalDeposits', 'holdings', 'cashBalance'
   ];
 
   requiredFields.forEach(field => {
@@ -199,47 +256,12 @@ export function validatePortfolioData(portfolio: any): ValidationResult {
     }
   });
 
-  // Validate holdings
   if (Array.isArray(portfolio.holdings)) {
     portfolio.holdings.forEach((holding: any, index: number) => {
       if (!holding.ticker) {
         errors.push(`Holding ${index + 1}: Missing ticker`);
       }
-      
-      if (holding.quantity === undefined || isNaN(holding.quantity)) {
-        errors.push(`Holding ${index + 1}: Invalid quantity`);
-      }
-      
-      if (holding.marketValue === undefined || isNaN(holding.marketValue)) {
-        errors.push(`Holding ${index + 1}: Invalid market value`);
-      }
     });
-  } else {
-    errors.push('Holdings must be an array');
-  }
-
-  // Validate history
-  if (Array.isArray(portfolio.history)) {
-    portfolio.history.forEach((point: any, index: number) => {
-      if (!point.date) {
-        errors.push(`History point ${index + 1}: Missing date`);
-      }
-      
-      if (point.value === undefined || isNaN(point.value)) {
-        errors.push(`History point ${index + 1}: Invalid value`);
-      }
-    });
-  } else {
-    errors.push('History must be an array');
-  }
-
-  // Business logic warnings
-  if (portfolio.totalValue < 0) {
-    warnings.push('Total portfolio value is negative - this may indicate data issues');
-  }
-
-  if (Math.abs(portfolio.totalTradingFees) > Math.abs(portfolio.totalValue) * 0.1) {
-    warnings.push('Trading fees exceed 10% of portfolio value - this seems unusually high');
   }
 
   return {

@@ -9,10 +9,12 @@ import {
   Award, 
   PieChart, 
   Check, 
-  ScanLine, 
   BrainCircuit,
-  Building2
+  Building2,
+  TrendingUp,
+  Search
 } from 'lucide-react';
+import { useMetrics } from '../context/MetricsContext';
 
 interface TabOption {
   id: string;
@@ -29,14 +31,10 @@ interface FloatingActionButtonProps {
 const tabs: TabOption[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, color: 'bg-blue-500' },
   { id: 'transactions', label: 'Transactions', icon: <FileText size={20} />, color: 'bg-emerald-500' },
-  { id: 'bankops', label: 'Bank Ops', icon: <Building2 size={20} />, color: 'bg-orange-500' },
   { id: 'moneymgmt', label: 'Money Mgmt', icon: <Calculator size={20} />, color: 'bg-violet-500' },
   { id: 'dividends', label: 'Dividends', icon: <Banknote size={20} />, color: 'bg-amber-500' },
-  { id: 'fundamentals', label: 'Fundamentals', icon: <Award size={20} />, color: 'bg-indigo-500' },
-  { id: 'valuation', label: 'Valuation', icon: <PieChart size={20} />, color: 'bg-pink-500' },
-  { id: 'quality', label: 'Quality', icon: <Check size={20} />, color: 'bg-teal-500' },
-  { id: 'risk', label: 'Risk', icon: <ScanLine size={20} />, color: 'bg-rose-500' },
-  { id: 'insights', label: 'Insights', icon: <BrainCircuit size={20} />, color: 'bg-cyan-500' },
+  { id: 'analysis', label: 'Analysis', icon: <TrendingUp size={20} />, color: 'bg-indigo-500' },
+  { id: 'signals', label: 'Signals', icon: <Search size={20} />, color: 'bg-rose-500' },
 ];
 
 export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ 
@@ -47,6 +45,9 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const fabRef = useRef<HTMLDivElement>(null);
+  const { selectedTicker, setSelectedTicker } = useMetrics();
+
+  const [tickerInput, setTickerInput] = useState('');
 
   // Auto-hide on scroll down, show on scroll up
   useEffect(() => {
@@ -89,6 +90,16 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
     console.log('Tab selected:', tabId);
     onTabChange(tabId);
     setIsOpen(false);
+  };
+
+  const handleTickerSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (tickerInput.trim()) {
+      setSelectedTicker(tickerInput.trim().toUpperCase());
+      onTabChange('analysis');
+      setTickerInput('');
+      setIsOpen(false);
+    }
   };
 
   // Get current tab info
@@ -138,6 +149,28 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
             </div>
           </div>
         ))}
+        
+        {/* Ticker Search Input */}
+        <form 
+          onSubmit={handleTickerSubmit}
+          className="flex items-center group"
+          style={{
+            transform: isOpen ? 'translateX(0)' : 'translateX(20px)',
+            opacity: isOpen ? 1 : 0,
+            transition: `all 0.3s ease ${tabs.length * 0.05}s`
+          }}
+        >
+          <input
+            type="text"
+            value={tickerInput}
+            onChange={(e) => setTickerInput(e.target.value)}
+            placeholder="Search ticker..."
+            className="mr-3 bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-md text-sm font-medium border border-slate-200 w-32 focus:w-40 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+          />
+          <div className="w-12 h-12 bg-indigo-500 text-white rounded-full shadow-lg flex items-center justify-center">
+            <Search size={20} />
+          </div>
+        </form>
       </div>
 
       {/* Active Tab Indicator */}

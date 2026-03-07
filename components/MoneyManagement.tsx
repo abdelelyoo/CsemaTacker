@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PortfolioSummary, Transaction } from '../types';
-import { Calculator, TrendingUp, AlertTriangle, ShieldCheck, Target, Percent, Sparkles, RefreshCcw, PieChart, Info, BarChart3, Crosshair, GitGraph, Activity, TrendingDown, Brain, Timer, Scale } from 'lucide-react';
-import { getKellyStrategyAdvice, analyzePortfolio } from '../services/geminiService';
-import ReactMarkdown from 'react-markdown';
+import { Calculator, TrendingUp, AlertTriangle, ShieldCheck, Target, Percent, PieChart, Info, BarChart3, Crosshair, GitGraph, Activity, TrendingDown, Brain, Timer, Scale } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, BarChart, Bar, Cell } from 'recharts';
 
 import { usePortfolioContext } from '../context/PortfolioContext';
+import { useMetrics } from '../context/MetricsContext';
+import { CHART_COLORS } from '../constants/colors';
 
 interface MonteCarloStep {
   trade: number;
@@ -18,6 +18,7 @@ interface MoneyManagementProps { }
 
 export const MoneyManagement: React.FC = () => {
   const { portfolio, enrichedTransactions: transactions } = usePortfolioContext();
+  const { setTradingMetrics, setRiskMetrics } = useMetrics();
   // Stats State
   const [winRate, setWinRate] = useState<number>(50);
   const [avgWin, setAvgWin] = useState<number>(0);
@@ -28,10 +29,6 @@ export const MoneyManagement: React.FC = () => {
   const [useCustom, setUseCustom] = useState(false);
   const [customWinRate, setCustomWinRate] = useState<string>("50");
   const [customRatio, setCustomRatio] = useState<string>("2.0");
-
-  // AI Advice State
-  const [aiAdvice, setAiAdvice] = useState<string | null>(null);
-  const [loadingAdvice, setLoadingAdvice] = useState(false);
 
   // Monte Carlo State
   const [monteCarloData, setMonteCarloData] = useState<MonteCarloStep[]>([]);
@@ -59,6 +56,31 @@ export const MoneyManagement: React.FC = () => {
       totalTrades
     };
   }, [transactions]);
+
+  // Update trading metrics in context
+  useEffect(() => {
+    const kellyDecimal = (() => {
+      const W = (useCustom ? parseFloat(customWinRate) : winRate) / 100;
+      const R = useCustom ? parseFloat(customRatio) : (avgWin > 0 && avgLoss > 0 ? avgWin / avgLoss : 2);
+      if (W === 0 || R === 0) return 0;
+      return W - (1 - W) / R;
+    })();
+
+    const closedTrades = transactions.filter(t => t.RealizedPL !== undefined && t.RealizedPL !== null && t.RealizedPL !== 0);
+    const wins = closedTrades.filter(t => (t.RealizedPL || 0) > 0);
+    const losses = closedTrades.filter(t => (t.RealizedPL || 0) < 0);
+
+    setTradingMetrics({
+      winRate: useCustom ? parseFloat(customWinRate) : winRate,
+      avgWin,
+      avgLoss,
+      kellyPercent: kellyDecimal * 100,
+      totalTrades: historicalStats.totalTrades,
+      profitFactor: avgLoss > 0 ? avgWin / avgLoss : 0,
+      totalWins: wins.length,
+      totalLosses: losses.length
+    });
+  }, [winRate, avgWin, avgLoss, useCustom, customWinRate, customRatio, historicalStats.totalTrades, setTradingMetrics, transactions]);
 
   // Calculate Risk Metrics (VaR, Sharpe, Volatility)
   const riskMetrics = useMemo(() => {
@@ -115,6 +137,19 @@ export const MoneyManagement: React.FC = () => {
       sharpe: sharpe
     };
   }, [portfolio.history, portfolio.totalValue]);
+
+  // Update risk metrics in context
+  useEffect(() => {
+    if (riskMetrics) {
+      setRiskMetrics({
+        volatility: riskMetrics.volatility,
+        var95: riskMetrics.var95,
+        var95Percent: riskMetrics.var95Percent,
+        sharpe: riskMetrics.sharpe,
+        maxDrawdown: riskMetrics.maxDrawdown
+      });
+    }
+  }, [riskMetrics, setRiskMetrics]);
 
   // Calculate Trading Behavior (Hold Time, Day of Week, FIFO Reconstruction)
   const behaviorStats = useMemo(() => {
@@ -274,11 +309,6 @@ export const MoneyManagement: React.FC = () => {
     }
   }, [historicalStats, useCustom]);
 
-  // Reset advice when inputs change
-  useEffect(() => {
-    setAiAdvice(null);
-  }, [useCustom, customWinRate, customRatio, capital]);
-
   // Run Monte Carlo Simulation
   useEffect(() => {
     const W = useCustom ? parseFloat(customWinRate) : winRate;
@@ -359,20 +389,6 @@ export const MoneyManagement: React.FC = () => {
   const kellyPercent = kellyDecimal * 100;
   const isPositiveEdge = kellyDecimal > 0;
   const formatMoney = (val: number) => val.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' });
-
-  const handleRunAnalysis = async () => {
-    setLoadingAdvice(true);
-    const w = useCustom ? parseFloat(customWinRate) : winRate;
-    const r = useCustom ? parseFloat(customRatio) : (avgLoss > 0 ? avgWin / avgLoss : 0);
-
-    const result = await getKellyStrategyAdvice(
-      w, r, kellyPercent, capital,
-      hhiStats.score, hhiStats.status, vwapStats.executionScore,
-      mcStats, riskMetrics, behaviorStats
-    );
-    setAiAdvice(result.markdown);
-    setLoadingAdvice(false);
-  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20 md:pb-0">
@@ -663,7 +679,7 @@ export const MoneyManagement: React.FC = () => {
                     />
                     <Bar dataKey="pl" radius={[4, 4, 0, 0]}>
                       {behaviorStats.dayStats.filter(d => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(d.day)).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.pl >= 0 ? '#10b981' : '#ef4444'} />
+                        <Cell key={`cell-${index}`} fill={entry.pl >= 0 ? CHART_COLORS.POSITIVE : CHART_COLORS.NEGATIVE} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -710,9 +726,9 @@ export const MoneyManagement: React.FC = () => {
                   />
                   <ReferenceLine y={capital} stroke="#94a3b8" strokeDasharray="3 3" />
 
-                  <Line type="monotone" dataKey="best" stroke="#10b981" strokeWidth={2} dot={false} name="Best Case (90th)" />
+                  <Line type="monotone" dataKey="best" stroke={CHART_COLORS.POSITIVE} strokeWidth={2} dot={false} name="Best Case (90th)" />
                   <Line type="monotone" dataKey="median" stroke="#3b82f6" strokeWidth={2} dot={false} name="Median" />
-                  <Line type="monotone" dataKey="worst" stroke="#ef4444" strokeWidth={2} dot={false} name="Worst Case (10th)" />
+                  <Line type="monotone" dataKey="worst" stroke={CHART_COLORS.NEGATIVE} strokeWidth={2} dot={false} name="Worst Case (10th)" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -915,41 +931,6 @@ export const MoneyManagement: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          </div>
-
-
-
-          {/* AI Commentary Section */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 text-white shadow-lg border border-slate-700">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-2">
-                <Sparkles className="text-emerald-400" size={20} />
-                <h3 className="font-semibold text-lg">AI Risk & Psychology Analyst</h3>
-              </div>
-              <button
-                onClick={handleRunAnalysis}
-                disabled={loadingAdvice}
-                className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <RefreshCcw size={12} className={loadingAdvice ? "animate-spin" : ""} />
-                {aiAdvice ? "Refresh Analysis" : "Generate Analysis"}
-              </button>
-            </div>
-
-            {loadingAdvice ? (
-              <div className="py-8 text-center text-slate-400 text-sm animate-pulse flex flex-col items-center">
-                <div className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin mb-2"></div>
-                Running Monte Carlo Simulations & Analyzing Behavioral Patterns...
-              </div>
-            ) : aiAdvice ? (
-              <div className="prose prose-invert prose-sm max-w-none">
-                <ReactMarkdown>{aiAdvice}</ReactMarkdown>
-              </div>
-            ) : (
-              <div className="text-sm text-slate-400 italic">
-                Ask the AI to analyze your trading psychology, cognitive biases, and provide a strategic roadmap.
-              </div>
-            )}
           </div>
         </div>
       </div>
