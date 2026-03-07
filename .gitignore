@@ -30,3 +30,9 @@ vitest_errors.txt
 test_errors.txt
 test_full.txt
 test_failure.txt
+
+# Environment files
+.env
+.env.local
+.env.production
+scripts/.env

@@ -128,7 +128,7 @@ Under **Environment Variables**, add:
 |------|-------|
 | `VITE_SUPABASE_URL` | Your Supabase Project URL |
 | `VITE_SUPABASE_ANON_KEY` | Your Supabase Anon Key |
-| `VITE_GEMINI_API_KEY` | AIzaSyBndjfuQCmo2EterNNeWBcSuLvqPiTv8X8 |
+| `VITE_GEMINI_API_KEY` | Your Gemini API key (get from Google AI Studio) |
 
 ### 4.4 Deploy
 
