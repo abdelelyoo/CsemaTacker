@@ -82,6 +82,21 @@ export const Dashboard: React.FC = () => {
     setTreemapMetric(metric as TreemapMetric);
   }, []);
 
+  const handleUpdatePrices = useCallback((prices: Record<string, number>) => {
+    setMarketData(prev => {
+      const newMap = new Map(prev);
+      Object.entries(prices).forEach(([ticker, price]) => {
+        const existing = newMap.get(ticker);
+        if (existing) {
+          newMap.set(ticker, { ...existing, price, last_updated: new Date().toISOString() });
+        } else {
+          newMap.set(ticker, { ticker, price, last_updated: new Date().toISOString() });
+        }
+      });
+      return newMap;
+    });
+  }, []);
+
   return (
     <motion.div
       className="space-y-6 pb-20 md:pb-0 relative"
@@ -94,8 +109,10 @@ export const Dashboard: React.FC = () => {
       {isMarketDataOpen && (
         <MarketData
           holdings={portfolio.holdings.map(h => h.ticker)}
-          currentPrices={{}}
-          onUpdatePrices={() => {}}
+          currentPrices={Object.fromEntries(
+            Array.from(marketData.entries()).map(([ticker, stock]) => [ticker, stock.price || 0])
+          )}
+          onUpdatePrices={handleUpdatePrices}
           onClose={() => setIsMarketDataOpen(false)}
         />
       )}
