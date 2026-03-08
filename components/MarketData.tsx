@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RefreshCcw, Save, X, Globe, Eye } from 'lucide-react';
-import { fetchLatestPrices } from '../services/geminiService';
+
+const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001' 
+  : '';
 
 interface MarketDataProps {
   holdings: string[];
@@ -61,9 +64,20 @@ export const MarketData: React.FC<MarketDataProps> = ({ holdings, currentPrices,
     setSearchStatus("Searching market data...");
     
     try {
-      const fetchedPrices = await fetchLatestPrices(holdings);
-      setPrices(prev => ({ ...prev, ...fetchedPrices }));
-      setSearchStatus(`Updated ${Object.keys(fetchedPrices).length} prices.`);
+      // Use local API endpoint
+      const response = await fetch(`${API_BASE}/api/prices`);
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        const priceMap: Record<string, number> = {};
+        result.data.forEach((stock: any) => {
+          priceMap[stock.ticker] = stock.price;
+        });
+        setPrices(prev => ({ ...prev, ...priceMap }));
+        setSearchStatus(`Updated ${result.data.length} prices.`);
+      } else {
+        setSearchStatus("Failed to fetch data.");
+      }
     } catch (e) {
       setSearchStatus("Failed to fetch data.");
     } finally {
