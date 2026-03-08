@@ -9,7 +9,7 @@ interface SettingsPanelProps {
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
-  const { settings, updateSettings, resetSettings, toggleDarkMode, setCostMethod } = useSettings();
+  const { settings, updateSettings, resetSettings, toggleDarkMode, setCostMethod, showShortcuts } = useSettings();
   const [activeTab, setActiveTab] = useState<'general' | 'calculation' | 'security'>('general');
 
   if (!isOpen) return null;
@@ -134,7 +134,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose })
                   </div>
                 </div>
                 <button
-                  onClick={() => updateSettings({ showShortcutsModal: true })}
+                  onClick={showShortcuts}
                   className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   View

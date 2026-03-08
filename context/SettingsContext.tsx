@@ -21,6 +21,7 @@ const STORAGE_KEY = 'atlas_settings';
 
 interface SettingsContextType {
   settings: AppSettings;
+  showShortcutsModal: boolean;
   updateSettings: (newSettings: Partial<AppSettings>) => void;
   resetSettings: () => void;
   toggleDarkMode: () => void;
@@ -83,6 +84,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
   return (
     <SettingsContext.Provider value={{
       settings,
+      showShortcutsModal,
       updateSettings,
       resetSettings,
       toggleDarkMode,

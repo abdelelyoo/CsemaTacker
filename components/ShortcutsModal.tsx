@@ -17,9 +17,9 @@ const SHORTCUTS = [
 ];
 
 export const ShortcutsModal: React.FC = () => {
-  const { settings, hideShortcuts } = useSettings();
+  const { showShortcutsModal, hideShortcuts } = useSettings();
 
-  if (!settings.showShortcutsModal) return null;
+  if (!showShortcutsModal) return null;
 
   return (
     <div 
