@@ -40,7 +40,7 @@ const itemVariants: Variants = {
 };
 
 export const Dashboard: React.FC = () => {
-  const { portfolio } = usePortfolioContext();
+  const { portfolio, currentPrices, updateManualPrices } = usePortfolioContext();
   
   const [isMarketDataOpen, setIsMarketDataOpen] = useState(false);
   const [timeRange, setTimeRange] = useState<TimeRange['label']>('ALL');
@@ -83,6 +83,10 @@ export const Dashboard: React.FC = () => {
   }, []);
 
   const handleUpdatePrices = useCallback((prices: Record<string, number>) => {
+    // Update PortfolioContext so holdings recalculate with new prices
+    updateManualPrices(prices);
+    
+    // Also update local marketData for charts/treemap
     setMarketData(prev => {
       const newMap = new Map(prev);
       Object.entries(prices).forEach(([ticker, price]) => {
@@ -95,7 +99,7 @@ export const Dashboard: React.FC = () => {
       });
       return newMap;
     });
-  }, []);
+  }, [updateManualPrices]);
 
   return (
     <motion.div
@@ -109,9 +113,7 @@ export const Dashboard: React.FC = () => {
       {isMarketDataOpen && (
         <MarketData
           holdings={portfolio.holdings.map(h => h.ticker)}
-          currentPrices={Object.fromEntries(
-            Array.from(marketData.entries()).map(([ticker, stock]) => [ticker, stock.price || 0])
-          )}
+          currentPrices={currentPrices}
           onUpdatePrices={handleUpdatePrices}
           onClose={() => setIsMarketDataOpen(false)}
         />
