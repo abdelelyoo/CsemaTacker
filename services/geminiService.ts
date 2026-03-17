@@ -1,10 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 import { PortfolioSummary, AIAnalysisResult, Holding } from '../types';
+import { logger, logContext } from '../utils/logger';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 
 if (!GEMINI_API_KEY) {
-  console.warn("GEMINI_API_KEY is not set. AI features will be disabled.");
+  logger.warn(logContext.AI, "GEMINI_API_KEY is not set. AI features will be disabled.");
 }
 
 const ai = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
@@ -179,7 +180,7 @@ const computePortfolioMetrics = (portfolio: PortfolioSummary): PortfolioMetrics 
     for (let i = 1; i < values.length; i++) {
       const current = values[i];
       const prev = values[i - 1];
-      if (prev > 0) {
+      if (prev !== undefined && current !== undefined && prev > 0) {
         returns.push((current - prev) / prev);
       }
     }
@@ -481,7 +482,7 @@ Close with 2–3 sentences situating this portfolio within the current Moroccan 
       markdown: response.text || "Analysis could not be generated at this time."
     };
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    logger.error(logContext.AI, "Gemini API Error:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       markdown: `Error connecting to AI service. Please check your API key.\n\nDetails: ${errorMessage}`
@@ -531,10 +532,15 @@ export const fetchLatestPrices = async (tickers: string[]): Promise<Record<strin
 
       const parts = cleanLine.split(':');
       if (parts.length >= 2) {
-        let ticker = parts[0].trim().toUpperCase();
+        const tickerPart = parts[0];
+        const pricePart = parts[1];
+        
+        if (!tickerPart || !pricePart) return;
+        
+        let ticker = tickerPart.trim().toUpperCase();
         ticker = ticker.replace('CSEMA:', '').replace('MA:', '');
 
-        const finalPriceStr = parts[1].replace(/[^0-9.]/g, '');
+        const finalPriceStr = pricePart.replace(/[^0-9.]/g, '');
         const price = parseFloat(finalPriceStr);
 
         if (!isNaN(price) && tickers.includes(ticker)) {
@@ -545,7 +551,7 @@ export const fetchLatestPrices = async (tickers: string[]): Promise<Record<strin
 
     return prices;
   } catch (error) {
-    console.error("Error fetching prices:", error);
+    logger.error(logContext.API, "Error fetching prices:", error);
     return {};
   }
 };
@@ -582,11 +588,6 @@ export const getKellyStrategyAdvice = async (
   const model = "gemini-3-flash-preview";
 
   const kellyFraction = kellyPercent > 0 ? "Full Kelly" : kellyPercent === 0 ? "No Kelly Edge" : "Negative Kelly";
-  const kellyRecommendation = kellyPercent > 0
-    ? kellyPercent > 25
-      ? "Consider Half-Kelly (12.5%) to reduce volatility"
-      : "Kelly fraction is reasonable"
-    : "No statistical edge detected - avoid increasing position size";
 
   const dispositionSeverity = behaviorStats
     ? behaviorStats.avgHoldLoss > behaviorStats.avgHoldWin
@@ -738,7 +739,7 @@ End the entire report with a single bolded sentence:
     });
     return { markdown: response.text || "No analysis generated." };
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    logger.error(logContext.AI, "Gemini API Error:", error);
     return { markdown: "Error connecting to AI risk analyst." };
   }
 };

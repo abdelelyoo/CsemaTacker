@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { PortfolioSummary } from '../types';
 import { analyzePortfolio } from '../services/geminiService';
 import { Sparkles, RefreshCcw, AlertTriangle, Info, Lightbulb } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';

@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import marketDataJson from '../market_data_local.json';
+import { logger, logContext } from '../utils/logger';
 
 export interface MarketStock {
   id?: string;
@@ -51,7 +52,7 @@ export interface MarketFilters {
   peMax?: number;
   divYieldMin?: number;
   qualityGradeMin?: string;
-  sortBy?: 'ticker' | 'price' | 'pe_ratio' | 'dividend_yield' | 'quality_score' | 'perf_1m' | 'perf_3m';
+  sortBy?: 'ticker' | 'price' | 'pe_ratio' | 'dividend_yield' | 'quality_score' | 'perf_1m' | 'perf_3m' | 'change_percent';
   sortOrder?: 'asc' | 'desc';
   limit?: number;
 }
@@ -164,12 +165,12 @@ export const MarketDataService = {
           return data;
         }
       } catch (e) {
-        console.warn('Supabase query failed, using local data:', e);
+        logger.warn(logContext.MARKET, 'Supabase query failed, using local data:', e);
       }
     }
 
     // Fallback to local JSON
-    console.log('Using local market data');
+    logger.debug(logContext.MARKET, 'Using local market data');
     return filterAndSortStocks(getLocalData(), filters);
   },
 
@@ -237,7 +238,7 @@ export const MarketDataService = {
           .not('sector', 'is', null);
 
         if (!error && data && data.length > 0) {
-          const sectors = new Set(data.map(d => d.sector).filter(Boolean));
+          const sectors = new Set(data.map(d => d.sector).filter((s): s is string => Boolean(s)));
           return Array.from(sectors).sort();
         }
       } catch (e) {
@@ -247,7 +248,7 @@ export const MarketDataService = {
 
     // Fallback to local JSON
     const stocks = getLocalData();
-    const sectors = new Set(stocks.map(s => s.sector).filter(Boolean));
+    const sectors = new Set(stocks.map(s => s.sector).filter((s): s is string => Boolean(s)));
     return Array.from(sectors).sort();
   }
 };

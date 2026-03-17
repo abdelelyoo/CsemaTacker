@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { logger, logContext } from '../utils/logger';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -15,7 +16,7 @@ const isValidUrl = (url: string): boolean => {
 const isConfigured = supabaseUrl && supabaseKey && isValidUrl(supabaseUrl);
 
 if (!isConfigured) {
-  console.warn('Supabase credentials not found or invalid. Using local storage mode.');
+  logger.warn(logContext.DB, 'Supabase credentials not found or invalid. Using local storage mode.');
 }
 
 export const supabase: SupabaseClient | null = isConfigured 

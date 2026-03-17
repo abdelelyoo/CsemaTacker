@@ -60,7 +60,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
           Qty: 10,
           Price: 100.00,
           Total: -1000.00, // No fees in total
-          Fees: null, // Explicitly null
+          Fees: undefined, // Explicitly undefined
           parsedDate: new Date('2023-01-01')
         }
       ];
@@ -131,7 +131,7 @@ describe('Fee Handling - Comprehensive Transaction Types', () => {
           Price: 120.00,
           Total: 580.00,
           Fees: 10.00, // Only fees provided
-          Tax: null, // Tax missing
+          Tax: undefined, // Tax missing
           parsedDate: new Date('2023-01-02')
         }
       ];

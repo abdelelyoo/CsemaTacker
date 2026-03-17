@@ -1,4 +1,0 @@
-Date,Company,Ticker,Operation,Qty,Price,Total,Fees,Tax,Realized P&L
-01/01/25,Attijariwafa Bank,ATW,Achat,10,750.00,7510.00,10.00,0.00,
-01/02/25,Bank of Africa,BOA,Achat,20,240.00,4810.00,20.00,0.00,
-01/03/25,Attijariwafa Bank,ATW,Vente,5,800.00,3970.00,12.50,17.50,225.00

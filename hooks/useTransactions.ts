@@ -50,6 +50,7 @@ export const useTransactions = () => {
 
             return () => subscription.unsubscribe();
         }
+        return undefined;
     }, [loadTransactions]);
 
     /**

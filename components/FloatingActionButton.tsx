@@ -6,11 +6,6 @@ import {
   FileText, 
   Calculator, 
   Banknote, 
-  Award, 
-  PieChart, 
-  Check, 
-  BrainCircuit,
-  Building2,
   TrendingUp,
   Search
 } from 'lucide-react';
@@ -45,7 +40,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const fabRef = useRef<HTMLDivElement>(null);
-  const { selectedTicker, setSelectedTicker } = useMetrics();
+  const { setSelectedTicker } = useMetrics();
 
   const [tickerInput, setTickerInput] = useState('');
 
@@ -103,7 +98,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   };
 
   // Get current tab info
-  const currentTab = tabs.find(t => t.id === activeTab) || tabs[0];
+  const currentTab = tabs.find(t => t.id === activeTab) ?? tabs[0];
 
   return (
     <div 
@@ -183,7 +178,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
         }}
       >
         <span className="mr-3 bg-slate-800 text-white px-3 py-1.5 rounded-lg shadow-md text-sm font-medium">
-          {currentTab.label}
+          {currentTab?.label ?? 'Dashboard'}
         </span>
       </div>
 
@@ -193,7 +188,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
         className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 ${
           isOpen 
             ? 'bg-rose-500 text-white' 
-            : `${currentTab.color} text-white`
+            : `${currentTab?.color ?? 'bg-indigo-500'} text-white`
         }`}
         style={{
           transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)'

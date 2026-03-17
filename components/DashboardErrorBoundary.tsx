@@ -21,13 +21,13 @@ export class DashboardErrorBoundary extends Component<Props, State> {
     return { hasError: true, error, errorInfo: null };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('🚨 Dashboard Error Boundary Caught:', error);
     console.error('📋 Error Info:', errorInfo);
     this.setState({ errorInfo });
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div className="p-6 bg-rose-50 border border-rose-200 rounded-xl m-4">

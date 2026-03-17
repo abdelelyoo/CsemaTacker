@@ -4,7 +4,7 @@ import { SettingsPanel } from './SettingsPanel';
 import { ShortcutsModal } from './ShortcutsModal';
 import { useSettings } from '../context/SettingsContext';
 import { ErrorBoundary } from './ErrorBoundary';
-import { Settings, Keyboard, Shield, Zap, Bell, User, Layout as LayoutIcon, Activity } from 'lucide-react';
+import { Settings, Keyboard, Shield, Bell, User, Layout as LayoutIcon, Activity } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;

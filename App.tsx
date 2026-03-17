@@ -1,51 +1,57 @@
-
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
 import { parseCSV } from './utils/portfolioCalc';
 import { validateCSVStructure, validateTransactionBatch } from './utils/validation';
-import { INITIAL_CSV_DATA } from './constants';
 import { Layout } from './components/Layout';
-import { Dashboard } from './components/Dashboard';
-import { Upload, Database, RefreshCw, CheckCircle2, Download, AlertCircle, Settings as SettingsIcon, Trash2 } from 'lucide-react';
+import { Upload, Database, CheckCircle2, Download, AlertCircle, Trash2 } from 'lucide-react';
 import { db } from './db';
 import { DuplicateManager } from './components/DuplicateManager';
 import { PortfolioProvider, usePortfolioContext } from './context/PortfolioContext';
-import { DividendCalendar } from './components/DividendCalendar';
-import { AnalysisTab } from './components/AnalysisTab';
-import { TransactionsTab } from './components/TransactionsTab';
-import { SignalsTab } from './components/SignalsTab';
-import { MoneyMgmtTab } from './components/MoneyMgmtTab';
 import { CloudSyncStatus } from './components/CloudSyncStatus';
-import { SettingsPanel } from './components/SettingsPanel';
-import { ShortcutsModal } from './components/ShortcutsModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { SettingsProvider, useSettings } from './context/SettingsContext';
+import { SettingsProvider } from './context/SettingsContext';
 import { MetricsProvider } from './context/MetricsContext';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { logger, logContext } from './utils/logger';
+
+// Lazy load heavy components for code splitting
+const Dashboard = lazy(() => import('./components/Dashboard').then(m => ({ default: m.Dashboard })));
+const TransactionsTab = lazy(() => import('./components/TransactionsTab').then(m => ({ default: m.TransactionsTab })));
+const MoneyMgmtTab = lazy(() => import('./components/MoneyMgmtTab').then(m => ({ default: m.MoneyMgmtTab })));
+const DividendCalendar = lazy(() => import('./components/DividendCalendar').then(m => ({ default: m.DividendCalendar })));
+const AnalysisTab = lazy(() => import('./components/AnalysisTab').then(m => ({ default: m.AnalysisTab })));
+const SignalsTab = lazy(() => import('./components/SignalsTab').then(m => ({ default: m.SignalsTab })));
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center p-12">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+      <span className="text-slate-500 text-sm">Loading...</span>
+    </div>
+  </div>
+);
+
+// Tab content wrapper with Suspense
+const TabContent: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <ErrorBoundary fallbackMessage="This section failed to load">
+    <Suspense fallback={<LoadingFallback />}>
+      {children}
+    </Suspense>
+  </ErrorBoundary>
+);
 
 const AppContent = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [localError, setLocalError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [isSeeding, setIsSeeding] = useState(false);
   const seedingRef = useRef(false);
   const [showDuplicateManager, setShowDuplicateManager] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const { showShortcuts } = useSettings();
 
   const {
     transactions,
-    enrichedTransactions,
-    addTransaction,
-    deleteTransaction,
     deleteTransactions,
-    updateTransaction,
     clearTransactions,
     importTransactions,
     duplicateGroups,
-    portfolio,
-    currentPrices,
-    updateManualPrices,
-    isFeedConnected,
     dbError,
     clearDbError
   } = usePortfolioContext();
@@ -62,7 +68,7 @@ const AppContent = () => {
       if (seedingRef.current || !mounted) return;
       const count = await db.transactions.count();
       if (count === 0 && mounted) {
-        console.log('No transactions found. Please import your CSV manually.');
+        logger.info(logContext.DB, 'No transactions found. Please import your CSV manually.');
       }
     };
     seedDatabase();
@@ -74,10 +80,14 @@ const AppContent = () => {
       const timer = setTimeout(() => setSuccessMsg(null), 3000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [successMsg]);
 
-  const handleExportCSV = () => {
-    if (!transactions.length) return setLocalError("No data to export.");
+  const handleExportCSV = (): void => {
+    if (!transactions.length) {
+      setLocalError("No data to export.");
+      return;
+    }
 
     const headers = ['Date', 'Company', 'ISIN', 'Operation', 'Ticker', 'Qty', 'Price', 'Total', 'Fees', 'TPCVM', 'Realized P&L'];
     const csvContent = [
@@ -94,15 +104,17 @@ const AppContent = () => {
     link.href = url;
     link.setAttribute('download', `atlas_portfolio_export_${new Date().toISOString().split('T')[0]}.csv`);
     link.click();
+    URL.revokeObjectURL(url);
     setSuccessMsg("Export complete.");
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      return setLocalError("File too large. Maximum size is 5MB.");
+      setLocalError("File too large. Maximum size is 5MB.");
+      return;
     }
 
     const reader = new FileReader();
@@ -110,19 +122,28 @@ const AppContent = () => {
       const text = event.target?.result as string;
       try {
         const structValid = validateCSVStructure(text);
-        if (!structValid.valid) return setLocalError(`CSV Error: ${structValid.errors[0]}`);
+        if (!structValid.valid) {
+          setLocalError(`CSV Error: ${structValid.errors[0] ?? 'Unknown error'}`);
+          return;
+        }
 
         const { transactions: parsed, errors: parseErrors } = parseCSV(text);
-        if (parseErrors.length > 0) return setLocalError(`Parse Error: ${parseErrors[0]}`);
+        if (parseErrors.length > 0) {
+          setLocalError(`Parse Error: ${parseErrors[0] ?? 'Unknown error'}`);
+          return;
+        }
 
         const txValid = validateTransactionBatch(parsed);
-        if (!txValid.valid) return setLocalError(`Data Error: ${txValid.errors[0]}`);
+        if (!txValid.valid) {
+          setLocalError(`Data Error: ${txValid.errors[0] ?? 'Unknown error'}`);
+          return;
+        }
 
         if (window.confirm(`Import ${parsed.length} transactions? This replaces current data.`)) {
           await importTransactions(parsed);
           setSuccessMsg(`Imported ${parsed.length} transactions.`);
         }
-      } catch (e) {
+      } catch {
         setLocalError("Import failed.");
       }
     };
@@ -201,33 +222,36 @@ const AppContent = () => {
           />
         )}
 
-        {isSeeding && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
-            <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center">
-              <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <h3 className="font-bold text-slate-800">Setting up Database...</h3>
-            </div>
-          </div>
-        )}
-
         {activeTab === 'dashboard' && (
-          <ErrorBoundary fallbackMessage="Dashboard failed to load">
+          <TabContent>
             <Dashboard />
-          </ErrorBoundary>
+          </TabContent>
         )}
         {activeTab === 'transactions' && (
-          <ErrorBoundary fallbackMessage="Transactions tab failed to load">
+          <TabContent>
             <TransactionsTab />
-          </ErrorBoundary>
+          </TabContent>
         )}
         {activeTab === 'moneymgmt' && (
-          <ErrorBoundary fallbackMessage="Money management tab failed to load">
+          <TabContent>
             <MoneyMgmtTab />
-          </ErrorBoundary>
+          </TabContent>
         )}
-        {activeTab === 'dividends' && <ErrorBoundary fallbackMessage="Dividend calendar failed to load"><DividendCalendar /></ErrorBoundary>}
-        {activeTab === 'analysis' && <ErrorBoundary fallbackMessage="Analysis panel failed to load"><AnalysisTab /></ErrorBoundary>}
-        {activeTab === 'signals' && <ErrorBoundary fallbackMessage="Signals tab failed to load"><SignalsTab /></ErrorBoundary>}
+        {activeTab === 'dividends' && (
+          <TabContent>
+            <DividendCalendar />
+          </TabContent>
+        )}
+        {activeTab === 'analysis' && (
+          <TabContent>
+            <AnalysisTab />
+          </TabContent>
+        )}
+        {activeTab === 'signals' && (
+          <TabContent>
+            <SignalsTab />
+          </TabContent>
+        )}
       </Layout>
     </MetricsProvider>
   );

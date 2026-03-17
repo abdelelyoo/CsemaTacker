@@ -116,11 +116,10 @@ export class RiskAnalysisService {
     ): Promise<SectorExposure[]> {
         const sectorMap = new Map<string, { value: number; tickers: Set<string> }>();
 
-        // Calculate total portfolio value
+// Calculate total portfolio value
         const totalValue = holdings.reduce((sum, h) => sum + h.quantity * h.currentPrice, 0);
 
         // Get all stocks from tvscreener
-        const tickers = holdings.map(h => h.ticker);
         const allStocks = await MarketDataService.getAllStocks({ limit: 200 });
         const stockMap = new Map(allStocks.map(s => [s.ticker, s]));
 
@@ -218,14 +217,14 @@ export class RiskAnalysisService {
         // Concentration warnings
         const concentration = await this.getConcentrationMetrics(
             holdings.map(h => ({ ticker: h.ticker, value: h.value }))
-        );
+);
 
         if (concentration.riskLevel === 'extreme') {
-            warnings.push(`?? EXTREME concentration risk: ${concentration.topHoldingPercent.toFixed(1)}% in top holding`);
+            warnings.push(`⚠️ EXTREME concentration risk: ${concentration.topHoldingPercent.toFixed(1)}% in top holding`);
         } else if (concentration.riskLevel === 'high') {
-            warnings.push(`?? HIGH concentration risk: Top 3 holdings = ${concentration.top3Percent.toFixed(1)}%`);
+            warnings.push(`⚠️ HIGH concentration risk: Top 3 holdings = ${concentration.top3Percent.toFixed(1)}%`);
         } else if (concentration.riskLevel === 'moderate') {
-            warnings.push(`?? Moderate concentration: Top holding = ${concentration.topHoldingPercent.toFixed(1)}%`);
+            warnings.push(`⚠️ Moderate concentration: Top holding = ${concentration.topHoldingPercent.toFixed(1)}%`);
         }
 
         // Sector imbalance warnings
@@ -233,9 +232,9 @@ export class RiskAnalysisService {
 
         if (sectorExposure.length > 0) {
             const topSector = sectorExposure[0];
-            if (topSector.percentOfPortfolio > 40) {
+            if (topSector && topSector.percentOfPortfolio > 40) {
                 warnings.push(
-                    `?? Sector concentration: ${topSector.sector} = ${topSector.percentOfPortfolio.toFixed(1)}% of portfolio`
+                    `⚠️ Sector concentration: ${topSector.sector} = ${topSector.percentOfPortfolio.toFixed(1)}% of portfolio`
                 );
             }
         }

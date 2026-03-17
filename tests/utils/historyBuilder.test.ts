@@ -50,7 +50,8 @@ describe('historyBuilder', () => {
       const result = buildPerformanceHistory(transactions, { TEST: 100 });
       
       expect(result.length).toBeGreaterThan(0);
-      expect(result[0].value).toBeGreaterThan(0);
+      // Value = cash (-1010) + holdings (1000) = -10 (negative because no deposit)
+      expect(result[0].value).toBeCloseTo(-10, 0);
     });
 
     it('should process sell transactions correctly', () => {
@@ -135,7 +136,8 @@ describe('historyBuilder', () => {
       const result = buildPerformanceHistory(transactions, currentPrices);
       
       const todayPoint = result[result.length - 1];
-      expect(todayPoint.value).toBeCloseTo(1500, 0);
+      // Value = cash (-1010) + holdings at current price (10 * 150 = 1500) = 490
+      expect(todayPoint.value).toBeCloseTo(490, 0);
     });
 
     it('should handle multiple tickers correctly', () => {

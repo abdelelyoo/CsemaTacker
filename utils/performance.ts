@@ -1,4 +1,5 @@
 // Performance optimization utilities
+import { logger, logContext } from './logger';
 
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
@@ -7,7 +8,7 @@ export function debounce<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout> | null = null;
   
-  return function(...args: Parameters<T>): void {
+  return function(this: unknown, ...args: Parameters<T>): void {
     const context = this;
     
     const later = () => {
@@ -38,7 +39,7 @@ export function throttle<T extends (...args: any[]) => any>(
   let lastFunc: ReturnType<typeof setTimeout> | null = null;
   let lastRan = 0;
   
-  return function(...args: Parameters<T>): void {
+  return function(this: unknown, ...args: Parameters<T>): void {
     const context = this;
     
     if (!lastRan) {
@@ -66,7 +67,7 @@ export function memoize<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => ReturnType<T> {
   const cache = new Map<string, ReturnType<T>>();
   
-  return function(...args: Parameters<T>): ReturnType<T> {
+  return function(this: unknown, ...args: Parameters<T>): ReturnType<T> {
     const key = cacheKeyFunc(...args);
     
     if (cache.has(key)) {
@@ -127,13 +128,13 @@ export function createPerformanceMonitor(name: string) {
       const now = performance.now();
       const elapsed = now - lastCheck;
       const total = now - startTime;
-      console.log(`[${name}] ${message} - Last: ${elapsed.toFixed(2)}ms, Total: ${total.toFixed(2)}ms`);
+      logger.debug(logContext.API, `[${name}] ${message} - Last: ${elapsed.toFixed(2)}ms, Total: ${total.toFixed(2)}ms`);
       lastCheck = now;
       return { elapsed, total };
     },
     end: () => {
       const total = performance.now() - startTime;
-      console.log(`[${name}] Completed in ${total.toFixed(2)}ms`);
+      logger.debug(logContext.API, `[${name}] Completed in ${total.toFixed(2)}ms`);
       return total;
     }
   };

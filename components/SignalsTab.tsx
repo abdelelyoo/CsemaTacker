@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { TrendingUp, TrendingDown, CheckCircle, Clock, BarChart3, ArrowUp, ArrowDown, RefreshCw, Info, Filter, Activity, AlertTriangle, Zap, Volume2, ChevronUp, ChevronDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart3, RefreshCw, Activity, AlertTriangle, Zap, Volume2, ChevronUp, ChevronDown } from 'lucide-react';
 
 const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
   ? 'http://localhost:3001' 

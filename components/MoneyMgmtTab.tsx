@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MoneyManagement } from './MoneyManagement';
-import { AIInsights } from './AIInsights';
-import { Calculator, BrainCircuit } from 'lucide-react';
+import { GLMInsights } from './GLMInsights';
+import { Calculator, Sparkles } from 'lucide-react';
 
 type MoneyMgmtSubTab = 'moneymgmt' | 'insights';
 
@@ -10,12 +10,11 @@ export const MoneyMgmtTab: React.FC = () => {
 
   const subTabs: { id: MoneyMgmtSubTab; label: string; icon: React.ReactNode }[] = [
     { id: 'moneymgmt', label: 'Money Mgmt', icon: <Calculator size={16} /> },
-    { id: 'insights', label: 'Insights', icon: <BrainCircuit size={16} /> },
+    { id: 'insights', label: 'Insights', icon: <Sparkles size={16} /> },
   ];
 
   return (
     <div className="space-y-4">
-      {/* SubTab Navigation */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="flex border-b border-slate-200 overflow-x-auto">
           {subTabs.map((tab) => (
@@ -35,10 +34,9 @@ export const MoneyMgmtTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div>
         {activeSubTab === 'moneymgmt' && <MoneyManagement />}
-        {activeSubTab === 'insights' && <AIInsights />}
+        {activeSubTab === 'insights' && <GLMInsights />}
       </div>
     </div>
   );

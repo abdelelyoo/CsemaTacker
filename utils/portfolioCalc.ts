@@ -6,6 +6,7 @@ import { updateHoldingState, updateHoldingStateWithMethod, HoldingState, createE
 import { buildPerformanceHistory } from './historyBuilder';
 import { calculateBreakEvenPrice } from './feeLogic';
 import { parseNumber } from './validation';
+import { logger, logContext } from './logger';
 
 export const splitTransactionsAndBankOps = (transactions: Transaction[]): {
   trades: Transaction[];
@@ -178,7 +179,7 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
           });
         }
       } catch (lineError) {
-        errors.push(`Line ${i + 1}: Error - ${lineError.message}`);
+        errors.push(`Line ${i + 1}: Error - ${(lineError as Error).message}`);
       }
     }
 
@@ -188,7 +189,7 @@ export const parseCSV = (csv: string): { transactions: Transaction[], errors: st
       warnings
     };
   } catch (error) {
-    return { transactions: [], errors: [error.message], warnings: [] };
+    return { transactions: [], errors: [(error as Error).message], warnings: [] };
   }
 };
 
@@ -395,12 +396,10 @@ export const calculatePortfolio = (
     }
   });
 
-  // Debug logging for cash flow components
-  console.log('Portfolio Calculation Debug:', {
+  // Debug logging for cash flow components (dev only)
+  logger.debug(logContext.PORTFOLIO, 'Calculation summary', {
     totalDeposits,
     totalWithdrawals,
-    totalSells: transactions.filter(t => t.Operation.toLowerCase() === 'vente' || t.Operation.toLowerCase() === 'sell').reduce((acc, t) => acc + Math.abs(t.Total), 0),
-    totalBuys: transactions.filter(t => t.Operation.toLowerCase() === 'achat' || t.Operation.toLowerCase() === 'buy').reduce((acc, t) => acc + Math.abs(t.Total), 0),
     totalDividends,
     netTaxImpact,
     totalBankFees,

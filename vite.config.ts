@@ -11,6 +11,14 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      proxy: {
+        '/api/opencode': {
+          target: 'https://opencode.ai',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/opencode/, '/zen/go'),
+          secure: true,
+        }
+      }
     },
     plugins: [
       react(),

@@ -133,9 +133,11 @@ export const CapitalBridge: React.FC = () => {
                             <LabelList
                                 dataKey="delta"
                                 position="top"
-                                formatter={(val: number) => {
-                                    if (Math.abs(val) > 1000) return `${(val / 1000).toFixed(0)}k`;
-                                    return Math.round(val).toString();
+                                formatter={(val) => {
+                                    if (val === undefined || val === null) return '';
+                                    const numVal = typeof val === 'number' ? val : parseFloat(String(val));
+                                    if (Math.abs(numVal) > 1000) return `${(numVal / 1000).toFixed(0)}k`;
+                                    return Math.round(numVal).toString();
                                 }}
                                 style={{ fontSize: 10, fill: '#475569', fontWeight: 'bold' }}
                             />

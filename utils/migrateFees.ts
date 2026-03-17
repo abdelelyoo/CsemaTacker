@@ -1,16 +1,17 @@
 import { getTransactions, deleteTransaction, addTransaction } from '../services/cloudDatabase';
 import { Transaction } from '../types';
+import { logger, logContext } from './logger';
 
 /**
  * Migration script to convert 0 values to null for fees, tax, and realized_pl
  * This ensures proper fee inference behavior for existing transactions
  */
 export const migrateTransactionFees = async (): Promise<void> => {
-  console.log('Starting migration of transaction fees...');
+  logger.info(logContext.DB, 'Starting migration of transaction fees...');
   
   try {
     const transactions = await getTransactions();
-    console.log(`Found ${transactions.length} transactions to check`);
+    logger.debug(logContext.DB, `Found ${transactions.length} transactions to check`);
     
     const toMigrate = transactions.filter(tx => {
       // Migrate buy/sell transactions with 0 fees/tax
@@ -21,15 +22,15 @@ export const migrateTransactionFees = async (): Promise<void> => {
       return isTrade && (tx.Fees === 0 || tx.Tax === 0);
     });
     
-    console.log(`Found ${toMigrate.length} transactions that need migration`);
+    logger.debug(logContext.DB, `Found ${toMigrate.length} transactions that need migration`);
     
     let migratedCount = 0;
     for (const tx of toMigrate) {
       const updated = {
         ...tx,
-        Fees: tx.Fees === 0 ? null : tx.Fees,
-        Tax: tx.Tax === 0 ? null : tx.Tax,
-        RealizedPL: tx.RealizedPL === 0 ? null : tx.RealizedPL
+        Fees: tx.Fees === 0 ? undefined : tx.Fees,
+        Tax: tx.Tax === 0 ? undefined : tx.Tax,
+        RealizedPL: tx.RealizedPL === 0 ? undefined : tx.RealizedPL
       };
       
       // Delete and re-add the transaction with updated values
@@ -38,13 +39,13 @@ export const migrateTransactionFees = async (): Promise<void> => {
       migratedCount++;
       
       if (migratedCount % 10 === 0) {
-        console.log(`Migrated ${migratedCount}/${toMigrate.length} transactions...`);
+        logger.debug(logContext.DB, `Migrated ${migratedCount}/${toMigrate.length} transactions...`);
       }
     }
     
-    console.log(`Migration completed successfully. ${migratedCount} transactions updated.`);
+    logger.info(logContext.DB, `Migration completed successfully. ${migratedCount} transactions updated.`);
   } catch (error) {
-    console.error('Migration failed:', error);
+    logger.error(logContext.DB, 'Migration failed:', error);
     throw error;
   }
 };
@@ -67,7 +68,7 @@ export const checkMigrationStatus = async (): Promise<{ total: number; needMigra
     
     return { total, needMigration, migrated };
   } catch (error) {
-    console.error('Failed to check migration status:', error);
+    logger.error(logContext.DB, 'Failed to check migration status:', error);
     return { total: 0, needMigration: 0, migrated: 0 };
   }
 };

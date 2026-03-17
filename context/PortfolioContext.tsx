@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, ReactNode, useMemo, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 import { Transaction, PortfolioSummary, FeeRecord, FeeType, BankOperation } from '../types';
 import { useTransactions } from '../hooks/useTransactions';
 import { useBankOperations } from '../hooks/useBankOperations';

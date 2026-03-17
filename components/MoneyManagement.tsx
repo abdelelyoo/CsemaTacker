@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { PortfolioSummary, Transaction } from '../types';
-import { Calculator, TrendingUp, AlertTriangle, ShieldCheck, Target, Percent, PieChart, Info, BarChart3, Crosshair, GitGraph, Activity, TrendingDown, Brain, Timer, Scale } from 'lucide-react';
+import { Calculator, AlertTriangle, ShieldCheck, Target, PieChart, Info, BarChart3, GitGraph, Activity, Brain, Timer, Scale } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, BarChart, Bar, Cell } from 'recharts';
 
 import { usePortfolioContext } from '../context/PortfolioContext';
@@ -13,8 +12,6 @@ interface MonteCarloStep {
   best: number;
   worst: number;
 }
-
-interface MoneyManagementProps { }
 
 export const MoneyManagement: React.FC = () => {
   const { portfolio, enrichedTransactions: transactions } = usePortfolioContext();
@@ -86,13 +83,18 @@ export const MoneyManagement: React.FC = () => {
   const riskMetrics = useMemo(() => {
     if (!portfolio.history || portfolio.history.length < 2) return null;
 
-    const returns = [];
+    const returns: number[] = [];
     let peak = -Infinity;
     let maxDrawdown = 0;
 
     for (let i = 1; i < portfolio.history.length; i++) {
-      const current = portfolio.history[i].value;
-      const prev = portfolio.history[i - 1].value;
+      const historyItem = portfolio.history[i];
+      const prevHistoryItem = portfolio.history[i - 1];
+      
+      if (!historyItem || !prevHistoryItem) continue;
+      
+      const current = historyItem.value;
+      const prev = prevHistoryItem.value;
 
       // Simple return
       if (prev > 0) {
@@ -168,31 +170,32 @@ export const MoneyManagement: React.FC = () => {
         // Find matching open positions for this ticker
         // Simple FIFO: take from first available
         for (let i = 0; i < openPositions.length; i++) {
-          if (openPositions[i].ticker === tx.Ticker && openPositions[i].qty > 0) {
-            const matchedQty = Math.min(openPositions[i].qty, qtyToClose);
+          const position = openPositions[i];
+          if (position && position.ticker === tx.Ticker && position.qty > 0) {
+            const matchedQty = Math.min(position.qty, qtyToClose);
 
             // Calculate specific PL for this chunk to determine if it's part of a Win or Loss
             // Note: This is an approximation of PL using pure price diff, neglecting fees for simplicity of "Win/Loss" classification logic here
             // Real PL is stored in the transaction, but we need duration.
 
-            const durationMs = tx.parsedDate.getTime() - openPositions[i].date.getTime();
+            const durationMs = tx.parsedDate.getTime() - position.date.getTime();
             const durationDays = durationMs / (1000 * 60 * 60 * 24);
 
             // We use the Transaction's total realized PL to determine Win/Loss, 
             // but if a single sell closes multiple buys, we distribute duration weighted?
             // Simpler: Just classify based on price diff of this specific lot.
-            const lotPL = (tx.Price - openPositions[i].price) * matchedQty;
+            const lotPL = (tx.Price - position.price) * matchedQty;
 
             closedTrades.push({
               ticker: tx.Ticker,
-              openDate: openPositions[i].date,
+              openDate: position.date,
               closeDate: tx.parsedDate,
               duration: durationDays,
               pl: lotPL,
               type: lotPL >= 0 ? 'Win' : 'Loss'
             });
 
-            openPositions[i].qty -= matchedQty;
+            position.qty -= matchedQty;
             qtyToClose -= matchedQty;
 
             if (qtyToClose <= 0.0001) break;
@@ -214,13 +217,16 @@ export const MoneyManagement: React.FC = () => {
     const profitFactor = grossLoss > 0 ? grossWin / grossLoss : (grossWin > 0 ? 999 : 0);
 
     // Day of Week Analysis (0 = Sun, 1 = Mon...)
-    const dayStats = [0, 0, 0, 0, 0, 0, 0].map(() => ({ pl: 0, count: 0 }));
+    const dayStats: { pl: number; count: number }[] = [0, 0, 0, 0, 0, 0, 0].map(() => ({ pl: 0, count: 0 }));
 
     // Use the actual realized PL transactions for Day of Week accuracy
     transactions.filter(t => t.Operation === 'Vente' && t.RealizedPL).forEach(t => {
       const day = t.parsedDate.getDay();
-      dayStats[day].pl += t.RealizedPL || 0;
-      dayStats[day].count += 1;
+      const stat = dayStats[day];
+      if (stat) {
+        stat.pl += t.RealizedPL || 0;
+        stat.count += 1;
+      }
     });
 
     const largestWin = Math.max(...winners.map(w => w.pl), 0);
@@ -324,9 +330,8 @@ export const MoneyManagement: React.FC = () => {
     const TRADES = 50;
 
     const finalEquities: number[] = [];
-    const ruins: number = 0;
 
-    const paths: number[][] = Array(SIMULATIONS).fill(0).map(() => [capital]);
+    const paths: number[][] = Array.from({ length: SIMULATIONS }, () => [capital]);
 
     let ruinCount = 0;
 
@@ -339,16 +344,23 @@ export const MoneyManagement: React.FC = () => {
         } else {
           currentEquity -= effectiveAvgLoss;
         }
-        paths[sim][t] = currentEquity;
+        const pathRow = paths[sim];
+        if (pathRow) {
+          pathRow[t] = currentEquity;
+        }
       }
       if (currentEquity <= 0) ruinCount++;
       finalEquities.push(currentEquity);
     }
 
     finalEquities.sort((a, b) => a - b);
-    const median = finalEquities[Math.floor(SIMULATIONS * 0.5)];
-    const worst = finalEquities[Math.floor(SIMULATIONS * 0.1)];
-    const best = finalEquities[Math.floor(SIMULATIONS * 0.9)];
+    const medianIdx = Math.floor(SIMULATIONS * 0.5);
+    const worstIdx = Math.floor(SIMULATIONS * 0.1);
+    const bestIdx = Math.floor(SIMULATIONS * 0.9);
+    
+    const median = finalEquities[medianIdx] ?? 0;
+    const worst = finalEquities[worstIdx] ?? 0;
+    const best = finalEquities[bestIdx] ?? 0;
     const riskOfRuin = (ruinCount / SIMULATIONS) * 100;
 
     setMcStats({
@@ -360,12 +372,12 @@ export const MoneyManagement: React.FC = () => {
 
     const chartData: MonteCarloStep[] = [];
     for (let t = 0; t <= TRADES; t++) {
-      const stepValues = paths.map(p => p[t]).sort((a, b) => a - b);
+      const stepValues = paths.map(p => p[t] ?? 0).sort((a, b) => a - b);
       chartData.push({
         trade: t,
-        median: stepValues[Math.floor(SIMULATIONS * 0.5)],
-        worst: stepValues[Math.floor(SIMULATIONS * 0.1)],
-        best: stepValues[Math.floor(SIMULATIONS * 0.9)]
+        median: stepValues[Math.floor(SIMULATIONS * 0.5)] ?? 0,
+        worst: stepValues[Math.floor(SIMULATIONS * 0.1)] ?? 0,
+        best: stepValues[Math.floor(SIMULATIONS * 0.9)] ?? 0
       });
     }
     setMonteCarloData(chartData);
@@ -668,18 +680,18 @@ export const MoneyManagement: React.FC = () => {
               <h3 className="font-semibold text-slate-800 mb-4 text-sm">P/L by Day of Week</h3>
               <div className="h-40 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={behaviorStats.dayStats.filter(d => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(d.day))}>
+                  <BarChart data={behaviorStats.dayStats.filter(d => d?.day && ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(d.day))}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                     <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="#cbd5e1" />
-                    <YAxis tick={{ fontSize: 10 }} stroke="#cbd5e1" tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                    <YAxis tick={{ fontSize: 10 }} stroke="#cbd5e1" tickFormatter={(v: number | undefined) => v !== undefined ? `${(v / 1000).toFixed(0)}k` : ''} />
                     <Tooltip
                       cursor={{ fill: '#f8fafc' }}
                       contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                      formatter={(val: number) => formatMoney(val)}
+                      formatter={(val: number | undefined) => val !== undefined ? formatMoney(val) : ''}
                     />
                     <Bar dataKey="pl" radius={[4, 4, 0, 0]}>
-                      {behaviorStats.dayStats.filter(d => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(d.day)).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.pl >= 0 ? CHART_COLORS.POSITIVE : CHART_COLORS.NEGATIVE} />
+                      {behaviorStats.dayStats.filter(d => d?.day && ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(d.day)).map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry && entry.pl >= 0 ? CHART_COLORS.POSITIVE : CHART_COLORS.NEGATIVE} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -717,12 +729,12 @@ export const MoneyManagement: React.FC = () => {
                   <YAxis
                     tick={{ fontSize: 10, fill: '#94a3b8' }}
                     stroke="#e2e8f0"
-                    tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
+                    tickFormatter={(val: number | undefined) => val !== undefined ? `${(val / 1000).toFixed(0)}k` : ''}
                     domain={['auto', 'auto']}
                   />
                   <Tooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                    formatter={(value: number) => formatMoney(value)}
+                    formatter={(value: number | undefined) => value !== undefined ? formatMoney(value) : ''}
                   />
                   <ReferenceLine y={capital} stroke="#94a3b8" strokeDasharray="3 3" />
 

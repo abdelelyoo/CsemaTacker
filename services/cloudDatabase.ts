@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { db } from '../db';
+import { logger, logContext } from '../utils/logger';
 import type {
   Transaction,
   BankOperation,
@@ -13,11 +14,16 @@ import type {
   CapitalEvent
 } from '../types';
 
+const getSupabaseClient = () => {
+  if (!supabase) throw new Error('Supabase not configured');
+  return supabase;
+};
+
 // Helper to get current user ID
 const getCurrentUserId = async (): Promise<string | null> => {
   if (!isSupabaseConfigured() || !supabase) return null;
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await getSupabaseClient().auth.getUser();
     return user?.id || null;
   } catch (e) {
     return null;
@@ -34,14 +40,14 @@ export const getTransactions = async (): Promise<Transaction[]> => {
     return await db.transactions.toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('trades')
     .select('*')
     .eq('user_id', userId)
     .order('parsed_date', { ascending: false });
 
   if (error) {
-    console.error('Error fetching trades:', error);
+    logger.error(logContext.DB, 'Error fetching trades:', error);
     return [];
   }
 
@@ -70,7 +76,7 @@ export const addTransaction = async (transaction: Transaction): Promise<Transact
     return { ...transaction, id: id as number };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('trades')
     .insert({
       user_id: userId,
@@ -91,7 +97,7 @@ export const addTransaction = async (transaction: Transaction): Promise<Transact
     .single();
 
   if (error) {
-    console.error('Error adding transaction:', error);
+    logger.error(logContext.DB, 'Error adding transaction:', error);
     throw error;
   }
 
@@ -136,10 +142,10 @@ export const addTransactions = async (trades: Transaction[]): Promise<void> => {
     parsed_date: t.parsedDate.toISOString().split('T')[0]
   }));
 
-  const { error } = await supabase.from('trades').insert(records);
+  const { error } = await getSupabaseClient().from('trades').insert(records);
 
   if (error) {
-    console.error('Error adding trades:', error);
+    logger.error(logContext.DB, 'Error adding trades:', error);
     throw error;
   }
 };
@@ -158,7 +164,7 @@ export const deleteTransaction = async (id: string | number): Promise<void> => {
         const ticker = id.substring(0, lastDashIndex);
         const datePart = id.substring(lastDashIndex + 1);
 
-        console.log('Deleting transaction:', { ticker, datePart, fullId: id });
+        logger.debug(logContext.DB, 'Deleting transaction:', { ticker, datePart, fullId: id });
 
         const txs = await db.transactions
           .where('Ticker')
@@ -180,14 +186,14 @@ export const deleteTransaction = async (id: string | number): Promise<void> => {
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('trades')
     .delete()
     .eq('id', id)
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error deleting transaction:', error);
+    logger.error(logContext.DB, 'Error deleting transaction:', error);
     throw error;
   }
 };
@@ -211,14 +217,14 @@ export const deleteTransactions = async (ids: (string | number)[]): Promise<void
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('trades')
     .delete()
     .in('id', ids)
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error deleting transactions:', error);
+    logger.error(logContext.DB, 'Error deleting transactions:', error);
     throw error;
   }
 };
@@ -247,7 +253,7 @@ export const updateTransaction = async (id: string | number, transaction: Partia
   if (transaction.RealizedPL !== undefined) updateData.realized_pl = transaction.RealizedPL;
   if (transaction.parsedDate !== undefined) updateData.parsed_date = transaction.parsedDate.toISOString().split('T')[0];
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('trades')
     .update(updateData)
     .eq('id', id)
@@ -256,7 +262,7 @@ export const updateTransaction = async (id: string | number, transaction: Partia
     .single();
 
   if (error) {
-    console.error('Error updating transaction:', error);
+    logger.error(logContext.DB, 'Error updating transaction:', error);
     throw error;
   }
 
@@ -279,22 +285,29 @@ export const updateTransaction = async (id: string | number, transaction: Partia
 
 export const clearTransactions = async (): Promise<void> => {
   const userId = await getCurrentUserId();
-  console.log('clearTransactions - userId:', userId);
-
-  if (!userId) {
-    console.log('Clearing local Dexie transactions...');
+  logger.debug(logContext.DB, 'clearTransactions', { userId });
+  
+  try {
+    logger.debug(logContext.DB, 'Clearing local Dexie transactions...');
     await db.transactions.clear();
-    console.log('Local transactions cleared');
+    logger.debug(logContext.DB, 'Local transactions cleared');
+    return;
+  } catch (localError) {
+    logger.warn(logContext.DB, 'Local clear failed, trying cloud', localError);
+  }
+
+  if (!isSupabaseConfigured() || !supabase) {
+    logger.warn(logContext.DB, 'Supabase not configured, skipping cloud clear');
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('trades')
     .delete()
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error clearing trades:', error);
+    logger.error(logContext.DB, 'Error clearing trades:', error);
     throw error;
   }
 };
@@ -308,14 +321,14 @@ export const getFees = async (): Promise<FeeRecord[]> => {
     return await db.fees.toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('fees_v2')
     .select('*')
     .eq('user_id', userId)
     .order('date', { ascending: false });
 
   if (error) {
-    console.error('Error fetching fees:', error);
+    logger.error(logContext.DB, 'Error fetching fees:', error);
     return [];
   }
 
@@ -336,7 +349,7 @@ export const addFee = async (fee: FeeRecord): Promise<FeeRecord> => {
     return { ...fee, id: id as number };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('fees_v2')
     .insert({
       user_id: userId,
@@ -349,7 +362,7 @@ export const addFee = async (fee: FeeRecord): Promise<FeeRecord> => {
     .single();
 
   if (error) {
-    console.error('Error adding fee:', error);
+    logger.error(logContext.DB, 'Error adding fee:', error);
     throw error;
   }
 
@@ -378,32 +391,32 @@ export const addFees = async (fees: FeeRecord[]): Promise<void> => {
     description: f.description
   }));
 
-  const { error } = await supabase.from('fees_v2').insert(records);
+  const { error } = await getSupabaseClient().from('fees_v2').insert(records);
 
   if (error) {
-    console.error('Error adding fees:', error);
+    logger.error(logContext.DB, 'Error adding fees:', error);
     throw error;
   }
 };
 
 export const clearFees = async (): Promise<void> => {
   const userId = await getCurrentUserId();
-  console.log('clearFees - userId:', userId);
+  logger.debug(logContext.DB, 'clearFees', { userId });
 
   if (!userId) {
-    console.log('Clearing local Dexie fees...');
+    logger.debug(logContext.DB, 'Clearing local Dexie fees...');
     await db.fees.clear();
-    console.log('Local fees cleared');
+    logger.debug(logContext.DB, 'Local fees cleared');
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('fees_v2')
     .delete()
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error clearing fees:', error);
+    logger.error(logContext.DB, 'Error clearing fees:', error);
     throw error;
   }
 };
@@ -416,14 +429,14 @@ export const deleteFee = async (id: number | string): Promise<void> => {
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('fees_v2')
     .delete()
     .eq('id', id)
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error deleting fee:', error);
+    logger.error(logContext.DB, 'Error deleting fee:', error);
     throw error;
   }
 };
@@ -437,14 +450,14 @@ export const getBankOperations = async (): Promise<BankOperation[]> => {
     return await db.bankOperations?.toArray() || [];
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('bank_ops')
     .select('*')
     .eq('user_id', userId)
     .order('date', { ascending: false });
 
   if (error) {
-    console.error('Error fetching bank operations:', error);
+    logger.error(logContext.DB, 'Error fetching bank operations:', error);
     return [];
   }
 
@@ -468,7 +481,7 @@ export const addBankOperation = async (operation: BankOperation): Promise<BankOp
     return { ...operation, id: id as number };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('bank_ops')
     .insert({
       user_id: userId,
@@ -484,7 +497,7 @@ export const addBankOperation = async (operation: BankOperation): Promise<BankOp
     .single();
 
   if (error) {
-    console.error('Error adding bank operation:', error);
+    logger.error(logContext.DB, 'Error adding bank operation:', error);
     throw error;
   }
 
@@ -508,36 +521,36 @@ export const deleteBankOperation = async (id: string | number): Promise<void> =>
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('bank_ops')
     .delete()
     .eq('id', id)
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error deleting bank operation:', error);
+    logger.error(logContext.DB, 'Error deleting bank operation:', error);
     throw error;
   }
 };
 
 export const clearBankOperations = async (): Promise<void> => {
   const userId = await getCurrentUserId();
-  console.log('clearBankOperations - userId:', userId);
+  logger.debug(logContext.DB, 'clearBankOperations', { userId });
 
   if (!userId) {
-    console.log('Clearing local Dexie bankOperations...');
+    logger.debug(logContext.DB, 'Clearing local Dexie bankOperations...');
     await db.bankOperations?.clear();
-    console.log('Local bankOperations cleared');
+    logger.debug(logContext.DB, 'Local bankOperations cleared');
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('bank_ops')
     .delete()
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error clearing bank operations:', error);
+    logger.error(logContext.DB, 'Error clearing bank operations:', error);
     throw error;
   }
 };
@@ -551,13 +564,13 @@ export const getCompanies = async (): Promise<CompanyProfile[]> => {
     return await db.companies.toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('companies')
     .select('*')
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error fetching companies:', error);
+    logger.error(logContext.DB, 'Error fetching companies:', error);
     return [];
   }
 
@@ -588,7 +601,7 @@ export const getCompanyByTicker = async (ticker: string): Promise<CompanyProfile
     return await db.companies.where('ticker').equals(ticker).first();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('companies')
     .select('*')
     .eq('user_id', userId)
@@ -627,7 +640,7 @@ export const addCompany = async (company: CompanyProfile): Promise<CompanyProfil
     return { ...company, id: id as number };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('companies')
     .upsert({
       user_id: userId,
@@ -651,7 +664,7 @@ export const addCompany = async (company: CompanyProfile): Promise<CompanyProfil
     .single();
 
   if (error) {
-    console.error('Error adding company:', error);
+    logger.error(logContext.DB, 'Error adding company:', error);
     throw error;
   }
 
@@ -684,14 +697,14 @@ export const getManagementByTicker = async (ticker: string): Promise<ManagementM
     return await db.management.where('ticker').equals(ticker).toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('management')
     .select('*')
     .eq('user_id', userId)
     .eq('ticker', ticker);
 
   if (error) {
-    console.error('Error fetching management:', error);
+    logger.error(logContext.DB, 'Error fetching management:', error);
     return [];
   }
 
@@ -718,10 +731,10 @@ export const addManagement = async (members: ManagementMember[]): Promise<void> 
     name: m.name
   }));
 
-  const { error } = await supabase.from('management').insert(records);
+  const { error } = await getSupabaseClient().from('management').insert(records);
 
   if (error) {
-    console.error('Error adding management:', error);
+    logger.error(logContext.DB, 'Error adding management:', error);
     throw error;
   }
 };
@@ -735,14 +748,14 @@ export const getFinancialFiguresByTicker = async (ticker: string): Promise<Finan
     return await db.financialFigures.where('ticker').equals(ticker).toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('financial_figures')
     .select('*')
     .eq('user_id', userId)
     .eq('ticker', ticker);
 
   if (error) {
-    console.error('Error fetching financial figures:', error);
+    logger.error(logContext.DB, 'Error fetching financial figures:', error);
     return [];
   }
 
@@ -781,10 +794,10 @@ export const addFinancialFigures = async (figures: FinancialFigure[]): Promise<v
     capital_social: f.capital_social
   }));
 
-  const { error } = await supabase.from('financial_figures').upsert(records);
+  const { error } = await getSupabaseClient().from('financial_figures').upsert(records);
 
   if (error) {
-    console.error('Error adding financial figures:', error);
+    logger.error(logContext.DB, 'Error adding financial figures:', error);
     throw error;
   }
 };
@@ -798,14 +811,14 @@ export const getFinancialRatiosByTicker = async (ticker: string): Promise<Financ
     return await db.financialRatios.where('ticker').equals(ticker).toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('financial_ratios')
     .select('*')
     .eq('user_id', userId)
     .eq('ticker', ticker);
 
   if (error) {
-    console.error('Error fetching financial ratios:', error);
+    logger.error(logContext.DB, 'Error fetching financial ratios:', error);
     return [];
   }
 
@@ -842,10 +855,10 @@ export const addFinancialRatios = async (ratios: FinancialRatio[]): Promise<void
     dividend_yield_percent: r.dividend_yield_percent
   }));
 
-  const { error } = await supabase.from('financial_ratios').upsert(records);
+  const { error } = await getSupabaseClient().from('financial_ratios').upsert(records);
 
   if (error) {
-    console.error('Error adding financial ratios:', error);
+    logger.error(logContext.DB, 'Error adding financial ratios:', error);
     throw error;
   }
 };
@@ -859,14 +872,14 @@ export const getDividendsByTicker = async (ticker: string): Promise<DividendReco
     return await db.dividends.where('ticker').equals(ticker).toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('dividends')
     .select('*')
     .eq('user_id', userId)
     .eq('ticker', ticker);
 
   if (error) {
-    console.error('Error fetching dividends:', error);
+    logger.error(logContext.DB, 'Error fetching dividends:', error);
     return [];
   }
 
@@ -889,13 +902,13 @@ export const getAllDividends = async (): Promise<DividendRecord[]> => {
     return await db.dividends.toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('dividends')
     .select('*')
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error fetching all dividends:', error);
+    logger.error(logContext.DB, 'Error fetching all dividends:', error);
     return [];
   }
 
@@ -930,10 +943,10 @@ export const addDividends = async (dividends: DividendRecord[]): Promise<void> =
     payment_date: d.payment_date?.toISOString().split('T')[0]
   }));
 
-  const { error } = await supabase.from('dividends').upsert(records);
+  const { error } = await getSupabaseClient().from('dividends').upsert(records);
 
   if (error) {
-    console.error('Error adding dividends:', error);
+    logger.error(logContext.DB, 'Error adding dividends:', error);
     throw error;
   }
 };
@@ -947,14 +960,14 @@ export const getShareholdersByTicker = async (ticker: string): Promise<Sharehold
     return await db.shareholders.where('ticker').equals(ticker).toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('shareholders')
     .select('*')
     .eq('user_id', userId)
     .eq('ticker', ticker);
 
   if (error) {
-    console.error('Error fetching shareholders:', error);
+    logger.error(logContext.DB, 'Error fetching shareholders:', error);
     return [];
   }
 
@@ -983,10 +996,10 @@ export const addShareholders = async (shareholders: Shareholder[]): Promise<void
     as_of_date: s.as_of_date?.toISOString().split('T')[0]
   }));
 
-  const { error } = await supabase.from('shareholders').insert(records);
+  const { error } = await getSupabaseClient().from('shareholders').insert(records);
 
   if (error) {
-    console.error('Error adding shareholders:', error);
+    logger.error(logContext.DB, 'Error adding shareholders:', error);
     throw error;
   }
 };
@@ -1000,14 +1013,14 @@ export const getCapitalEventsByTicker = async (ticker: string): Promise<CapitalE
     return await db.capitalEvents.where('ticker').equals(ticker).toArray();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('capital_events')
     .select('*')
     .eq('user_id', userId)
     .eq('ticker', ticker);
 
   if (error) {
-    console.error('Error fetching capital events:', error);
+    logger.error(logContext.DB, 'Error fetching capital events:', error);
     return [];
   }
 
@@ -1046,10 +1059,10 @@ export const addCapitalEvents = async (events: CapitalEvent[]): Promise<void> =>
     direction: e.direction
   }));
 
-  const { error } = await supabase.from('capital_events').insert(records);
+  const { error } = await getSupabaseClient().from('capital_events').insert(records);
 
   if (error) {
-    console.error('Error adding capital events:', error);
+    logger.error(logContext.DB, 'Error adding capital events:', error);
     throw error;
   }
 };
@@ -1087,13 +1100,13 @@ export const clearAllData = async (): Promise<void> => {
   ];
 
   for (const table of tables) {
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from(table)
       .delete()
       .eq('user_id', userId);
 
     if (error) {
-      console.error(`Error clearing ${table}:`, error);
+      logger.error(logContext.DB, `Error clearing ${table}:`, error);
     }
   }
 };

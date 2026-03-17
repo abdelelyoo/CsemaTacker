@@ -461,7 +461,7 @@ export const RiskDashboard: React.FC = () => {
                                             <Cell key={idx} fill={SECTOR_COLORS[idx % SECTOR_COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
+                                    <Tooltip formatter={(value) => value === undefined || value === null ? '' : `${Number(value).toFixed(1)}%`} />
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>

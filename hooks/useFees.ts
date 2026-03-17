@@ -40,6 +40,7 @@ export const useFees = () => {
 
             return () => subscription.unsubscribe();
         }
+        return undefined;
     }, [loadFees]);
 
     const addFee = async (date: Date, type: FeeType, amount: number, description?: string) => {

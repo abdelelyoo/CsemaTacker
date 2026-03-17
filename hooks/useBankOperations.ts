@@ -37,6 +37,7 @@ export const useBankOperations = () => {
             });
             return () => subscription.unsubscribe();
         }
+        return undefined;
     }, [loadOperations]);
 
     const normalizeOperation = (data: any): Partial<BankOperation> => {

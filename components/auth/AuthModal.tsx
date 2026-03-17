@@ -19,6 +19,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!supabase) {
+      setError('Supabase is not configured');
+      return;
+    }
     setLoading(true);
     setError(null);
     setMessage(null);

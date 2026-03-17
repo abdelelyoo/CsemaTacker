@@ -18,9 +18,10 @@ export const CloudSyncStatus: React.FC<CloudSyncStatusProps> = ({ onMigrationCom
   const [migrationResult, setMigrationResult] = useState<{ success: boolean; message: string } | null>(null);
 
   useEffect(() => {
-    setIsConfigured(isSupabaseConfigured());
+    const configured = isSupabaseConfigured();
+    setIsConfigured(!!configured);
     
-    if (isSupabaseConfigured()) {
+    if (configured && supabase) {
       supabase.auth.getUser().then(({ data: { user } }) => {
         setIsAuthenticated(!!user);
       });
@@ -31,6 +32,7 @@ export const CloudSyncStatus: React.FC<CloudSyncStatusProps> = ({ onMigrationCom
 
       return () => subscription.unsubscribe();
     }
+    return undefined;
   }, []);
 
   const handleMigration = async () => {

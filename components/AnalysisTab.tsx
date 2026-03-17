@@ -4,13 +4,11 @@ import { ValuationScreener } from './ValuationScreener';
 import { QualityDashboard } from './QualityDashboard';
 import { RiskDashboard } from './RiskDashboard';
 import { PieChart, BarChart3, Award, ScanLine } from 'lucide-react';
-import { useMetrics } from '../context/MetricsContext';
 
 type AnalysisSubTab = 'fundamentals' | 'valuation' | 'quality' | 'risk';
 
 export const AnalysisTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<AnalysisSubTab>('fundamentals');
-  const { selectedTicker, setSelectedTicker } = useMetrics();
 
   const subTabs: { id: AnalysisSubTab; label: string; icon: React.ReactNode }[] = [
     { id: 'fundamentals', label: 'Fundamentals', icon: <BarChart3 size={16} /> },
